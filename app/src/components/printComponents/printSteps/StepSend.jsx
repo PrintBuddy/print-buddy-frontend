@@ -1,6 +1,6 @@
 import { 
     Box, Button, Typography, Paper, List, ListItem, ListItemText, 
-    Divider, CircularProgress, Backdrop
+    CircularProgress
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PrintIcon from "@mui/icons-material/Print";
