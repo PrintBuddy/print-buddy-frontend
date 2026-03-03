@@ -13,7 +13,11 @@ import HistoryPage from "./views/HistoryPage";
 import BalancePage from "./views/BalancePage";
 import PwdResetPage from "./views/PwdResetPage";
 import PwdRequestPage from "./views/PwdRequestPage";
-
+import AdminDashboardPage from "./views/AdminDashboardPage";
+import AdminUsersPage from "./views/AdminUsersPage";
+import AdminRefundsPage from "./views/AdminRefundsPage";
+import AdminSettingsPage from "./views/AdminSettingsPage";
+import AdminActivityPage from "./views/AdminActivityPage";
 
 import { useEffect } from "react";
 import { usePrint } from "./context/PrintContext"; 
@@ -54,6 +58,25 @@ const ProtectedRoute = ({ children }) => {
     );
 }
 
+const AdminRoute = ({ children }) => {
+    const { statusLoggedIn } = useAuth();
+    const { user } = useUser();
+
+    if (statusLoggedIn == "loggedOut") {
+        return <Navigate to="/login" replace />;
+    }
+
+    if (user && !user.is_admin) {
+        return <Navigate to="/" replace />;
+    }
+
+    return (
+        <DashboardLayout>
+            { children }
+        </DashboardLayout>
+    );
+};
+
 
 export default function AppRouter() {
 
@@ -93,6 +116,37 @@ export default function AppRouter() {
                     <ProtectedRoute>
                         <BalancePage />
                     </ProtectedRoute>
+                } />
+
+                {/* ── Admin routes ────────────────────────── */}
+                <Route path="/admin" element={
+                    <AdminRoute>
+                        <AdminDashboardPage />
+                    </AdminRoute>
+                } />
+
+                <Route path="/admin/users" element={
+                    <AdminRoute>
+                        <AdminUsersPage />
+                    </AdminRoute>
+                } />
+
+                <Route path="/admin/refunds" element={
+                    <AdminRoute>
+                        <AdminRefundsPage />
+                    </AdminRoute>
+                } />
+
+                <Route path="/admin/settings" element={
+                    <AdminRoute>
+                        <AdminSettingsPage />
+                    </AdminRoute>
+                } />
+
+                <Route path="/admin/activity" element={
+                    <AdminRoute>
+                        <AdminActivityPage />
+                    </AdminRoute>
                 } />
 
                 <Route path="*" element={

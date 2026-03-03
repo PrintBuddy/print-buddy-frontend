@@ -1,39 +1,43 @@
-import { TableRow, TableCell, Box } from "@mui/material";
+import { Box, TableRow, TableCell, Typography } from "@mui/material";
 
 
 export default function JobRow({ job, isMobile, renderStatusIcon, onClick }) {
     return (
         <TableRow
-        hover
-        onClick={onClick}
-        sx={{
-            cursor: isMobile ? "pointer" : "default",
-            "&:hover": {
-            backgroundColor: isMobile ? "action.hover" : "transparent",
-            },
-        }}
+            hover
+            onClick={onClick}
+            sx={{ cursor: isMobile ? "pointer" : "default" }}
         >
         {isMobile ? (
             <>
-            <TableCell width={50}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                {renderStatusIcon(job.status)}
+            <TableCell width={36} sx={{ pl: 1, pr: 0 }}>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                    {renderStatusIcon(job.status)}
                 </Box>
             </TableCell>
-            <TableCell sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "15vw" }}>
-                {job.file_name || "—"}
-            </TableCell>
             <TableCell>
-                {job.completed_at
-                ? new Date(job.completed_at).toLocaleString()
-                : "—"}
+                <Typography variant="body2" fontWeight="medium" noWrap sx={{ maxWidth: "40vw" }}>
+                    {job.file_name || "—"}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                    {job.printer_name || "—"}
+                </Typography>
+            </TableCell>
+            <TableCell align="right">
+                <Typography variant="caption" color="text.secondary">
+                    {job.completed_at
+                        ? new Date(job.completed_at).toLocaleDateString()
+                        : job.created_at
+                        ? new Date(job.created_at).toLocaleDateString()
+                        : "—"}
+                </Typography>
             </TableCell>
             </>
         ) : (
             <>
             <TableCell>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                {renderStatusIcon(job.status)}
+                    {renderStatusIcon(job.status)}
                 </Box>
             </TableCell>
             <TableCell sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "10vw" }}>
@@ -42,14 +46,10 @@ export default function JobRow({ job, isMobile, renderStatusIcon, onClick }) {
             <TableCell>{job.printer_name || "—"}</TableCell>
             <TableCell>{job.status.toUpperCase() || "—"}</TableCell>
             <TableCell>
-                {job.created_at
-                ? new Date(job.created_at).toLocaleString()
-                : "—"}
+                {job.created_at ? new Date(job.created_at).toLocaleString() : "—"}
             </TableCell>
             <TableCell>
-                {job.completed_at
-                ? new Date(job.completed_at).toLocaleString()
-                : "—"}
+                {job.completed_at ? new Date(job.completed_at).toLocaleString() : "—"}
             </TableCell>
             </>
         )}

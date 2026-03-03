@@ -1,7 +1,7 @@
 import { TableRow, TableCell, Skeleton } from "@mui/material";
 
-export default function SkeletonRow({ isMobile }) {
-    const cellCount = isMobile ? 3 : 6;
+export default function SkeletonRow({ isMobile, mobileColumns = 3, desktopColumns = 6 }) {
+    const cellCount = isMobile ? mobileColumns : desktopColumns;
     return (
         <TableRow>
         {Array.from({ length: cellCount }).map((_, j) => (
