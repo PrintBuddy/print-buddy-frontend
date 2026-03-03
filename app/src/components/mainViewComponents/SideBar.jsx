@@ -11,6 +11,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import AssignmentReturnIcon from "@mui/icons-material/AssignmentReturn";
 import SettingsIcon from "@mui/icons-material/Settings";
 import HistoryEduIcon from "@mui/icons-material/HistoryEdu";
+import BarChartIcon from "@mui/icons-material/BarChart";
 
 import { useUser } from "../../context/UserContext";
 
@@ -35,6 +36,7 @@ export default function SideBar({ open, onClose, isDesktop, width }) {
         { text: "Users", icon: <PeopleIcon />, path: "/admin/users" },
         { text: "Refunds", icon: <AssignmentReturnIcon />, path: "/admin/refunds" },
         { text: "Activity Log", icon: <HistoryEduIcon />, path: "/admin/activity" },
+        { text: "Statistics", icon: <BarChartIcon />, path: "/admin/statistics" },
         { text: "Settings", icon: <SettingsIcon />, path: "/admin/settings" },
     ];
 
