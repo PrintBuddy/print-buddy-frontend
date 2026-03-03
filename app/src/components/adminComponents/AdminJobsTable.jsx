@@ -77,7 +77,7 @@ export default function AdminJobsTable({ jobs, isLoading, userById = {} }) {
                     {!isMobile && (
                         <TableHead>
                             <TableRow>
-                                <TableCell>File</TableCell>
+                                <TableCell sx={{ maxWidth: 180, width: 180 }}>File</TableCell>
                                 <TableCell>Printer</TableCell>
                                 <TableCell>User</TableCell>
                                 <TableCell>Pages</TableCell>
@@ -142,7 +142,11 @@ export default function AdminJobsTable({ jobs, isLoading, userById = {} }) {
                                 }
                                 return (
                                     <TableRow key={job.id} hover>
-                                        <TableCell>{job.file_name ?? "—"}</TableCell>
+                                        <TableCell sx={{ maxWidth: 180, overflow: "hidden" }}>
+                                            <Typography variant="body2" noWrap title={job.file_name}>
+                                                {job.file_name ?? "—"}
+                                            </Typography>
+                                        </TableCell>
                                         <TableCell>{job.printer_name}</TableCell>
                                         <TableCell>
                                             {user
