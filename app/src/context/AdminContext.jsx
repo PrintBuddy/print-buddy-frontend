@@ -3,7 +3,7 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 
 import { useUser } from "./UserContext";
 
-import { getAllUsers, updateUser, adjustUserBalance, getUserTransactions } from "../api/user";
+import { getAllUsers, updateUser, adjustUserBalance, rechargeUserBalance, getUserTransactions, deleteUser } from "../api/user";
 import { getAllJobs } from "../api/print";
 import { getAllRefunds, resolveRefund } from "../api/refund";
 import { getPrinters, updatePrinter } from "../api/printer";
@@ -34,6 +34,16 @@ export function AdminProvider({ children }) {
 
     const adjustBalanceMutation = useMutation({
         mutationFn: ({ userId, amount }) => adjustUserBalance(userId, amount),
+        onSuccess: () => queryClient.invalidateQueries(["admin-users"])
+    });
+
+    const rechargeBalanceMutation = useMutation({
+        mutationFn: ({ userId, amount }) => rechargeUserBalance(userId, amount),
+        onSuccess: () => queryClient.invalidateQueries(["admin-users"])
+    });
+
+    const deleteUserMutation = useMutation({
+        mutationFn: (userId) => deleteUser(userId),
         onSuccess: () => queryClient.invalidateQueries(["admin-users"])
     });
 
@@ -90,6 +100,8 @@ export function AdminProvider({ children }) {
             usersLoading: usersQuery.isLoading,
             updateUser: (userId, data) => updateUserMutation.mutateAsync({ userId, data }),
             adjustBalance: (userId, amount) => adjustBalanceMutation.mutateAsync({ userId, amount }),
+            rechargeBalance: (userId, amount) => rechargeBalanceMutation.mutateAsync({ userId, amount }),
+            deleteUser: (userId) => deleteUserMutation.mutateAsync(userId),
             getUserTransactions,
 
             // jobs

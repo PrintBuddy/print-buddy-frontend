@@ -45,6 +45,11 @@ export async function adjustUserBalance(userId, amount) {
     return response.data;
 }
 
+export async function rechargeUserBalance(userId, amount) {
+    const response = await api.patch(`${USER_ROUTE}/balance-recharge/${userId}/${amount}`);
+    return response.data;
+}
+
 export async function getUserTransactions(userId) {
     const response = await api.get(`${USER_ROUTE}/${userId}/transactions`);
     return response.data;

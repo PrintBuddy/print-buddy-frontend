@@ -11,7 +11,7 @@ import {
     Divider
 } from "@mui/material";
 import PrintIcon from "@mui/icons-material/Print";
-import EditIcon from "@mui/icons-material/Edit";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 
 const STATUS_COLOR = {
@@ -39,7 +39,7 @@ function PrinterCard({ printer, onEdit }) {
                         {onEdit && (
                             <Tooltip title="Edit prices">
                                 <IconButton size="small" onClick={() => onEdit(printer)}>
-                                    <EditIcon fontSize="small" />
+                                    <SettingsIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
                         )}

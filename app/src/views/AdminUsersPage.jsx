@@ -4,7 +4,9 @@ import {
     Button,
     Chip,
     Dialog,
+    DialogActions,
     DialogContent,
+    DialogContentText,
     DialogTitle,
     IconButton,
     InputAdornment,
@@ -28,6 +30,7 @@ import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { useSnackbar } from "notistack";
 
 import { useAdmin } from "../context/AdminContext";
@@ -44,6 +47,8 @@ export default function AdminUsersPage() {
         usersLoading,
         updateUser,
         adjustBalance,
+        rechargeBalance,
+        deleteUser,
         refreshAll
     } = useAdmin();
 
@@ -53,6 +58,7 @@ export default function AdminUsersPage() {
     const [rechargeUser, setRechargeUser] = useState(null);
     const [txUser, setTxUser] = useState(null);
     const [selectedUser, setSelectedUser] = useState(null); // mobile action sheet
+    const [confirmDeleteUser, setConfirmDeleteUser] = useState(null);
     const [search, setSearch] = useState("");
 
     const handleSaveEdit = async (userId, data) => {
@@ -62,7 +68,24 @@ export default function AdminUsersPage() {
 
     const handleSaveBalance = async (userId, amount) => {
         await adjustBalance(userId, amount);
-        enqueueSnackbar("Balance updated successfully.", { variant: "success" });
+        enqueueSnackbar("Balance adjusted.", { variant: "success" });
+    };
+
+    const handleRecharge = async (userId, amount) => {
+        await rechargeBalance(userId, amount);
+        enqueueSnackbar("Credit recharged successfully.", { variant: "success" });
+    };
+
+    const handleDeleteUser = async () => {
+        if (!confirmDeleteUser) return;
+        try {
+            await deleteUser(confirmDeleteUser.id);
+            enqueueSnackbar(`User "${confirmDeleteUser.username}" deleted.`, { variant: "success" });
+        } catch {
+            enqueueSnackbar("Failed to delete user.", { variant: "error" });
+        } finally {
+            setConfirmDeleteUser(null);
+        }
     };
 
     const skeletonRows = Array.from({ length: 6 });
@@ -242,6 +265,11 @@ export default function AdminUsersPage() {
                                                 <ReceiptLongIcon fontSize="small" />
                                             </IconButton>
                                         </Tooltip>
+                                        <Tooltip title="Delete user">
+                                            <IconButton size="small" color="error" onClick={() => setConfirmDeleteUser(user)}>
+                                                <DeleteIcon fontSize="small" />
+                                            </IconButton>
+                                        </Tooltip>
                                     </TableCell>
                                 </TableRow>
                             ))
@@ -294,7 +322,7 @@ export default function AdminUsersPage() {
                         startIcon={<AccountBalanceWalletIcon />}
                         onClick={() => { setRechargeUser(selectedUser); setSelectedUser(null); }}
                     >
-                        Adjust Balance
+                        Recharge / Adjust Balance
                     </Button>
                     <Button
                         fullWidth
@@ -303,6 +331,15 @@ export default function AdminUsersPage() {
                         onClick={() => { setTxUser(selectedUser); setSelectedUser(null); }}
                     >
                         View Transactions
+                    </Button>
+                    <Button
+                        fullWidth
+                        variant="outlined"
+                        color="error"
+                        startIcon={<DeleteIcon />}
+                        onClick={() => { setConfirmDeleteUser(selectedUser); setSelectedUser(null); }}
+                    >
+                        Delete User
                     </Button>
                 </Box>
             </Dialog>
@@ -319,6 +356,7 @@ export default function AdminUsersPage() {
                 onClose={() => setRechargeUser(null)}
                 user={rechargeUser}
                 onSave={handleSaveBalance}
+                onRecharge={handleRecharge}
             />
 
             <UserTransactionsModal
@@ -326,6 +364,28 @@ export default function AdminUsersPage() {
                 onClose={() => setTxUser(null)}
                 user={txUser}
             />
+
+            {/* Delete confirmation dialog */}
+            <Dialog
+                open={Boolean(confirmDeleteUser)}
+                onClose={() => setConfirmDeleteUser(null)}
+                maxWidth="xs"
+                fullWidth
+            >
+                <DialogTitle>Delete user?</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Are you sure you want to permanently delete{" "}
+                        <strong>{confirmDeleteUser?.username}</strong>? This action cannot be undone.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setConfirmDeleteUser(null)}>Cancel</Button>
+                    <Button color="error" variant="contained" onClick={handleDeleteUser}>
+                        Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 }
