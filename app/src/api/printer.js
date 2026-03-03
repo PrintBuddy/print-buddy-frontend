@@ -26,3 +26,8 @@ export async function getPrinter(name) {
         throw new Error(err.message);
     }
 }
+
+export async function updatePrinter(name, data) {
+    const response = await api.patch(`${PRINTER_ROUTE}/${name}`, data);
+    return response.data;
+}

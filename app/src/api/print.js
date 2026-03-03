@@ -9,6 +9,11 @@ export async function getMyJobs() {
     return response.data;
 }
 
+export async function getAllJobs() {
+    const response = await api.get(`${PRINT_ROUTE}/all-jobs`);
+    return response.data;
+}
+
 
 export async function print(
     printerName, fileId, options
@@ -32,7 +37,7 @@ export async function print(
         copies: String(options.copies),
         sides: sides,
         page_ranges: options.pageRanges || "all",
-        color: options.color == "Color",
+        color: options.colorMode == "Color",
         number_up: String(options.numberUp)
     }
 

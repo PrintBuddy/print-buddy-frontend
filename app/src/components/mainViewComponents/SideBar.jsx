@@ -1,18 +1,26 @@
-import { Drawer, Toolbar, List, ListItemButton, ListItemText, ListItemIcon } from "@mui/material";
+import { Drawer, Toolbar, List, ListItemButton, ListItemText, ListItemIcon, Divider, Typography } from "@mui/material";
 import { useLocation, Link } from "react-router-dom";
 
 import DescriptionIcon from "@mui/icons-material/Description";
 import PrintIcon from "@mui/icons-material/Print";
-import BarChartIcon from "@mui/icons-material/BarChart";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import HistoryIcon from "@mui/icons-material/History";
 import HomeIcon from "@mui/icons-material/Home";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import PeopleIcon from "@mui/icons-material/People";
+import AssignmentReturnIcon from "@mui/icons-material/AssignmentReturn";
+import SettingsIcon from "@mui/icons-material/Settings";
+import HistoryEduIcon from "@mui/icons-material/HistoryEdu";
+
+import { useUser } from "../../context/UserContext";
 
 
 export default function SideBar({ open, onClose, isDesktop, width }) {
 
     const location = useLocation();
     const currentPath = location.pathname;
+    const { user } = useUser();
+    const isAdmin = user?.is_admin ?? false;
 
     const menuItems = [
         { text: "Home", icon: <HomeIcon />, path: "/" },
@@ -20,6 +28,14 @@ export default function SideBar({ open, onClose, isDesktop, width }) {
         { text: "Print", icon: <PrintIcon />, path: "/print" },
         { text: "Print history", icon: <HistoryIcon />, path: "/history"},
         { text: "My balance", icon: <AccountBalanceWalletIcon />, path: "/balance" },
+    ];
+
+    const adminMenuItems = [
+        { text: "Dashboard", icon: <DashboardIcon />, path: "/admin" },
+        { text: "Users", icon: <PeopleIcon />, path: "/admin/users" },
+        { text: "Refunds", icon: <AssignmentReturnIcon />, path: "/admin/refunds" },
+        { text: "Activity Log", icon: <HistoryEduIcon />, path: "/admin/activity" },
+        { text: "Settings", icon: <SettingsIcon />, path: "/admin/settings" },
     ];
 
     const drawerContent = (
@@ -35,6 +51,30 @@ export default function SideBar({ open, onClose, isDesktop, width }) {
                     <ListItemText primary={text} />
                 </ListItemButton>
             ))}
+
+            {isAdmin && (
+                <>
+                    <Divider sx={{ my: 1 }} />
+                    <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{ pl: 2, pb: 0.5, display: "block" }}
+                    >
+                        Admin
+                    </Typography>
+                    {adminMenuItems.map(({ text, icon, path }) => (
+                        <ListItemButton
+                            key={text}
+                            component={Link}
+                            to={path}
+                            selected={currentPath === path}
+                        >
+                            <ListItemIcon sx={{ minWidth: 40 }}>{icon}</ListItemIcon>
+                            <ListItemText primary={text} />
+                        </ListItemButton>
+                    ))}
+                </>
+            )}
         </List>
     );
 

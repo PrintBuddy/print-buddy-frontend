@@ -7,7 +7,8 @@ import { QueryContext } from "./QueryContext";
 import { FileProvider } from "./FileContext";
 import { PrintProvider } from "./PrintContext";
 import { NotifProvider } from "./NotificationContext";
-import { TransactionProvider } from "./TransactionContext"
+import { TransactionProvider } from "./TransactionContext";
+import { AdminProvider } from "./AdminContext";
 
 
 
@@ -23,7 +24,9 @@ export function RootProvider({ children }) {
                         <FileProvider>
                             <TransactionProvider>
                             <UserProvider>
-                                {children}
+                                <AdminProvider>
+                                    {children}
+                                </AdminProvider>
                             </UserProvider>
                             </TransactionProvider>
                         </FileProvider>
