@@ -69,7 +69,7 @@ export default function TransactionsTable({ transactions, isLoading }) {
                     key={tx.id}
                     tx={tx}
                     isMobile={isMobile}
-                    onClick={() => isMobile && setSelectedTx(tx)}
+                    onClick={() => setSelectedTx(tx)}
                     />
                 ))
                 )}

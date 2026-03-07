@@ -22,12 +22,7 @@ export default function TransactionRow({ tx, isMobile, onClick }) {
         <TableRow
         hover
         onClick={onClick}
-        sx={{
-            cursor: isMobile ? "pointer" : "default",
-            "&:hover": {
-            backgroundColor: isMobile ? "action.hover" : "transparent",
-            },
-        }}
+        sx={{ cursor: "pointer" }}
         >
         {isMobile ? (
             <>

@@ -31,6 +31,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CloseIcon from "@mui/icons-material/Close";
 import { useSnackbar } from "notistack";
 
 import { useAdmin } from "../context/AdminContext";
@@ -227,7 +228,12 @@ export default function AdminUsersPage() {
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                <TableRow key={user.id} hover>
+                                <TableRow
+                                    key={user.id}
+                                    hover
+                                    onClick={() => setSelectedUser(user)}
+                                    sx={{ cursor: "pointer" }}
+                                >
                                     <TableCell>
                                         <Typography variant="body2" fontWeight="medium">
                                             {user.username}
@@ -251,22 +257,22 @@ export default function AdminUsersPage() {
                                     </TableCell>
                                     <TableCell align="right">
                                         <Tooltip title="Edit user info">
-                                            <IconButton size="small" onClick={() => setEditUser(user)}>
+                                            <IconButton size="small" onClick={(e) => { e.stopPropagation(); setEditUser(user); }}>
                                                 <EditIcon fontSize="small" />
                                             </IconButton>
                                         </Tooltip>
                                         <Tooltip title="Adjust balance">
-                                            <IconButton size="small" onClick={() => setRechargeUser(user)}>
+                                            <IconButton size="small" onClick={(e) => { e.stopPropagation(); setRechargeUser(user); }}>
                                                 <AccountBalanceWalletIcon fontSize="small" />
                                             </IconButton>
                                         </Tooltip>
                                         <Tooltip title="View transactions">
-                                            <IconButton size="small" onClick={() => setTxUser(user)}>
+                                            <IconButton size="small" onClick={(e) => { e.stopPropagation(); setTxUser(user); }}>
                                                 <ReceiptLongIcon fontSize="small" />
                                             </IconButton>
                                         </Tooltip>
                                         <Tooltip title="Delete user">
-                                            <IconButton size="small" color="error" onClick={() => setConfirmDeleteUser(user)}>
+                                            <IconButton size="small" color="error" onClick={(e) => { e.stopPropagation(); setConfirmDeleteUser(user); }}>
                                                 <DeleteIcon fontSize="small" />
                                             </IconButton>
                                         </Tooltip>
@@ -285,11 +291,18 @@ export default function AdminUsersPage() {
                 fullWidth
                 maxWidth="xs"
             >
-                <DialogTitle sx={{ pb: 0.5 }}>
+                <DialogTitle sx={{ pb: 0.5, pr: 6 }}>
                     <Typography fontWeight="bold">{selectedUser?.username}</Typography>
                     <Typography variant="body2" color="text.secondary">
                         {selectedUser?.name} {selectedUser?.surname}
                     </Typography>
+                    <IconButton
+                        onClick={() => setSelectedUser(null)}
+                        size="small"
+                        sx={{ position: "absolute", top: 8, right: 8 }}
+                    >
+                        <CloseIcon fontSize="small" />
+                    </IconButton>
                 </DialogTitle>
                 <DialogContent>
                     <Typography variant="body2" color="text.secondary" gutterBottom>

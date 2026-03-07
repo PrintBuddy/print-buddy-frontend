@@ -6,7 +6,7 @@ export default function JobRow({ job, isMobile, renderStatusIcon, onClick }) {
         <TableRow
             hover
             onClick={onClick}
-            sx={{ cursor: isMobile ? "pointer" : "default" }}
+            sx={{ cursor: "pointer" }}
         >
         {isMobile ? (
             <>
