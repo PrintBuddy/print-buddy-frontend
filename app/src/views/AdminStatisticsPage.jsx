@@ -26,6 +26,7 @@ import EuroIcon from "@mui/icons-material/Euro";
 import TuneIcon from "@mui/icons-material/Tune";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import AssignmentReturnIcon from "@mui/icons-material/AssignmentReturn";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import {
     BarChart,
     Bar,
@@ -334,7 +335,7 @@ export default function AdminStatisticsPage() {
                     display: "grid",
                     gridTemplateColumns: {
                         xs: "1fr 1fr",
-                        md: "1fr 1fr 1fr 1fr",
+                        md: "1fr 1fr 1fr 1fr 1fr",
                     },
                     gap: { xs: 1.5, sm: 2 },
                 }}
@@ -359,6 +360,14 @@ export default function AdminStatisticsPage() {
                     label="Color Pages"
                     value={stats?.color_pages?.toLocaleString() ?? "0"}
                     accentColor={COLOR_COLOR}
+                    loading={isLoading}
+                />
+                <StatCard
+                    icon={<ContentCopyIcon />}
+                    label="Sheets Used"
+                    subtitle="Physical paper sheets"
+                    value={stats?.total_sheets?.toLocaleString() ?? "0"}
+                    accentColor="#00796b"
                     loading={isLoading}
                 />
                 <StatCard
@@ -535,16 +544,19 @@ export default function AdminStatisticsPage() {
                                     <b>{isMobile ? "Color" : "Color Pages"}</b>
                                 </TableCell>
                                 <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
+                                    <b>Sheets</b>
+                                </TableCell>
+                                <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
                                     <b>Revenue</b>
                                 </TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {isLoading ? (
-                                <SkeletonRows cols={5} rows={3} />
+                                <SkeletonRows cols={6} rows={3} />
                             ) : (stats?.by_printer ?? []).length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={5}>
+                                    <TableCell colSpan={6}>
                                         <Typography color="text.secondary">No data available.</Typography>
                                     </TableCell>
                                 </TableRow>
@@ -557,6 +569,7 @@ export default function AdminStatisticsPage() {
                                         <TableCell align="right">{p.total_pages.toLocaleString()}</TableCell>
                                         <TableCell align="right">{p.bw_pages.toLocaleString()}</TableCell>
                                         <TableCell align="right">{p.color_pages.toLocaleString()}</TableCell>
+                                        <TableCell align="right">{p.total_sheets.toLocaleString()}</TableCell>
                                         <TableCell align="right" sx={{ fontWeight: "bold", color: "success.dark" }}>
                                             €{p.total_cost.toFixed(2)}
                                         </TableCell>
@@ -585,14 +598,17 @@ export default function AdminStatisticsPage() {
                                 <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
                                     <b>{isMobile ? "Color" : "Color Pages"}</b>
                                 </TableCell>
+                                <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
+                                    <b>Sheets</b>
+                                </TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {isLoading ? (
-                                <SkeletonRows cols={4} rows={5} />
+                                <SkeletonRows cols={5} rows={5} />
                             ) : (stats?.by_user ?? []).length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={4}>
+                                    <TableCell colSpan={5}>
                                         <Typography color="text.secondary">No data available.</Typography>
                                     </TableCell>
                                 </TableRow>
@@ -605,6 +621,7 @@ export default function AdminStatisticsPage() {
                                         <TableCell align="right">{u.total_pages.toLocaleString()}</TableCell>
                                         <TableCell align="right">{u.bw_pages.toLocaleString()}</TableCell>
                                         <TableCell align="right">{u.color_pages.toLocaleString()}</TableCell>
+                                        <TableCell align="right">{u.total_sheets.toLocaleString()}</TableCell>
                                     </TableRow>
                                 ))
                             )}
