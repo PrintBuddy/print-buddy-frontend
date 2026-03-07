@@ -20,6 +20,42 @@ const STATUS_COLOR = {
     stopped: "error",
 };
 
+// Maps CUPS printer-state-reasons strings to a human-readable label and MUI chip color.
+// Severity "error" = red chip, "warning" = orange chip.
+const REASON_MAP = {
+    "media-empty":                   { label: "Out of paper",  color: "error" },
+    "media-low":                     { label: "Low paper",     color: "warning" },
+    "toner-empty":                   { label: "Out of toner",  color: "error" },
+    "toner-low":                     { label: "Low toner",     color: "warning" },
+    "marker-supply-empty-warning":   { label: "Supply empty",  color: "warning" },
+    "marker-supply-empty-error":     { label: "Supply empty",  color: "error" },
+    "marker-supply-low-warning":     { label: "Supply low",    color: "warning" },
+    "marker-supply-low-error":       { label: "Supply low",    color: "error" },
+    "offline-report":                { label: "Offline",       color: "error" },
+    "door-open":                     { label: "Door open",     color: "warning" },
+    "cover-open":                    { label: "Cover open",    color: "warning" },
+};
+
+function ReasonChips({ reasons }) {
+    if (!reasons?.length) return null;
+    return (
+        <Box display="flex" flexWrap="wrap" gap={0.5} mt={1}>
+            {reasons.map((reason) => {
+                const mapped = REASON_MAP[reason];
+                return (
+                    <Chip
+                        key={reason}
+                        label={mapped?.label ?? reason}
+                        color={mapped?.color ?? "default"}
+                        size="small"
+                        variant="outlined"
+                    />
+                );
+            })}
+        </Box>
+    );
+}
+
 function PrinterCard({ printer, onEdit }) {
     const statusColor = STATUS_COLOR[printer.status] ?? "default";
     const statusLabel = printer.status ?? "unknown";
@@ -64,6 +100,7 @@ function PrinterCard({ printer, onEdit }) {
                         No color support
                     </Typography>
                 )}
+                <ReasonChips reasons={printer.state_reasons} />
             </CardContent>
         </Card>
     );
