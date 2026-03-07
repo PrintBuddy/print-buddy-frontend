@@ -39,6 +39,7 @@ import {
 } from "recharts";
 
 import { getStatsOverview } from "../api/stats";
+import { getPrinters } from "../api/printer";
 
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -280,22 +281,39 @@ export default function AdminStatisticsPage() {
         staleTime: 1000 * 60 * 2,
     });
 
+    const { data: allPrinters = [] } = useQuery({
+        queryKey: ["printers"],
+        queryFn: getPrinters,
+        retry: false,
+        staleTime: 1000 * 60 * 5,
+    });
+
     const refresh = () => queryClient.invalidateQueries({ queryKey: ["admin-stats"] });
 
     const labelFn = isMobile ? shortLabelMobile : shortLabel;
 
-    const printerChartData = (stats?.by_printer ?? []).map((p) => ({
-        name: labelFn(p.printer_name),
-        fullName: p.printer_name,
-        "B/W": p.bw_pages,
-        Color: p.color_pages,
-    }));
+    const statsByPrinterName = Object.fromEntries(
+        (stats?.by_printer ?? []).map((p) => [p.printer_name, p])
+    );
 
-    const printerRevenueChartData = (stats?.by_printer ?? []).map((p) => ({
-        name: labelFn(p.printer_name),
-        fullName: p.printer_name,
-        Revenue: p.total_cost,
-    }));
+    const printerChartData = allPrinters.map((p) => {
+        const s = statsByPrinterName[p.name];
+        return {
+            name: labelFn(p.name),
+            fullName: p.name,
+            "B/W": s?.bw_pages ?? 0,
+            Color: s?.color_pages ?? 0,
+        };
+    });
+
+    const printerRevenueChartData = allPrinters.map((p) => {
+        const s = statsByPrinterName[p.name];
+        return {
+            name: labelFn(p.name),
+            fullName: p.name,
+            Revenue: s?.total_cost ?? 0,
+        };
+    });
 
     const topUserChartData = (stats?.by_user ?? []).slice(0, 10).map((u) => ({
         name: labelFn(u.username),

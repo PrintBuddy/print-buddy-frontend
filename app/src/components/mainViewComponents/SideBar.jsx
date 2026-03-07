@@ -29,6 +29,7 @@ export default function SideBar({ open, onClose, isDesktop, width }) {
         { text: "Print", icon: <PrintIcon />, path: "/print" },
         { text: "Print history", icon: <HistoryIcon />, path: "/history"},
         { text: "My balance", icon: <AccountBalanceWalletIcon />, path: "/balance" },
+        { text: "My statistics", icon: <BarChartIcon />, path: "/statistics" },
     ];
 
     const adminMenuItems = [
