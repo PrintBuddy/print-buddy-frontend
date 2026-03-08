@@ -141,7 +141,12 @@ export default function AdminJobsTable({ jobs, isLoading, userById = {} }) {
                                     );
                                 }
                                 return (
-                                    <TableRow key={job.id} hover>
+                                    <TableRow
+                                        key={job.id}
+                                        hover
+                                        onClick={() => setSelectedJob(job)}
+                                        sx={{ cursor: "pointer" }}
+                                    >
                                         <TableCell sx={{ maxWidth: 180, overflow: "hidden" }}>
                                             <Typography variant="body2" noWrap title={job.file_name}>
                                                 {job.file_name ?? "—"}

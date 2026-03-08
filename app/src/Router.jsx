@@ -19,6 +19,7 @@ import AdminRefundsPage from "./views/AdminRefundsPage";
 import AdminSettingsPage from "./views/AdminSettingsPage";
 import AdminActivityPage from "./views/AdminActivityPage";
 import AdminStatisticsPage from "./views/AdminStatisticsPage";
+import StatisticsPage from "./views/StatisticsPage";
 
 import { useEffect } from "react";
 import { usePrint } from "./context/PrintContext"; 
@@ -116,6 +117,12 @@ export default function AppRouter() {
                 <Route path="/balance" element={
                     <ProtectedRoute>
                         <BalancePage />
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/statistics" element={
+                    <ProtectedRoute>
+                        <StatisticsPage />
                     </ProtectedRoute>
                 } />
 

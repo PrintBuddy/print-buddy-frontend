@@ -5,6 +5,7 @@ import {
     Chip,
     Grid,
     IconButton,
+    LinearProgress,
     Skeleton,
     Tooltip,
     Typography,
@@ -12,6 +13,10 @@ import {
 } from "@mui/material";
 import PrintIcon from "@mui/icons-material/Print";
 import SettingsIcon from "@mui/icons-material/Settings";
+import WarningAmberIcon from "@mui/icons-material/WarningAmber";
+import { useQuery } from "@tanstack/react-query";
+
+import { getTonerLevels } from "../../api/printer";
 
 
 const STATUS_COLOR = {
@@ -19,6 +24,115 @@ const STATUS_COLOR = {
     printing: "info",
     stopped: "error",
 };
+
+// Maps CUPS printer-state-reasons strings to a human-readable label and MUI chip color.
+// Severity "error" = red chip, "warning" = orange chip.
+const REASON_MAP = {
+    "media-empty":                   { label: "Out of paper",  color: "error" },
+    "media-low":                     { label: "Low paper",     color: "warning" },
+    "toner-empty":                   { label: "Out of toner",  color: "error" },
+    "toner-low":                     { label: "Low toner",     color: "warning" },
+    "marker-supply-empty-warning":   { label: "Supply empty",  color: "warning" },
+    "marker-supply-empty-error":     { label: "Supply empty",  color: "error" },
+    "marker-supply-low-warning":     { label: "Supply low",    color: "warning" },
+    "marker-supply-low-error":       { label: "Supply low",    color: "error" },
+    "offline-report":                { label: "Offline",       color: "error" },
+    "door-open":                     { label: "Door open",     color: "warning" },
+    "cover-open":                    { label: "Cover open",    color: "warning" },
+};
+
+function ReasonChips({ reasons }) {
+    if (!reasons?.length) return null;
+    return (
+        <Box display="flex" flexWrap="wrap" gap={0.5} mt={1}>
+            {reasons.map((reason) => {
+                const mapped = REASON_MAP[reason];
+                return (
+                    <Chip
+                        key={reason}
+                        label={mapped?.label ?? reason}
+                        color={mapped?.color ?? "default"}
+                        size="small"
+                        variant="outlined"
+                    />
+                );
+            })}
+        </Box>
+    );
+}
+
+function TonerBar({ name, color, level, lowLevel }) {
+    const isUnknown = level === -1;
+    const isLow = !isUnknown && level < lowLevel;
+    const barColor = isLow ? undefined : (color ?? "#888888");
+
+    return (
+        <Box sx={{ mb: 0.75 }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={0.25}>
+                <Typography variant="caption" color={isLow ? "error" : "text.secondary"} fontWeight={isLow ? "bold" : "normal"}>
+                    {name}
+                </Typography>
+                <Box display="flex" alignItems="center" gap={0.5}>
+                    {isLow && <WarningAmberIcon color="error" sx={{ fontSize: 13 }} />}
+                    <Typography variant="caption" color={isLow ? "error" : "text.secondary"}>
+                        {isUnknown ? "N/A" : `${level}%`}
+                    </Typography>
+                </Box>
+            </Box>
+            <LinearProgress
+                variant="determinate"
+                value={isUnknown ? 0 : level}
+                sx={{
+                    height: 6,
+                    borderRadius: 1,
+                    backgroundColor: "grey.200",
+                    "& .MuiLinearProgress-bar": {
+                        backgroundColor: isLow ? "error.main" : barColor,
+                    },
+                }}
+            />
+        </Box>
+    );
+}
+
+function TonerSection({ printerName }) {
+    const { data: toners, isLoading, isError } = useQuery({
+        queryKey: ["toner", printerName],
+        queryFn: () => getTonerLevels(printerName),
+        staleTime: 1000 * 30,
+        retry: false,
+    });
+
+    const hasData = !isError && toners?.length > 0;
+
+    return (
+        <Box mt={1.5}>
+            <Divider sx={{ mb: 1 }} />
+            <Typography variant="caption" color="text.secondary" fontWeight="bold" textTransform="uppercase" letterSpacing={0.5}>
+                Toner
+            </Typography>
+            {isLoading ? (
+                <Skeleton variant="rounded" height={40} sx={{ mt: 0.75 }} />
+            ) : hasData ? (
+                <Box mt={0.75}>
+                    {toners.map((t) => (
+                        <TonerBar
+                            key={t.name}
+                            name={t.name}
+                            color={t.color}
+                            level={t.level}
+                            lowLevel={t.low_level}
+                        />
+                    ))}
+                </Box>
+            ) : (
+                <Typography variant="caption" color="text.disabled" fontStyle="italic" display="block" mt={0.5}>
+                    No toner data reported by this printer.
+                </Typography>
+            )}
+        </Box>
+    );
+}
 
 function PrinterCard({ printer, onEdit }) {
     const statusColor = STATUS_COLOR[printer.status] ?? "default";
@@ -64,6 +178,8 @@ function PrinterCard({ printer, onEdit }) {
                         No color support
                     </Typography>
                 )}
+                <ReasonChips reasons={printer.state_reasons} />
+                <TonerSection printerName={printer.name} />
             </CardContent>
         </Card>
     );

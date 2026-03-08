@@ -71,7 +71,7 @@ export default function HistoryTable({ jobs, isLoading, renderStatusIcon }) {
                         job={job}
                         isMobile={isMobile}
                         renderStatusIcon={renderStatusIcon}
-                        onClick={() => isMobile && setSelectedJob(job)}
+                        onClick={() => setSelectedJob(job)}
                     />
                 ))
                 )}

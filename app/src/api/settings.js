@@ -31,3 +31,18 @@ export async function getActivityLog() {
     const response = await api.get(`${SETTINGS_ROUTE}/activity-log`);
     return response.data;
 }
+
+export async function getTonerAlertConfig() {
+    const response = await api.get(`${SETTINGS_ROUTE}/toner-alert`);
+    return response.data;
+}
+
+export async function updateTonerAlertConfig(data) {
+    const response = await api.put(`${SETTINGS_ROUTE}/toner-alert`, data);
+    return response.data;
+}
+
+export async function testTonerAlert() {
+    const response = await api.post(`${SETTINGS_ROUTE}/toner-alert/test`);
+    return response.data;
+}

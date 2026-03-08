@@ -135,7 +135,7 @@ export default function HistoryPage() {
                                                     label={existingRefund.status}
                                                     color={REFUND_STATUS_COLOR[existingRefund.status] ?? "default"}
                                                     size="small"
-                                                    onClick={() => setViewRefund(existingRefund)}
+                                                    onClick={(e) => { e.stopPropagation(); setViewRefund(existingRefund); }}
                                                     sx={{ cursor: "pointer" }}
                                                 />
                                             </Tooltip>
@@ -144,7 +144,7 @@ export default function HistoryPage() {
                                                     <IconButton
                                                         size="small"
                                                         color="warning"
-                                                        onClick={() => setRefundJob(job)}
+                                                        onClick={(e) => { e.stopPropagation(); setRefundJob(job); }}
                                                     >
                                                         <ReplayIcon fontSize="small" />
                                                     </IconButton>
@@ -156,7 +156,7 @@ export default function HistoryPage() {
                                                 <IconButton
                                                     size="small"
                                                     color="warning"
-                                                    onClick={() => setRefundJob(job)}
+                                                    onClick={(e) => { e.stopPropagation(); setRefundJob(job); }}
                                                 >
                                                     <ReplayIcon fontSize="small" />
                                                 </IconButton>
@@ -208,7 +208,12 @@ export default function HistoryPage() {
                                 }
 
                                 return (
-                                    <TableRow key={job.id} hover>
+                                    <TableRow
+                                        key={job.id}
+                                        hover
+                                        onClick={() => { setSelectedJob(job); setSelectedJobRefund(existingRefund ?? null); }}
+                                        sx={{ cursor: "pointer" }}
+                                    >
                                         <TableCell>
                                             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                                                 {renderStatusIcon(job.status)}
