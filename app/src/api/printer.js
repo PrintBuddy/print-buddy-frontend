@@ -31,3 +31,8 @@ export async function updatePrinter(name, data) {
     const response = await api.patch(`${PRINTER_ROUTE}/${name}`, data);
     return response.data;
 }
+
+export async function getTonerLevels(name) {
+    const response = await api.get(`${PRINTER_ROUTE}/${name}/toner`);
+    return response.data;
+}
