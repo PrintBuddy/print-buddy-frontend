@@ -139,16 +139,19 @@ function PrinterCard({ printer, onEdit }) {
     const statusLabel = printer.status ?? "unknown";
 
     return (
-        <Card variant="outlined">
+        <Card variant="outlined" sx={{ opacity: printer.is_active ? 1 : 0.6 }}>
             <CardContent>
                 <Box display="flex" justifyContent="space-between" alignItems="flex-start">
                     <Box display="flex" gap={1} alignItems="center">
-                        <PrintIcon color="action" />
+                        <PrintIcon color={printer.is_active ? "action" : "disabled"} />
                         <Typography variant="subtitle1" fontWeight="bold">
                             {printer.name}
                         </Typography>
                     </Box>
                     <Box display="flex" gap={0.5} alignItems="center">
+                        {!printer.is_active && (
+                            <Chip label="Inactive" color="default" size="small" />
+                        )}
                         <Chip label={statusLabel} color={statusColor} size="small" />
                         {onEdit && (
                             <Tooltip title="Edit prices">

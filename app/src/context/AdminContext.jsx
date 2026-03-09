@@ -6,7 +6,7 @@ import { useUser } from "./UserContext";
 import { getAllUsers, updateUser, adjustUserBalance, rechargeUserBalance, getUserTransactions, deleteUser } from "../api/user";
 import { getAllJobs } from "../api/print";
 import { getAllRefunds, resolveRefund } from "../api/refund";
-import { getPrinters, updatePrinter } from "../api/printer";
+import { getPrinters, getAllPrinters, updatePrinter } from "../api/printer";
 
 
 const AdminContext = createContext(null);
@@ -58,15 +58,15 @@ export function AdminProvider({ children }) {
 
     // ─── Printers ──────────────────────────────────────────────────────────────
     const printersQuery = useQuery({
-        queryKey: ["printers"],
-        queryFn: getPrinters,
+        queryKey: ["admin-printers"],
+        queryFn: getAllPrinters,
         staleTime: 1000 * 30,
         retry: false
     });
 
     const updatePrinterMutation = useMutation({
         mutationFn: ({ name, data }) => updatePrinter(name, data),
-        onSuccess: () => queryClient.invalidateQueries(["printers"])
+        onSuccess: () => queryClient.invalidateQueries(["admin-printers"])
     });
 
     // ─── Refunds ───────────────────────────────────────────────────────────────
@@ -90,7 +90,7 @@ export function AdminProvider({ children }) {
         queryClient.invalidateQueries(["admin-users"]);
         queryClient.invalidateQueries(["admin-jobs"]);
         queryClient.invalidateQueries(["admin-refunds"]);
-        queryClient.invalidateQueries(["printers"]);
+        queryClient.invalidateQueries(["admin-printers"]);
     };
 
     return (
