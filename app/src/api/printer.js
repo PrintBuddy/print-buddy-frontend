@@ -10,6 +10,11 @@ export async function getPrinters() {
     return response.data;
 }
 
+export async function getAllPrinters() {
+    const response = await api.get(`${PRINTER_ROUTE}/all`);
+    return response.data;
+}
+
 
 export async function getPrinter(name) {
     try {

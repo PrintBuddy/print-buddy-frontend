@@ -16,6 +16,7 @@ export default function EditPrinterModal({ open, onClose, printer, onSave }) {
         price_per_page_bw: "",
         admits_color: false,
         price_per_page_color: "",
+        is_active: true,
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -26,6 +27,7 @@ export default function EditPrinterModal({ open, onClose, printer, onSave }) {
                 price_per_page_bw: printer.price_per_page_bw ?? "",
                 admits_color: printer.admits_color ?? false,
                 price_per_page_color: printer.price_per_page_color ?? "",
+                is_active: printer.is_active ?? true,
             });
             setError("");
         }
@@ -60,6 +62,7 @@ export default function EditPrinterModal({ open, onClose, printer, onSave }) {
                 price_per_page_bw: bw,
                 admits_color: form.admits_color,
                 price_per_page_color: form.admits_color ? color : 0,
+                is_active: form.is_active,
             });
             onClose();
         } catch (err) {
@@ -108,6 +111,16 @@ export default function EditPrinterModal({ open, onClose, printer, onSave }) {
                             />
                         }
                         label="Supports color printing"
+                    />
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={form.is_active}
+                                onChange={handleChange}
+                                name="is_active"
+                            />
+                        }
+                        label="Active (visible to users)"
                     />
                     {form.admits_color && (
                         <TextField
