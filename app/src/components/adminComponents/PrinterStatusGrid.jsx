@@ -141,20 +141,20 @@ function PrinterCard({ printer, onEdit }) {
     return (
         <Card variant="outlined" sx={{ opacity: printer.is_active ? 1 : 0.6 }}>
             <CardContent>
-                <Box display="flex" justifyContent="space-between" alignItems="flex-start">
-                    <Box display="flex" gap={1} alignItems="center">
-                        <PrintIcon color={printer.is_active ? "action" : "disabled"} />
-                        <Typography variant="subtitle1" fontWeight="bold">
+                <Box display="flex" justifyContent="space-between" alignItems="flex-start" gap={1}>
+                    <Box display="flex" gap={1} alignItems="center" minWidth={0}>
+                        <PrintIcon color={printer.is_active ? "action" : "disabled"} sx={{ flexShrink: 0 }} />
+                        <Typography variant="subtitle1" fontWeight="bold" noWrap>
                             {printer.name}
                         </Typography>
                     </Box>
-                    <Box display="flex" gap={0.5} alignItems="center">
+                    <Box display="flex" flexWrap="wrap" gap={0.5} alignItems="center" justifyContent="flex-end" sx={{ flexShrink: 0 }}>
                         {!printer.is_active && (
                             <Chip label="Inactive" color="default" size="small" />
                         )}
                         <Chip label={statusLabel} color={statusColor} size="small" />
                         {onEdit && (
-                            <Tooltip title="Edit prices">
+                            <Tooltip title="Edit printer">
                                 <IconButton size="small" onClick={() => onEdit(printer)}>
                                     <SettingsIcon fontSize="small" />
                                 </IconButton>
