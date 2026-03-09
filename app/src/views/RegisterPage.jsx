@@ -3,6 +3,9 @@ import { Grid, Paper, Stack, Typography, TextField, Button, CircularProgress } f
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 
+const USERNAME_REGEX = /^[a-zA-Z_][a-zA-Z0-9_-]{2,19}$/;
+const USERNAME_HELPER = "3–20 characters. Start with a letter or underscore. Only letters, digits, _ and - allowed.";
+
 
 export default function RegisterPage() {
     const { register } = useAuth();
@@ -17,10 +20,16 @@ export default function RegisterPage() {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [usernameError, setUsernameError] = useState("");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
+
+        if (!USERNAME_REGEX.test(username)) {
+            setUsernameError(USERNAME_HELPER);
+            return;
+        }
 
         if (password !== confirmPassword) {
             setError("Passwords do not match");
@@ -67,11 +76,14 @@ export default function RegisterPage() {
                     label="Username"
                     value={username}
                     onChange={(e) => {
-                        // Strip spaces from username input
-                        setUsername(e.target.value.replace(/\s/g, ''));
+                        const val = e.target.value.replace(/\s/g, '');
+                        setUsername(val);
+                        setUsernameError(val && !USERNAME_REGEX.test(val) ? USERNAME_HELPER : "");
                     }}
                     fullWidth
                     required
+                    error={!!usernameError}
+                    helperText={usernameError || "Letters, digits, _ and - only; 3–20 chars"}
                 />
 
                 <TextField
