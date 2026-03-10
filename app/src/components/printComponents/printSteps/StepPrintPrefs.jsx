@@ -75,6 +75,7 @@ export default function StepPrintPrefs({ onNext, onPrev }) {
                         optionsByFile={printerOptionsByFile}
                         onChange={setPreferencesByFile}
                         colorDisabled={selectedPrinter?.admits_color}
+                        duplexDisabled={!selectedPrinter?.supports_duplex}
                         validByFile={validByFile}
                         setValid={setFileValid}
                     />

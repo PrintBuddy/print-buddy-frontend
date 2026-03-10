@@ -10,7 +10,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import PrintOptionsForm from "./PrintOptionsForm"
 
 
-export default function FilesPrintOptions({ files, optionsByFile, onChange, colorDisabled, validByFile, setValid }) {
+export default function FilesPrintOptions({ files, optionsByFile, onChange, colorDisabled, duplexDisabled, validByFile, setValid }) {
     return (
         <div>
         {files.map((file) => (
@@ -40,7 +40,8 @@ export default function FilesPrintOptions({ files, optionsByFile, onChange, colo
                         numberUp: 1
                     }}
                     onChange={(newOpts) => onChange(file.id, newOpts)}
-                    colorDisabled={!colorDisabled} // ejemplo si quieres bloquear color
+                    colorDisabled={!colorDisabled}
+                    duplexDisabled={duplexDisabled}
                     totalPages={file.pages}
                     changeValid={(valid) => setValid(file.id, valid)}
                 />

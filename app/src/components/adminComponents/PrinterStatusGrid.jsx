@@ -232,6 +232,9 @@ function PrinterCard({ printer, onEdit }) {
                         No color support
                     </Typography>
                 )}
+                <Typography variant="body2" color={printer.supports_duplex ? "text.secondary" : "text.disabled"} fontStyle={printer.supports_duplex ? "normal" : "italic"}>
+                    {printer.supports_duplex ? "Duplex (2-sided) supported" : "No duplex support"}
+                </Typography>
                 <ReasonChips reasons={printer.state_reasons} />
                 <TonerSection printerName={printer.name} />
             </CardContent>
