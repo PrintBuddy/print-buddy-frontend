@@ -63,7 +63,8 @@ export default function StepPrinter({ onNext, onPrev }) {
                 <List>
                     {printers?.map(p => {
                         const colorSuffix = p.admits_color ? "B/W & Color" : "B/W only";
-                        const secondary = `${p.location} · ${colorSuffix}`;
+                        const duplexSuffix = p.supports_duplex ? "Duplex" : "No duplex";
+                        const secondary = `${p.location} · ${colorSuffix} · ${duplexSuffix}`;
 
                         return (
                         <ListItem key={p.name} disablePadding>

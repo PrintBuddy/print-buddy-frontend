@@ -5,7 +5,10 @@ import {
     Select,
     MenuItem,
     TextField,
+    Tooltip,
+    IconButton,
 } from "@mui/material";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { useEffect, useState } from "react";
 
 
@@ -34,12 +37,19 @@ const validatePageRanges = (input, totalPages) => {
 };
 
 
-export default function PrintOptionsForm({ options, onChange, colorDisabled, totalPages, changeValid }) {
+export default function PrintOptionsForm({ options, onChange, colorDisabled, duplexDisabled, totalPages, changeValid }) {
     const [pageRangeError, setPageRangeError] = useState("");
     
     const handleChange = (key, value) => {
         if (onChange) onChange({ ...options, [key]: value });
     };
+
+    // Reset sides to one-sided when the printer does not support duplex
+    useEffect(() => {
+        if (duplexDisabled && options?.sides && options.sides !== "1S") {
+            handleChange("sides", "1S");
+        }
+    }, [duplexDisabled]);
 
     const validateRange = (value) => {
         const error = validatePageRanges(value, totalPages);
@@ -91,18 +101,27 @@ export default function PrintOptionsForm({ options, onChange, colorDisabled, tot
                 </Select>
             </FormControl>
 
-            <FormControl fullWidth>
-                <InputLabel>Sides</InputLabel>
-                <Select
-                    value={options?.sides || "1S"}
-                    label="Sides"
-                    onChange={(e) => handleChange("sides", e.target.value)}
-                >
-                    <MenuItem value="1S">One-sided</MenuItem>
-                    <MenuItem value="2SLng">Two-sided (long edge)</MenuItem>
-                    <MenuItem value="2SSht">Two-sided (short edge)</MenuItem>
-                </Select>
-            </FormControl>
+            <Box display="flex" alignItems="center" gap={1} width="100%">
+                <FormControl fullWidth disabled={duplexDisabled}>
+                    <InputLabel>Sides</InputLabel>
+                    <Select
+                        value={duplexDisabled ? "1S" : (options?.sides || "1S")}
+                        label="Sides"
+                        onChange={(e) => handleChange("sides", e.target.value)}
+                    >
+                        <MenuItem value="1S">One-sided</MenuItem>
+                        <MenuItem value="2SLng">Two-sided (long edge)</MenuItem>
+                        <MenuItem value="2SSht">Two-sided (short edge)</MenuItem>
+                    </Select>
+                </FormControl>
+                {duplexDisabled && (
+                    <Tooltip title="This printer does not support automatic 2-sided (duplex) printing." arrow>
+                        <IconButton size="small" tabIndex={-1} sx={{ flexShrink: 0 }}>
+                            <InfoOutlinedIcon fontSize="small" color="disabled" />
+                        </IconButton>
+                    </Tooltip>
+                )}
+            </Box>
 
             <FormControl fullWidth>
                 <InputLabel>Pages per sheet</InputLabel>
