@@ -3,6 +3,7 @@ import {
     Card,
     CardContent,
     Chip,
+    Collapse,
     Grid,
     IconButton,
     LinearProgress,
@@ -14,6 +15,9 @@ import {
 import PrintIcon from "@mui/icons-material/Print";
 import SettingsIcon from "@mui/icons-material/Settings";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { getTonerLevels } from "../../api/printer";
@@ -95,27 +99,40 @@ function TonerBar({ name, color, level, lowLevel }) {
     );
 }
 
+const INK_TONER_TYPES = new Set(["toner", "ink"]);
+
 function TonerSection({ printerName }) {
-    const { data: toners, isLoading, isError } = useQuery({
+    const [othersOpen, setOthersOpen] = useState(false);
+
+    const { data: markers, isLoading, isError } = useQuery({
         queryKey: ["toner", printerName],
         queryFn: () => getTonerLevels(printerName),
         staleTime: 1000 * 30,
         retry: false,
     });
 
-    const hasData = !isError && toners?.length > 0;
+    const hasData = !isError && markers?.length > 0;
+
+    const tonerMarkers = hasData
+        ? markers.filter((m) => INK_TONER_TYPES.has(m.marker_type?.toLowerCase()))
+        : [];
+
+    // "others" = non-toner/ink markers that have a name
+    const otherMarkers = hasData
+        ? markers.filter((m) => !INK_TONER_TYPES.has(m.marker_type?.toLowerCase()) && m.name)
+        : [];
 
     return (
         <Box mt={1.5}>
             <Divider sx={{ mb: 1 }} />
             <Typography variant="caption" color="text.secondary" fontWeight="bold" textTransform="uppercase" letterSpacing={0.5}>
-                Toner
+                Ink / Toner
             </Typography>
             {isLoading ? (
                 <Skeleton variant="rounded" height={40} sx={{ mt: 0.75 }} />
-            ) : hasData ? (
+            ) : tonerMarkers.length > 0 ? (
                 <Box mt={0.75}>
-                    {toners.map((t) => (
+                    {tonerMarkers.map((t) => (
                         <TonerBar
                             key={t.name}
                             name={t.name}
@@ -127,8 +144,42 @@ function TonerSection({ printerName }) {
                 </Box>
             ) : (
                 <Typography variant="caption" color="text.disabled" fontStyle="italic" display="block" mt={0.5}>
-                    No toner data reported by this printer.
+                    No ink/toner data reported by this printer.
                 </Typography>
+            )}
+
+            {otherMarkers.length > 0 && (
+                <Box mt={1}>
+                    <Box
+                        display="flex"
+                        alignItems="center"
+                        gap={0.5}
+                        sx={{ cursor: "pointer", userSelect: "none" }}
+                        onClick={() => setOthersOpen((v) => !v)}
+                    >
+                        <Typography variant="caption" color="text.secondary" fontWeight="bold" textTransform="uppercase" letterSpacing={0.5}>
+                            Other Supplies
+                        </Typography>
+                        {othersOpen ? (
+                            <ExpandLessIcon sx={{ fontSize: 14, color: "text.secondary" }} />
+                        ) : (
+                            <ExpandMoreIcon sx={{ fontSize: 14, color: "text.secondary" }} />
+                        )}
+                    </Box>
+                    <Collapse in={othersOpen}>
+                        <Box mt={0.75}>
+                            {otherMarkers.map((t) => (
+                                <TonerBar
+                                    key={t.name}
+                                    name={t.name}
+                                    color={t.color}
+                                    level={t.level}
+                                    lowLevel={t.low_level}
+                                />
+                            ))}
+                        </Box>
+                    </Collapse>
+                </Box>
             )}
         </Box>
     );
