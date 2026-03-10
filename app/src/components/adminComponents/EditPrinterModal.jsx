@@ -17,6 +17,7 @@ export default function EditPrinterModal({ open, onClose, printer, onSave }) {
         admits_color: false,
         price_per_page_color: "",
         is_active: true,
+        supports_duplex: false,
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -28,6 +29,7 @@ export default function EditPrinterModal({ open, onClose, printer, onSave }) {
                 admits_color: printer.admits_color ?? false,
                 price_per_page_color: printer.price_per_page_color ?? "",
                 is_active: printer.is_active ?? true,
+                supports_duplex: printer.supports_duplex ?? false,
             });
             setError("");
         }
@@ -63,6 +65,7 @@ export default function EditPrinterModal({ open, onClose, printer, onSave }) {
                 admits_color: form.admits_color,
                 price_per_page_color: form.admits_color ? color : 0,
                 is_active: form.is_active,
+                supports_duplex: form.supports_duplex,
             });
             onClose();
         } catch (err) {
@@ -102,6 +105,23 @@ export default function EditPrinterModal({ open, onClose, printer, onSave }) {
                             }
                         }}
                     />
+                    <TextField
+                        label="Color price per page"
+                        name="price_per_page_color"
+                        type="number"
+                        value={form.price_per_page_color}
+                        onChange={handleChange}
+                        fullWidth
+                        size="small"
+                        disabled={!form.admits_color}
+                        slotProps={{
+                            input: {
+                                startAdornment: <InputAdornment position="start">€</InputAdornment>,
+                                inputProps: { min: 0, step: 0.001 }
+                            }
+                        }}
+                    />
+                    <Stack spacing={0}>
                     <FormControlLabel
                         control={
                             <Checkbox
@@ -115,6 +135,16 @@ export default function EditPrinterModal({ open, onClose, printer, onSave }) {
                     <FormControlLabel
                         control={
                             <Checkbox
+                                checked={form.supports_duplex}
+                                onChange={handleChange}
+                                name="supports_duplex"
+                            />
+                        }
+                        label="Supports 2-sided (duplex) printing"
+                    />
+                    <FormControlLabel
+                        control={
+                            <Checkbox
                                 checked={form.is_active}
                                 onChange={handleChange}
                                 name="is_active"
@@ -122,23 +152,7 @@ export default function EditPrinterModal({ open, onClose, printer, onSave }) {
                         }
                         label="Active (visible to users)"
                     />
-                    {form.admits_color && (
-                        <TextField
-                            label="Color price per page"
-                            name="price_per_page_color"
-                            type="number"
-                            value={form.price_per_page_color}
-                            onChange={handleChange}
-                            fullWidth
-                            size="small"
-                            slotProps={{
-                                input: {
-                                    startAdornment: <InputAdornment position="start">€</InputAdornment>,
-                                    inputProps: { min: 0, step: 0.001 }
-                                }
-                            }}
-                        />
-                    )}
+                    </Stack>
                 </Stack>
             }
             actions={
