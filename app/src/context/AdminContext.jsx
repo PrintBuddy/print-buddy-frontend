@@ -6,7 +6,7 @@ import { useUser } from "./UserContext";
 import { getAllUsers, updateUser, adjustUserBalance, rechargeUserBalance, getUserTransactions, deleteUser } from "../api/user";
 import { getAllJobs } from "../api/print";
 import { getAllRefunds, resolveRefund } from "../api/refund";
-import { getPrinters, getAllPrinters, updatePrinter } from "../api/printer";
+import { getPrinters, getAllPrinters, updatePrinter, deletePrinter } from "../api/printer";
 import { getGroups, createGroup, updateGroup, deleteGroup } from "../api/group";
 
 
@@ -67,6 +67,11 @@ export function AdminProvider({ children }) {
 
     const updatePrinterMutation = useMutation({
         mutationFn: ({ name, data }) => updatePrinter(name, data),
+        onSuccess: () => queryClient.invalidateQueries(["admin-printers"])
+    });
+
+    const deletePrinterMutation = useMutation({
+        mutationFn: (name) => deletePrinter(name),
         onSuccess: () => queryClient.invalidateQueries(["admin-printers"])
     });
 
@@ -138,6 +143,7 @@ export function AdminProvider({ children }) {
             printers: printersQuery.data ?? [],
             printersLoading: printersQuery.isLoading,
             updatePrinter: (name, data) => updatePrinterMutation.mutateAsync({ name, data }),
+            deletePrinter: (name) => deletePrinterMutation.mutateAsync(name),
 
             // groups
             groups: groupsQuery.data ?? [],

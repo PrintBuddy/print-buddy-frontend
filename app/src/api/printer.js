@@ -41,3 +41,8 @@ export async function getTonerLevels(name) {
     const response = await api.get(`${PRINTER_ROUTE}/${name}/toner`);
     return response.data;
 }
+
+export async function deletePrinter(name) {
+    const response = await api.delete(`${PRINTER_ROUTE}/${name}`);
+    return response.data;
+}
