@@ -7,6 +7,7 @@ import { getAllUsers, updateUser, adjustUserBalance, rechargeUserBalance, getUse
 import { getAllJobs } from "../api/print";
 import { getAllRefunds, resolveRefund } from "../api/refund";
 import { getPrinters, getAllPrinters, updatePrinter } from "../api/printer";
+import { getGroups, createGroup, updateGroup, deleteGroup } from "../api/group";
 
 
 const AdminContext = createContext(null);
@@ -69,6 +70,30 @@ export function AdminProvider({ children }) {
         onSuccess: () => queryClient.invalidateQueries(["admin-printers"])
     });
 
+    // ─── Groups ────────────────────────────────────────────────────────────────
+    const groupsQuery = useQuery({
+        queryKey: ["admin-groups"],
+        queryFn: getGroups,
+        enabled: isAdmin,
+        staleTime: 1000 * 60 * 2,
+        retry: false
+    });
+
+    const createGroupMutation = useMutation({
+        mutationFn: (data) => createGroup(data),
+        onSuccess: () => queryClient.invalidateQueries(["admin-groups"])
+    });
+
+    const updateGroupMutation = useMutation({
+        mutationFn: ({ groupId, data }) => updateGroup(groupId, data),
+        onSuccess: () => queryClient.invalidateQueries(["admin-groups"])
+    });
+
+    const deleteGroupMutation = useMutation({
+        mutationFn: (groupId) => deleteGroup(groupId),
+        onSuccess: () => queryClient.invalidateQueries(["admin-groups"])
+    });
+
     // ─── Refunds ───────────────────────────────────────────────────────────────
     const refundsQuery = useQuery({
         queryKey: ["admin-refunds"],
@@ -91,6 +116,7 @@ export function AdminProvider({ children }) {
         queryClient.invalidateQueries(["admin-jobs"]);
         queryClient.invalidateQueries(["admin-refunds"]);
         queryClient.invalidateQueries(["admin-printers"]);
+        queryClient.invalidateQueries(["admin-groups"]);
     };
 
     return (
@@ -112,6 +138,13 @@ export function AdminProvider({ children }) {
             printers: printersQuery.data ?? [],
             printersLoading: printersQuery.isLoading,
             updatePrinter: (name, data) => updatePrinterMutation.mutateAsync({ name, data }),
+
+            // groups
+            groups: groupsQuery.data ?? [],
+            groupsLoading: groupsQuery.isLoading,
+            createGroup: (data) => createGroupMutation.mutateAsync(data),
+            updateGroup: (groupId, data) => updateGroupMutation.mutateAsync({ groupId, data }),
+            deleteGroup: (groupId) => deleteGroupMutation.mutateAsync(groupId),
 
             // refunds
             refunds: refundsQuery.data ?? [],

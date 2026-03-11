@@ -203,6 +203,9 @@ function PrinterCard({ printer, onEdit }) {
                         {!printer.is_active && (
                             <Chip label="Inactive" color="default" size="small" />
                         )}
+                        {printer.is_restricted && (
+                            <Chip label="Restricted" color="warning" size="small" />
+                        )}
                         <Chip label={statusLabel} color={statusColor} size="small" />
                         {onEdit && (
                             <Tooltip title="Edit printer">

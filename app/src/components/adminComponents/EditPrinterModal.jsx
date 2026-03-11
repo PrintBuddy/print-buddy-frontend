@@ -17,6 +17,7 @@ export default function EditPrinterModal({ open, onClose, printer, onSave }) {
         admits_color: false,
         price_per_page_color: "",
         is_active: true,
+        is_restricted: false,
         supports_duplex: false,
     });
     const [loading, setLoading] = useState(false);
@@ -29,6 +30,7 @@ export default function EditPrinterModal({ open, onClose, printer, onSave }) {
                 admits_color: printer.admits_color ?? false,
                 price_per_page_color: printer.price_per_page_color ?? "",
                 is_active: printer.is_active ?? true,
+                is_restricted: printer.is_restricted ?? false,
                 supports_duplex: printer.supports_duplex ?? false,
             });
             setError("");
@@ -65,6 +67,7 @@ export default function EditPrinterModal({ open, onClose, printer, onSave }) {
                 admits_color: form.admits_color,
                 price_per_page_color: form.admits_color ? color : 0,
                 is_active: form.is_active,
+                is_restricted: form.is_restricted,
                 supports_duplex: form.supports_duplex,
             });
             onClose();
@@ -141,6 +144,16 @@ export default function EditPrinterModal({ open, onClose, printer, onSave }) {
                             />
                         }
                         label="Supports 2-sided (duplex) printing"
+                    />
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={form.is_restricted}
+                                onChange={handleChange}
+                                name="is_restricted"
+                            />
+                        }
+                        label="Restricted (only visible to permitted groups)"
                     />
                     <FormControlLabel
                         control={
