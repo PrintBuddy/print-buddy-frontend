@@ -193,35 +193,39 @@ function PrinterCard({ printer, onEdit, onDelete }) {
     return (
         <Card variant="outlined" sx={{ opacity: printer.is_active ? 1 : 0.6 }}>
             <CardContent>
-                <Box display="flex" justifyContent="space-between" alignItems="flex-start" gap={1}>
-                    <Box display="flex" gap={1} alignItems="center" minWidth={0}>
-                        <PrintIcon color={printer.is_active ? "action" : "disabled"} sx={{ flexShrink: 0 }} />
-                        <Typography variant="subtitle1" fontWeight="bold" noWrap>
-                            {printer.name}
-                        </Typography>
+                <Box>
+                    <Box display="flex" alignItems="center" minWidth={0} justifyContent="space-between">
+                        <Box display="flex" gap={1} alignItems="center" minWidth={0}>
+                            <PrintIcon color={printer.is_active ? "action" : "disabled"} sx={{ flexShrink: 0 }} />
+                            <Typography variant="subtitle1" fontWeight="bold" noWrap>
+                                {printer.name}
+                            </Typography>
+                        </Box>
+                        <Box display="flex" gap={0.5} alignItems="center">
+                            {onEdit && (
+                                <Tooltip title="Edit printer">
+                                    <IconButton size="small" onClick={() => onEdit(printer)}>
+                                        <SettingsIcon fontSize="small" />
+                                    </IconButton>
+                                </Tooltip>
+                            )}
+                            {onDelete && (
+                                <Tooltip title="Delete printer">
+                                    <IconButton size="small" color="error" onClick={() => onDelete(printer)}>
+                                        <DeleteIcon fontSize="small" />
+                                    </IconButton>
+                                </Tooltip>
+                            )}
+                        </Box>
                     </Box>
-                    <Box display="flex" flexWrap="wrap" gap={0.5} alignItems="center" justifyContent="flex-end" sx={{ flexShrink: 0 }}>
+                    <Box display="flex" flexWrap="wrap" gap={0.5} alignItems="center" sx={{ mt: 1 }}>
                         {!printer.is_active && (
-                            <Chip label="Inactive" color="default" size="small" />
+                            <Chip label="Inactive" color="default" size="small" sx={{ fontSize: '0.72rem', height: 22, px: 0.7 }} />
                         )}
                         {printer.is_restricted && (
-                            <Chip label="Restricted" color="warning" size="small" />
+                            <Chip label="Restricted" color="warning" size="small" sx={{ fontSize: '0.72rem', height: 22, px: 0.7 }} />
                         )}
-                        <Chip label={statusLabel} color={statusColor} size="small" />
-                        {onEdit && (
-                            <Tooltip title="Edit printer">
-                                <IconButton size="small" onClick={() => onEdit(printer)}>
-                                    <SettingsIcon fontSize="small" />
-                                </IconButton>
-                            </Tooltip>
-                        )}
-                        {onDelete && (
-                            <Tooltip title="Delete printer">
-                                <IconButton size="small" color="error" onClick={() => onDelete(printer)}>
-                                    <DeleteIcon fontSize="small" />
-                                </IconButton>
-                            </Tooltip>
-                        )}
+                        <Chip label={statusLabel} color={statusColor} size="small" sx={{ fontSize: '0.72rem', height: 22, px: 0.7 }} />
                     </Box>
                 </Box>
 
