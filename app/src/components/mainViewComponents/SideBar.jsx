@@ -12,6 +12,7 @@ import AssignmentReturnIcon from "@mui/icons-material/AssignmentReturn";
 import SettingsIcon from "@mui/icons-material/Settings";
 import HistoryEduIcon from "@mui/icons-material/HistoryEdu";
 import BarChartIcon from "@mui/icons-material/BarChart";
+import GroupsIcon from "@mui/icons-material/Groups";
 
 import { useUser } from "../../context/UserContext";
 
@@ -35,6 +36,7 @@ export default function SideBar({ open, onClose, isDesktop, width }) {
     const adminMenuItems = [
         { text: "Dashboard", icon: <DashboardIcon />, path: "/admin" },
         { text: "Users", icon: <PeopleIcon />, path: "/admin/users" },
+        { text: "Groups", icon: <GroupsIcon />, path: "/admin/groups" },
         { text: "Refunds", icon: <AssignmentReturnIcon />, path: "/admin/refunds" },
         { text: "Activity Log", icon: <HistoryEduIcon />, path: "/admin/activity" },
         { text: "Statistics", icon: <BarChartIcon />, path: "/admin/statistics" },
@@ -42,26 +44,29 @@ export default function SideBar({ open, onClose, isDesktop, width }) {
     ];
 
     const drawerContent = (
-        <List>
+        <List disablePadding sx={{ pt: 0.5 }}>
             {menuItems.map(({ text, icon, path}) => (
                 <ListItemButton 
                     key={text}
                     component={Link}
                     to={path}
                     selected={currentPath == path}
+                    sx={{ py: 0.75, px: 2 }}
                 >
-                    <ListItemIcon sx={{ minWidth: 40 }}>{icon}</ListItemIcon>
+                    <ListItemIcon sx={{ minWidth: 38 }}>
+                        {icon}
+                    </ListItemIcon>
                     <ListItemText primary={text} />
                 </ListItemButton>
             ))}
 
             {isAdmin && (
                 <>
-                    <Divider sx={{ my: 1 }} />
+                    <Divider sx={{ my: 0.75 }} />
                     <Typography
                         variant="caption"
                         color="text.secondary"
-                        sx={{ pl: 2, pb: 0.5, display: "block" }}
+                        sx={{ pl: 2, pb: 0.25, display: "block" }}
                     >
                         Admin
                     </Typography>
@@ -71,8 +76,11 @@ export default function SideBar({ open, onClose, isDesktop, width }) {
                             component={Link}
                             to={path}
                             selected={currentPath === path}
+                            sx={{ py: 0.75, px: 2 }}
                         >
-                            <ListItemIcon sx={{ minWidth: 40 }}>{icon}</ListItemIcon>
+                            <ListItemIcon sx={{ minWidth: 38 }}>
+                                {icon}
+                            </ListItemIcon>
                             <ListItemText primary={text} />
                         </ListItemButton>
                     ))}

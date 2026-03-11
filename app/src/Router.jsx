@@ -19,6 +19,7 @@ import AdminRefundsPage from "./views/AdminRefundsPage";
 import AdminSettingsPage from "./views/AdminSettingsPage";
 import AdminActivityPage from "./views/AdminActivityPage";
 import AdminStatisticsPage from "./views/AdminStatisticsPage";
+import AdminGroupsPage from "./views/AdminGroupsPage";
 import StatisticsPage from "./views/StatisticsPage";
 
 import { useEffect } from "react";
@@ -159,6 +160,11 @@ export default function AppRouter() {
                 <Route path="/admin/statistics" element={
                     <AdminRoute>
                         <AdminStatisticsPage />
+                    </AdminRoute>
+                } />
+                <Route path="/admin/groups" element={
+                    <AdminRoute>
+                        <AdminGroupsPage />
                     </AdminRoute>
                 } />
                 <Route path="*" element={
