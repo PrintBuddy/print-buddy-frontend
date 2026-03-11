@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import PrintIcon from "@mui/icons-material/Print";
 import SettingsIcon from "@mui/icons-material/Settings";
+import DeleteIcon from "@mui/icons-material/Delete";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -185,7 +186,7 @@ function TonerSection({ printerName }) {
     );
 }
 
-function PrinterCard({ printer, onEdit }) {
+function PrinterCard({ printer, onEdit, onDelete }) {
     const statusColor = STATUS_COLOR[printer.status] ?? "default";
     const statusLabel = printer.status ?? "unknown";
 
@@ -211,6 +212,13 @@ function PrinterCard({ printer, onEdit }) {
                             <Tooltip title="Edit printer">
                                 <IconButton size="small" onClick={() => onEdit(printer)}>
                                     <SettingsIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                        )}
+                        {onDelete && (
+                            <Tooltip title="Delete printer">
+                                <IconButton size="small" color="error" onClick={() => onDelete(printer)}>
+                                    <DeleteIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
                         )}
@@ -246,7 +254,7 @@ function PrinterCard({ printer, onEdit }) {
 }
 
 
-export default function PrinterStatusGrid({ printers, isLoading, onEdit }) {
+export default function PrinterStatusGrid({ printers, isLoading, onEdit, onDelete }) {
     if (isLoading) {
         return (
             <Grid container spacing={2} sx={{ mt: 1 }}>
@@ -271,7 +279,7 @@ export default function PrinterStatusGrid({ printers, isLoading, onEdit }) {
         <Grid container spacing={2} sx={{ mt: 1 }}>
             {printers.map((printer) => (
                 <Grid key={printer.id ?? printer.name} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
-                    <PrinterCard printer={printer} onEdit={onEdit} />
+                    <PrinterCard printer={printer} onEdit={onEdit} onDelete={onDelete} />
                 </Grid>
             ))}
         </Grid>

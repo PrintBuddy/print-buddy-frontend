@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Box, Paper, Typography, Stack, Button } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper, Typography, Stack } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { useSnackbar } from "notistack";
 
@@ -10,9 +10,11 @@ import EditPrinterModal from "../components/adminComponents/EditPrinterModal";
 
 
 export default function AdminDashboardPage() {
-    const { printers, printersLoading, allJobs, jobsLoading, refreshAll, updatePrinter, users } = useAdmin();
+    const { printers, printersLoading, allJobs, jobsLoading, refreshAll, updatePrinter, deletePrinter, users } = useAdmin();
     const { enqueueSnackbar } = useSnackbar();
     const [editPrinter, setEditPrinter] = useState(null);
+    const [confirmDeletePrinter, setConfirmDeletePrinter] = useState(null);
+    const [deleteLoading, setDeleteLoading] = useState(false);
 
     const userById = useMemo(() => {
         const map = {};
@@ -23,6 +25,21 @@ export default function AdminDashboardPage() {
     const handleSavePrinter = async (name, data) => {
         await updatePrinter(name, data);
         enqueueSnackbar("Printer updated successfully.", { variant: "success" });
+    };
+
+    const handleDeletePrinter = async () => {
+        if (!confirmDeletePrinter) return;
+        setDeleteLoading(true);
+        try {
+            await deletePrinter(confirmDeletePrinter.name);
+            enqueueSnackbar(`Printer "${confirmDeletePrinter.name}" deleted.`, { variant: "success" });
+            setConfirmDeletePrinter(null);
+        } catch (err) {
+            const detail = err?.response?.data?.detail;
+            enqueueSnackbar(detail ?? "Failed to delete printer.", { variant: "error" });
+        } finally {
+            setDeleteLoading(false);
+        }
     };
 
     return (
@@ -53,6 +70,7 @@ export default function AdminDashboardPage() {
                     printers={printers}
                     isLoading={printersLoading}
                     onEdit={(p) => setEditPrinter(p)}
+                    onDelete={(p) => setConfirmDeletePrinter(p)}
                 />
             </Paper>
 
@@ -72,6 +90,28 @@ export default function AdminDashboardPage() {
                 printer={editPrinter}
                 onSave={handleSavePrinter}
             />
+
+            {/* Delete Printer Confirmation */}
+            <Dialog
+                open={Boolean(confirmDeletePrinter)}
+                onClose={() => setConfirmDeletePrinter(null)}
+                maxWidth="xs"
+                fullWidth
+            >
+                <DialogTitle>Delete printer?</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Are you sure you want to permanently delete{" "}
+                        <strong>{confirmDeletePrinter?.name}</strong>? This action cannot be undone.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setConfirmDeletePrinter(null)} disabled={deleteLoading}>Cancel</Button>
+                    <Button color="error" variant="contained" onClick={handleDeletePrinter} disabled={deleteLoading}>
+                        {deleteLoading ? "Deleting…" : "Delete"}
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
         </Box>
     );
