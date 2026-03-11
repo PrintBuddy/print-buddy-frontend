@@ -103,7 +103,7 @@ function TonerBar({ name, color, level, lowLevel }) {
 const INK_TONER_TYPES = new Set(["toner", "ink"]);
 
 function TonerSection({ printerName }) {
-    const [othersOpen, setOthersOpen] = useState(false);
+    const [suppliesOpen, setSuppliesOpen] = useState(false);
 
     const { data: markers, isLoading, isError } = useQuery({
         queryKey: ["toner", printerName],
@@ -123,65 +123,77 @@ function TonerSection({ printerName }) {
         ? markers.filter((m) => !INK_TONER_TYPES.has(m.marker_type?.toLowerCase()) && m.name)
         : [];
 
+    const hasAnySupplies = tonerMarkers.length > 0 || otherMarkers.length > 0;
+
     return (
         <Box mt={1.5}>
             <Divider sx={{ mb: 1 }} />
-            <Typography variant="caption" color="text.secondary" fontWeight="bold" textTransform="uppercase" letterSpacing={0.5}>
-                Ink / Toner
-            </Typography>
-            {isLoading ? (
-                <Skeleton variant="rounded" height={40} sx={{ mt: 0.75 }} />
-            ) : tonerMarkers.length > 0 ? (
-                <Box mt={0.75}>
-                    {tonerMarkers.map((t) => (
-                        <TonerBar
-                            key={t.name}
-                            name={t.name}
-                            color={t.color}
-                            level={t.level}
-                            lowLevel={t.low_level}
-                        />
-                    ))}
-                </Box>
-            ) : (
-                <Typography variant="caption" color="text.disabled" fontStyle="italic" display="block" mt={0.5}>
-                    No ink/toner data reported by this printer.
+            <Box
+                display="flex"
+                alignItems="center"
+                gap={0.5}
+                sx={{ cursor: "pointer", userSelect: "none" }}
+                onClick={() => setSuppliesOpen((v) => !v)}
+            >
+                <Typography variant="caption" color="text.secondary" fontWeight="bold" textTransform="uppercase" letterSpacing={0.5}>
+                    Supplies
                 </Typography>
-            )}
-
-            {otherMarkers.length > 0 && (
-                <Box mt={1}>
-                    <Box
-                        display="flex"
-                        alignItems="center"
-                        gap={0.5}
-                        sx={{ cursor: "pointer", userSelect: "none" }}
-                        onClick={() => setOthersOpen((v) => !v)}
-                    >
-                        <Typography variant="caption" color="text.secondary" fontWeight="bold" textTransform="uppercase" letterSpacing={0.5}>
-                            Other Supplies
+                {suppliesOpen ? (
+                    <ExpandLessIcon sx={{ fontSize: 14, color: "text.secondary" }} />
+                ) : (
+                    <ExpandMoreIcon sx={{ fontSize: 14, color: "text.secondary" }} />
+                )}
+            </Box>
+            <Collapse in={suppliesOpen}>
+                <Box mt={0.75}>
+                    {isLoading ? (
+                        <Skeleton variant="rounded" height={40} sx={{ mt: 0.75 }} />
+                    ) : hasAnySupplies ? (
+                        <>
+                            {tonerMarkers.length > 0 && (
+                                <>
+                                    <Typography variant="caption" color="text.secondary" fontWeight="bold" textTransform="uppercase" letterSpacing={0.5}>
+                                        Ink / Toner
+                                    </Typography>
+                                    <Box mt={0.5}>
+                                        {tonerMarkers.map((t) => (
+                                            <TonerBar
+                                                key={t.name}
+                                                name={t.name}
+                                                color={t.color}
+                                                level={t.level}
+                                                lowLevel={t.low_level}
+                                            />
+                                        ))}
+                                    </Box>
+                                </>
+                            )}
+                            {otherMarkers.length > 0 && (
+                                <>
+                                    <Typography variant="caption" color="text.secondary" fontWeight="bold" textTransform="uppercase" letterSpacing={0.5} mt={tonerMarkers.length > 0 ? 2 : 0}>
+                                        Other Supplies
+                                    </Typography>
+                                    <Box mt={0.5}>
+                                        {otherMarkers.map((t) => (
+                                            <TonerBar
+                                                key={t.name}
+                                                name={t.name}
+                                                color={t.color}
+                                                level={t.level}
+                                                lowLevel={t.low_level}
+                                            />
+                                        ))}
+                                    </Box>
+                                </>
+                            )}
+                        </>
+                    ) : (
+                        <Typography variant="caption" color="text.disabled" fontStyle="italic" display="block" mt={0.5}>
+                            No supply data reported by this printer.
                         </Typography>
-                        {othersOpen ? (
-                            <ExpandLessIcon sx={{ fontSize: 14, color: "text.secondary" }} />
-                        ) : (
-                            <ExpandMoreIcon sx={{ fontSize: 14, color: "text.secondary" }} />
-                        )}
-                    </Box>
-                    <Collapse in={othersOpen}>
-                        <Box mt={0.75}>
-                            {otherMarkers.map((t) => (
-                                <TonerBar
-                                    key={t.name}
-                                    name={t.name}
-                                    color={t.color}
-                                    level={t.level}
-                                    lowLevel={t.low_level}
-                                />
-                            ))}
-                        </Box>
-                    </Collapse>
+                    )}
                 </Box>
-            )}
+            </Collapse>
         </Box>
     );
 }
@@ -250,7 +262,7 @@ function PrinterCard({ printer, onEdit, onDelete }) {
                 <Typography variant="body2" color={printer.supports_duplex ? "text.secondary" : "text.disabled"} fontStyle={printer.supports_duplex ? "normal" : "italic"}>
                     {printer.supports_duplex ? "Duplex (2-sided) supported" : "No duplex support"}
                 </Typography>
-                <ReasonChips reasons={printer.state_reasons} />
+                {/* <ReasonChips reasons={printer.state_reasons} /> */}
                 <TonerSection printerName={printer.name} />
             </CardContent>
         </Card>
