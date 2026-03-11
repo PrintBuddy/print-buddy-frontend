@@ -293,11 +293,13 @@ export default function PrinterStatusGrid({ printers, isLoading, onEdit, onDelet
 
     return (
         <Grid container spacing={2} sx={{ mt: 1 }}>
-            {printers.map((printer) => (
-                <Grid key={printer.id ?? printer.name} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
-                    <PrinterCard printer={printer} onEdit={onEdit} onDelete={onDelete} />
-                </Grid>
-            ))}
+            {[...printers]
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((printer) => (
+                    <Grid key={printer.id ?? printer.name} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
+                        <PrinterCard printer={printer} onEdit={onEdit} onDelete={onDelete} />
+                    </Grid>
+                ))}
         </Grid>
     );
 }
