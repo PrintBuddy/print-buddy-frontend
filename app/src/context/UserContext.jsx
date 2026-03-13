@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 
-import { getMe } from "../api/user";
+import { getMe, updateMyEmail } from "../api/user";
 
 
 const UserContext = createContext(null);
@@ -34,9 +34,29 @@ export function UserProvider({ children }) {
         }
     }, [user])
 
+
+    // Mutation for updating email
+    const updateEmailMutation = useMutation({
+        mutationFn: updateMyEmail,
+        onSuccess: () => {
+            queryClient.invalidateQueries(['user']);
+        }
+    });
+
+    // Expose a function that wraps the mutation
+    const updateEmail = async (email) => {
+        try {
+            const data = await updateEmailMutation.mutateAsync(email);
+            return { success: true, data };
+        } catch (err) {
+            let message = err?.response?.data?.detail || err?.message || "Unknown error";
+            return { success: false, message };
+        }
+    };
+
     return (
         <UserContext.Provider value={{
-            user, refreshUser, resetUser, isError, isLoading, lastUsername
+            user, refreshUser, resetUser, isError, isLoading, lastUsername, updateEmail
         }}>
             { children }
         </UserContext.Provider>
