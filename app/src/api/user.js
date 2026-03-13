@@ -1,3 +1,4 @@
+
 import api from "../services/api";
 
 
@@ -22,6 +23,10 @@ export async function updatePwd(current_pwd, new_pwd) {
     return response.data;
 }
 
+export async function updateMyEmail(email) {
+    const response = await api.patch(`${USER_ROUTE}/me/email`, { email });
+    return response.data;
+}
 
 // ─── Admin ────────────────────────────────────────────────────────────────────
 

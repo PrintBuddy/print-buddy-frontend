@@ -122,7 +122,6 @@ export default function LoginPage() {
                     <Typography variant="body2" align="center">
                         Don't have an account? <Link to="/register">Sign up</Link>
                     </Typography>
-
                 </Stack>
                 
             </Stack>

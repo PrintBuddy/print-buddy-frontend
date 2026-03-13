@@ -4,7 +4,9 @@ import { useMediaQuery } from "@mui/material";
 
 import TopBar from "./TopBar";
 import SideBar from "./SideBar";
+
 import ForceLoginModal from "./ForceLoginModal";
+import ForceEmailModal from "./ForceEmailModal";
 
 
 export default function DashboardLayout({ children }) {
@@ -20,7 +22,9 @@ export default function DashboardLayout({ children }) {
     return (
         <Box>
             
+
             <ForceLoginModal />
+            <ForceEmailModal />
 
             <TopBar onMenuClick={handleDrawerToggle} isDesktop={isDesktop} />
 

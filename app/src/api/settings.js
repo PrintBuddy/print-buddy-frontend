@@ -2,6 +2,17 @@ import api from "../services/api";
 
 const SETTINGS_ROUTE = "/settings";
 
+// AD Config
+export async function getADConfig() {
+    const response = await api.get(`${SETTINGS_ROUTE}/ad-config`);
+    return response.data;
+}
+
+export async function updateADConfig(data) {
+    const response = await api.put(`${SETTINGS_ROUTE}/ad-config`, data);
+    return response.data;
+}
+
 export async function getRechargeInfo() {
     const response = await api.get(`${SETTINGS_ROUTE}/recharge-info`);
     return response.data;

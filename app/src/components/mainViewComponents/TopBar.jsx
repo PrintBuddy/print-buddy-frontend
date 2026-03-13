@@ -16,7 +16,7 @@ import LoadingTypography from "../utils/LoadingTypography";
 
 export default function TopBar({ onMenuClick, isDesktop }) {
 
-    const { user, isLoading, isError } = useUser();
+    const { user, isLoading, isError, updateEmail } = useUser();
     const { logout } = useAuth()
     const { enqueueSnackbar } = useSnackbar();
 
@@ -24,6 +24,37 @@ export default function TopBar({ onMenuClick, isDesktop }) {
     const open = Boolean(anchorEl);
 
     const [ openModal, setOpenModal ] = useState(false);
+    const [ openEmailModal, setOpenEmailModal ] = useState(false);
+    const [ errChangeEmail, setErrChangeEmail ] = useState("");
+    const [ isSubmittingEmail, setIsSubmittingEmail ] = useState(false);
+    const [ email, setEmail ] = useState("");
+        const handleOpenEmailModal = () => {
+            setEmail("");
+            setErrChangeEmail("");
+            setOpenEmailModal(true);
+        };
+
+        const validateEmail = (email) => {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        };
+
+        const handleChangeEmail = async () => {
+            setIsSubmittingEmail(true);
+            setErrChangeEmail("");
+            if (!validateEmail(email)) {
+                setErrChangeEmail("Please enter a valid email address.");
+                setIsSubmittingEmail(false);
+                return;
+            }
+            const response = await updateEmail(email);
+            setIsSubmittingEmail(false);
+            if (response.success) {
+                setOpenEmailModal(false);
+                enqueueSnackbar("Email changed successfully!", { variant: "success" });
+            } else {
+                setErrChangeEmail(response.message || "Failed to update email.");
+            }
+        };
     const [ errChangePwd, setErrChangePwd ] = useState("")
     const [ isSubmitting, setIsSubmitting ] = useState(false);
     const [ appName, setAppName ] = useState("PrintBuddy");
@@ -141,12 +172,49 @@ export default function TopBar({ onMenuClick, isDesktop }) {
                         <MenuItem disabled>
                             { user?.username || "User" }
                         </MenuItem>
-
-                        <MenuItem
-                            onClick={handleOpenModal}
-                        >
+                        <MenuItem onClick={handleOpenEmailModal}>
+                            Change email
+                        </MenuItem>
+                        <MenuItem onClick={handleOpenModal}>
                             Change password
                         </MenuItem>
+                        
+
+            <CustomModal
+                open={openEmailModal}
+                onClose={() => setOpenEmailModal(false)}
+                title="Change email"
+                isForm
+                maxWidth="xs"
+                content={
+                    <Stack spacing={2} mt={1}>
+                        <Typography>
+                            Current email: <b>{user?.email || "(none)"}</b>
+                        </Typography>
+                        <TextField
+                            label="New email"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            fullWidth
+                            autoFocus
+                        />
+                        {errChangeEmail && (
+                            <Typography color="error" variant="body2">
+                                {errChangeEmail}
+                            </Typography>
+                        )}
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            onClick={handleChangeEmail}
+                            disabled={isSubmittingEmail}
+                        >
+                            Confirm
+                        </Button>
+                    </Stack>
+                }
+            />
 
                         <MenuItem
                             onClick={handleLogOut}
