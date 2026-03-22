@@ -3,12 +3,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSnackbar } from "notistack";
 import { getRechargeInfo, updateRechargeInfo } from "../../api/settings";
 import {
-    Accordion, AccordionSummary, AccordionDetails, Typography, Stack, TextField, Button, Box, Divider, IconButton, Tooltip
+    Typography, Stack, TextField, Button, Box, Divider, IconButton, Tooltip, Paper
 } from "@mui/material";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SaveIcon from "@mui/icons-material/Save";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import SettingsSectionCard from "./SettingsSectionCard";
 
 export default function RechargeInfoSection() {
     const queryClient = useQueryClient();
@@ -59,15 +59,16 @@ export default function RechargeInfoSection() {
         setForm((f) => ({ ...f, cashContacts: f.cashContacts.filter((_, idx) => idx !== i) }));
     const handleSave = () => saveMutation.mutate(form);
     return (
-        <Accordion defaultExpanded>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography fontWeight="bold">Recharge Info</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-                {isLoading ? (
-                    <Typography color="text.secondary">Loading recharge info…</Typography>
-                ) : (
-                    <>
+        <SettingsSectionCard
+            title="Recharge Info"
+            description="Organize the payment details students and staff need when topping up their balance."
+            badge="Payments"
+        >
+            {isLoading ? (
+                <Typography color="text.secondary">Loading recharge info…</Typography>
+            ) : (
+                <Stack spacing={3}>
+                    <Box>
                         <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
                             Bank / Transfer
                         </Typography>
@@ -94,7 +95,9 @@ export default function RechargeInfoSection() {
                                 onChange={(e) => handleBankChange("link", e.target.value)}
                             />
                         </Stack>
-                        <Divider sx={{ mb: 2 }} />
+                    </Box>
+                    <Divider />
+                    <Box>
                         <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
                             Confirmation Contact
                         </Typography>
@@ -114,38 +117,62 @@ export default function RechargeInfoSection() {
                                 onChange={(e) => handleConfirmationChange("number", e.target.value)}
                             />
                         </Stack>
-                        <Divider sx={{ mb: 2 }} />
-                        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+                    </Box>
+                    <Divider />
+                    <Stack spacing={2}>
+                        <Stack
+                            direction={{ xs: "column", sm: "row" }}
+                            justifyContent="space-between"
+                            alignItems={{ xs: "stretch", sm: "center" }}
+                            spacing={1}
+                        >
                             <Typography variant="subtitle2" fontWeight="bold">
                                 Cash Contacts
                             </Typography>
                             <Button size="small" startIcon={<AddIcon />} onClick={addContact}>
-                                Add
+                                Add contact
                             </Button>
-                        </Box>
+                        </Stack>
                         <Stack spacing={1.5}>
                             {form.cashContacts.map((contact, i) => (
-                                <Box key={i} display="flex" gap={1} alignItems="center">
+                                <Paper
+                                    key={i}
+                                    variant="outlined"
+                                    sx={{ p: 1.5, borderRadius: 2, bgcolor: "rgba(15, 23, 42, 0.02)" }}
+                                >
+                                    <Stack
+                                        direction={{ xs: "column", md: "row" }}
+                                        gap={1}
+                                        alignItems={{ xs: "stretch", md: "center" }}
+                                    >
                                     <TextField
                                         label="Name"
                                         size="small"
                                         value={contact.name}
                                         onChange={(e) => handleContactChange(i, "name", e.target.value)}
-                                        sx={{ flex: 1 }}
+                                        sx={{ flex: 1, minWidth: 0 }}
+                                        fullWidth
                                     />
                                     <TextField
                                         label="Phone number"
                                         size="small"
                                         value={contact.number}
                                         onChange={(e) => handleContactChange(i, "number", e.target.value)}
-                                        sx={{ flex: 1 }}
+                                        sx={{ flex: 1, minWidth: 0 }}
+                                        fullWidth
                                     />
                                     <Tooltip title="Remove">
-                                        <IconButton size="small" color="error" onClick={() => removeContact(i)}>
+                                        <IconButton
+                                            size="small"
+                                            color="error"
+                                            onClick={() => removeContact(i)}
+                                            sx={{ alignSelf: { xs: "flex-end", md: "center" } }}
+                                        >
                                             <DeleteIcon fontSize="small" />
                                         </IconButton>
                                     </Tooltip>
-                                </Box>
+                                    </Stack>
+                                </Paper>
                             ))}
                             {form.cashContacts.length === 0 && (
                                 <Typography variant="body2" color="text.disabled" fontStyle="italic">
@@ -153,20 +180,24 @@ export default function RechargeInfoSection() {
                                 </Typography>
                             )}
                         </Stack>
-                        <Box mt={2}>
+                    </Stack>
+                    <Box>
+                        <Divider sx={{ mb: 2 }} />
+                        <Stack direction={{ xs: "column", sm: "row" }} justifyContent="flex-end">
                             <Button
                                 variant="contained"
-                                size="small"
+                                size="medium"
                                 startIcon={<SaveIcon />}
                                 onClick={handleSave}
                                 disabled={saveMutation.isPending}
+                                sx={{ width: { xs: "100%", sm: "auto" } }}
                             >
                                 {saveMutation.isPending ? "Saving…" : "Save"}
                             </Button>
-                        </Box>
-                    </>
-                )}
-            </AccordionDetails>
-        </Accordion>
+                        </Stack>
+                    </Box>
+                </Stack>
+            )}
+        </SettingsSectionCard>
     );
 }

@@ -58,6 +58,16 @@ export async function getTonerAlertConfig() {
     return response.data;
 }
 
+export async function getVoucherRedeemConfig() {
+    const response = await api.get(`${SETTINGS_ROUTE}/voucher-redeem`);
+    return response.data;
+}
+
+export async function updateVoucherRedeemConfig(data) {
+    const response = await api.put(`${SETTINGS_ROUTE}/voucher-redeem`, data);
+    return response.data;
+}
+
 export async function updateTonerAlertConfig(data) {
     const response = await api.put(`${SETTINGS_ROUTE}/toner-alert`, data);
     return response.data;

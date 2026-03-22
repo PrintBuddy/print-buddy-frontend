@@ -22,6 +22,8 @@ import ClearIcon from "@mui/icons-material/Clear";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getActivityLog } from "../api/settings";
+import AdminPageHero from "../components/adminComponents/AdminPageHero";
+import AdminSurface from "../components/adminComponents/AdminSurface";
 
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
@@ -191,63 +193,50 @@ export default function AdminActivityPage() {
     });
 
     return (
-        <Box>
-            {/* Header */}
-            <Box
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-                mb={2}
-                gap={1}
-                flexWrap="wrap"
-            >
-                <Box minWidth={0}>
-                    <Typography variant="h5" fontWeight="bold">
-                        Activity Log
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        All admin-initiated recharges, balance adjustments and refund resolutions.
-                    </Typography>
-                </Box>
-                <Button
-                    startIcon={<RefreshIcon />}
-                    variant="outlined"
-                    size="small"
-                    onClick={() => queryClient.invalidateQueries(["admin-activity-log"])}
-                    sx={{ flexShrink: 0 }}
-                >
-                    Refresh
-                </Button>
-            </Box>
-
-            {/* Search */}
-            <TextField
-                placeholder="Search by admin, user, action or note…"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                size="small"
-                fullWidth
-                sx={{ mb: 2 }}
-                slotProps={{
-                    input: {
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <SearchIcon fontSize="small" />
-                            </InputAdornment>
-                        ),
-                        endAdornment: search ? (
-                            <InputAdornment position="end">
-                                <IconButton size="small" onClick={() => setSearch("")}>
-                                    <ClearIcon fontSize="small" />
-                                </IconButton>
-                            </InputAdornment>
-                        ) : null,
-                    },
-                }}
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2.25 }}>
+            <AdminPageHero
+                title="Activity Log"
+                description="Track admin-initiated recharges, balance adjustments, and refund resolutions with a cleaner audit view."
+                action={(
+                    <Button
+                        startIcon={<RefreshIcon />}
+                        variant="contained"
+                        size="medium"
+                        onClick={() => queryClient.invalidateQueries(["admin-activity-log"])}
+                        color="primary"
+                        sx={{ width: { xs: "100%", md: "auto" } }}
+                    >
+                        Refresh
+                    </Button>
+                )}
             />
 
-            {/* Log list */}
-            <Stack spacing={1}>
+            <AdminSurface title="Recent Admin Actions" description="Filter the audit log by actor, target user, action type, or note.">
+                <TextField
+                    placeholder="Search by admin, user, action or note…"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    size="small"
+                    fullWidth
+                    slotProps={{
+                        input: {
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon fontSize="small" />
+                                </InputAdornment>
+                            ),
+                            endAdornment: search ? (
+                                <InputAdornment position="end">
+                                    <IconButton size="small" onClick={() => setSearch("")}>
+                                        <ClearIcon fontSize="small" />
+                                    </IconButton>
+                                </InputAdornment>
+                            ) : null,
+                        },
+                    }}
+                />
+
+                <Stack spacing={1}>
                 {isLoading ? (
                     Array.from({ length: 6 }).map((_, i) => (
                         <Skeleton key={i} variant="rounded" height={72} />
@@ -263,7 +252,8 @@ export default function AdminActivityPage() {
                         <ActivityEntry key={entry.id} entry={entry} />
                     ))
                 )}
-            </Stack>
+                </Stack>
+            </AdminSurface>
         </Box>
     );
 }

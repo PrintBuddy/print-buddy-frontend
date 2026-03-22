@@ -3,12 +3,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSnackbar } from "notistack";
 import { getADConfig, updateADConfig, importADUsers, previewADUsersImport } from "../../api/settings";
 import {
-    Accordion, AccordionSummary, AccordionDetails, Typography, Stack, FormControlLabel, Switch, TextField, Button, Box, List, ListItem, ListItemText, Divider
+    Typography, Stack, FormControlLabel, Switch, TextField, Button, Box, List, ListItem, ListItemText, Divider
 } from "@mui/material";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SaveIcon from "@mui/icons-material/Save";
 import DownloadIcon from "@mui/icons-material/Download";
 import CustomModal from "../utils/CustomModal";
+import SettingsSectionCard from "./SettingsSectionCard";
 
 export default function ADConfigSection() {
     const queryClient = useQueryClient();
@@ -109,15 +109,16 @@ export default function ADConfigSection() {
         }
     };
     return (
-        <Accordion>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography fontWeight="bold">Active Directory (AD) Config</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-                {isLoading ? (
-                    <Typography color="text.secondary">Loading…</Typography>
-                ) : (
-                    <Stack spacing={2}>
+        <SettingsSectionCard
+            title="Active Directory (AD) Config"
+            description="Set up directory connection details and import users after previewing the accounts that will be created."
+            badge="Directory Sync"
+        >
+            {isLoading ? (
+                <Typography color="text.secondary">Loading…</Typography>
+            ) : (
+                <Stack spacing={3}>
+                    <Box>
                         <FormControlLabel
                             control={
                                 <Switch
@@ -127,6 +128,15 @@ export default function ADConfigSection() {
                             }
                             label={form.enabled ? "AD enabled" : "AD disabled"}
                         />
+                    </Box>
+                    <Divider />
+                    <Box
+                        sx={{
+                            display: "grid",
+                            gridTemplateColumns: { xs: "1fr", md: "repeat(2, minmax(0, 1fr))" },
+                            gap: 2
+                        }}
+                    >
                         <TextField
                             label="Institution Name"
                             size="small"
@@ -155,31 +165,32 @@ export default function ADConfigSection() {
                             value={form.base_dn}
                             onChange={e => handleChange("base_dn", e.target.value)}
                         />
-                        <Box>
-                            <Stack direction="row" spacing={1}>
-                                <Button
-                                    variant="contained"
-                                    size="small"
-                                    startIcon={<SaveIcon />}
-                                    onClick={handleSave}
-                                    disabled={saveMutation.isPending || importMutation.isPending}
-                                >
-                                    {saveMutation.isPending ? "Saving..." : "Save"}
-                                </Button>
-                                <Button
-                                    variant="outlined"
-                                    size="small"
-                                    startIcon={<DownloadIcon />}
-                                    onClick={openImportModal}
-                                    disabled={!form.enabled || saveMutation.isPending || importMutation.isPending}
-                                >
-                                    {importMutation.isPending ? "Importing..." : "Import AD users"}
-                                </Button>
-                            </Stack>
-                        </Box>
+                    </Box>
+                    <Divider />
+                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
+                        <Button
+                            variant="contained"
+                            size="medium"
+                            startIcon={<SaveIcon />}
+                            onClick={handleSave}
+                            disabled={saveMutation.isPending || importMutation.isPending}
+                            sx={{ width: { xs: "100%", sm: "auto" } }}
+                        >
+                            {saveMutation.isPending ? "Saving..." : "Save"}
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            size="medium"
+                            startIcon={<DownloadIcon />}
+                            onClick={openImportModal}
+                            disabled={!form.enabled || saveMutation.isPending || importMutation.isPending}
+                            sx={{ width: { xs: "100%", sm: "auto" } }}
+                        >
+                            {importMutation.isPending ? "Importing..." : "Import AD users"}
+                        </Button>
                     </Stack>
-                )}
-            </AccordionDetails>
+                </Stack>
+            )}
             <CustomModal
                 open={importModalOpen}
                 onClose={() => {
@@ -269,6 +280,6 @@ export default function ADConfigSection() {
                     </Stack>
                 )}
             />
-        </Accordion>
+        </SettingsSectionCard>
     );
 }

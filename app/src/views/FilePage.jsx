@@ -1,4 +1,4 @@
-import { Paper, Typography, Button, Box, List, ListItem, ListItemIcon, ListItemText, ListItemButton } from "@mui/material";
+import { Button, Box, List, ListItem, ListItemIcon, ListItemText, ListItemButton, Stack } from "@mui/material";
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PrintIcon from "@mui/icons-material/Print";
@@ -10,6 +10,8 @@ import LoadingList from "../components/utils/LoadingList";
 import { useState, useMemo } from "react";
 import { useSnackbar } from "notistack";
 import { useNavigate } from "react-router-dom";
+import UserPageHero from "../components/userViewComponents/UserPageHero";
+import UserSurface from "../components/userViewComponents/UserSurface";
 
 
 
@@ -71,81 +73,85 @@ export default function FilePage() {
     }
 
     return (
-        <Paper sx={{ p: 3, gap: 2 }}>
-            <Typography variant="h5">
-                My files
-            </Typography>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2.25 }}>
+            <UserPageHero
+                title="My Files"
+                description="Review uploaded files, select multiple documents, and send them straight back to print."
+            />
 
-            <Typography variant="body1">
-                Recently uploaded files
-            </Typography>
-
-            <Box
-                sx={{
-                    mt: 1,
-                    maxHeight: "calc(80vh - 200px)",
-                    overflowY: "auto",
-                    marginBottom: 2
-                }}
-            >
-                {isLoading ? (
-                    <LoadingList />
-                ) : (!files || files?.length == 0) ? (
-                    <List>
-                        <ListItem>
-                            <ListItemText primary="No files uploaded yet." />
-                        </ListItem>
-                    </List>
-                ) : (
-                    <List>
-                        {sortedFiles?.map(f => (
-                            <ListItem key={f.id} disablePadding>
-                                <ListItemButton
-                                    selected={selectedIds.includes(f.id)}
-                                    onClick={() => toggleFile(f.id)}
-                                >
-                                    <ListItemIcon>
-                                        <InsertDriveFileIcon />
-                                    </ListItemIcon>
-
-                                    <ListItemText 
-                                        primary={f.filename}
-                                        secondary={`Pages: ${f.pages}, Size: ${Math.round(f.size_bytes / 1024)} KB`}
-                                    />
-
-                                    {selectedIds.includes(f.id) && (
-                                        <CheckCircleIcon 
-                                            color="primary" 
-                                            sx={{ position: "absolute", right: 30 }} 
-                                        />
-                                    )}
-                                </ListItemButton>
+            <UserSurface title="Uploaded Files" description="Tap a file to select it, then print or remove your selection.">
+                <Box
+                    sx={{
+                        maxHeight: "calc(80vh - 200px)",
+                        overflowY: "auto",
+                        marginBottom: 1
+                    }}
+                >
+                    {isLoading ? (
+                        <LoadingList />
+                    ) : (!files || files?.length == 0) ? (
+                        <List>
+                            <ListItem>
+                                <ListItemText primary="No files uploaded yet." />
                             </ListItem>
-                        ))}
-                    </List>
-                )}
-            </Box>
+                        </List>
+                    ) : (
+                        <List>
+                            {sortedFiles?.map(f => (
+                                <ListItem key={f.id} disablePadding>
+                                    <ListItemButton
+                                        selected={selectedIds.includes(f.id)}
+                                        onClick={() => toggleFile(f.id)}
+                                    >
+                                        <ListItemIcon>
+                                            <InsertDriveFileIcon />
+                                        </ListItemIcon>
 
-            <Box sx={{ display: "flex", justifyContent: "center", gap: 5 }}>
-                <Button 
-                    variant="contained" 
-                    color="error"
-                    disabled={selectedIds.length == 0}
-                    startIcon={<DeleteIcon />}
-                    onClick={handleDelete}
-                >
-                    Delete
-                </Button>
+                                        <ListItemText 
+                                            primary={f.filename}
+                                            secondary={`Pages: ${f.pages}, Size: ${Math.round(f.size_bytes / 1024)} KB`}
+                                        />
 
-                <Button 
-                    variant="contained" 
-                    disabled={selectedIds.length == 0}
-                    startIcon={<PrintIcon />}
-                    onClick={handlePrint}
+                                        {selectedIds.includes(f.id) && (
+                                            <CheckCircleIcon 
+                                                color="primary" 
+                                                sx={{ position: "absolute", right: 30 }} 
+                                            />
+                                        )}
+                                    </ListItemButton>
+                                </ListItem>
+                            ))}
+                        </List>
+                    )}
+                </Box>
+
+                <Stack
+                    direction={{ xs: "column", sm: "row" }}
+                    spacing={1}
+                    justifyContent="flex-end"
+                    sx={{ width: "100%" }}
                 >
-                    Print
-                </Button>
-            </Box>
-        </Paper>
+                    <Button
+                        variant="contained"
+                        color="error"
+                        disabled={selectedIds.length === 0}
+                        startIcon={<DeleteIcon />}
+                        onClick={handleDelete}
+                        sx={{ width: { xs: "100%", sm: "auto" } }}
+                    >
+                        Delete
+                    </Button>
+                    <Button
+                        variant="contained"
+                        disabled={selectedIds.length === 0}
+                        startIcon={<PrintIcon />}
+                        onClick={handlePrint}
+                        sx={{ width: { xs: "100%", sm: "auto" } }}
+                    >
+                        Print
+                    </Button>
+                </Stack>
+            </UserSurface>
+        </Box>
     )
 }

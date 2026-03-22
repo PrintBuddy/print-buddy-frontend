@@ -23,6 +23,8 @@ import { useSnackbar } from "notistack";
 
 import { useAdmin } from "../context/AdminContext";
 import ResolveRefundModal from "../components/adminComponents/ResolveRefundModal";
+import AdminPageHero from "../components/adminComponents/AdminPageHero";
+import AdminSurface from "../components/adminComponents/AdminSurface";
 
 
 const STATUS_COLOR = {
@@ -61,25 +63,38 @@ export default function AdminRefundsPage() {
     const skeletonRows = Array.from({ length: 5 });
 
     return (
-        <Box>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                <Box>
-                    <Typography variant="h5" fontWeight="bold">Refund Requests</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        Review and resolve user refund requests.
-                    </Typography>
-                </Box>
-                <Button
-                    startIcon={<RefreshIcon />}
-                    variant="outlined"
-                    size="small"
-                    onClick={refreshAll}
-                >
-                    Refresh
-                </Button>
-            </Box>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2.25 }}>
+            <AdminPageHero
+                title="Refund Requests"
+                description="Review submitted refund requests, inspect the related print jobs, and resolve them with context."
+                action={(
+                    <Button
+                        startIcon={<RefreshIcon />}
+                        variant="contained"
+                        size="medium"
+                        onClick={refreshAll}
+                        color="primary"
+                        sx={{ width: { xs: "100%", md: "auto" } }}
+                    >
+                        Refresh
+                    </Button>
+                )}
+            />
 
-            <TableContainer component={Paper} sx={{ maxHeight: "calc(80vh - 180px)", overflowY: "auto" }}>
+            <AdminSurface title="Refund Queue" description="Open a request to review the job details, user note, and resolution status.">
+                <TableContainer
+                    component={Paper}
+                    elevation={0}
+                    sx={{
+                        maxHeight: "calc(80vh - 180px)",
+                        overflowY: "auto",
+                        borderRadius: 2.5,
+                        border: "1px solid",
+                        borderColor: "divider",
+                        boxShadow: "none",
+                        bgcolor: "rgba(255,255,255,0.75)"
+                    }}
+                >
                 <Table size="small">
                     <TableHead>
                         <TableRow>
@@ -212,7 +227,8 @@ export default function AdminRefundsPage() {
                         }
                     </TableBody>
                 </Table>
-            </TableContainer>
+                </TableContainer>
+            </AdminSurface>
 
             <ResolveRefundModal
                 open={Boolean(selectedRefund)}

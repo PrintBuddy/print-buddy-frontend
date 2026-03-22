@@ -4,7 +4,6 @@ import {
     Button,
     Card,
     CardContent,
-    Paper,
     Skeleton,
     Stack,
     Typography,
@@ -31,6 +30,8 @@ import {
 
 import { getUserStats } from "../api/stats";
 import { getPrinters } from "../api/printer";
+import UserPageHero from "../components/userViewComponents/UserPageHero";
+import UserSurface from "../components/userViewComponents/UserSurface";
 
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -53,7 +54,17 @@ function shortLabelMobile(label, maxLen = 9) {
 
 function StatCard({ icon, label, value, accentColor, loading, subtitle }) {
     return (
-        <Card sx={{ height: "100%" }}>
+        <Card
+            elevation={0}
+            sx={{
+                height: "100%",
+                borderRadius: 3,
+                border: "1px solid",
+                borderColor: "divider",
+                backgroundColor: "background.paper",
+                boxShadow: "0 14px 34px rgba(15, 23, 42, 0.08)"
+            }}
+        >
             <CardContent sx={{ p: { xs: 1.5, sm: 2 }, "&:last-child": { pb: { xs: 1.5, sm: 2 } } }}>
                 <Stack direction="row" alignItems="center" spacing={1} mb={1}>
                     <Box
@@ -198,17 +209,16 @@ export default function StatisticsPage() {
     const chartHeight = isMobile ? 220 : 260;
 
     return (
-        <Box sx={{ display: "flex", flexDirection: "column", gap: { xs: 2, sm: 3 } }}>
-
-            {/* ── Header ── */}
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
-                <Typography variant="h5" fontWeight="bold" sx={{ fontSize: { xs: "1.15rem", sm: "1.5rem" } }}>
-                    My Statistics
-                </Typography>
-                <Button startIcon={<RefreshIcon />} variant="outlined" size="small" onClick={refresh}>
-                    Refresh
-                </Button>
-            </Stack>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: { xs: 1.75, sm: 2.25 } }}>
+            <UserPageHero
+                title="My Statistics"
+                description="See how much you print, how your pages are split between color and black and white, and where your usage goes."
+                action={(
+                    <Button startIcon={<RefreshIcon />} variant="contained" color="primary" size="medium" onClick={refresh} sx={{ width: { xs: "100%", md: "auto" } }}>
+                        Refresh
+                    </Button>
+                )}
+            />
 
             {/* ── Summary cards ── */}
             <Box
@@ -261,8 +271,7 @@ export default function StatisticsPage() {
             </Box>
 
             {/* ── Spending summary ── */}
-            <Paper sx={{ p: { xs: 2, sm: 3 } }}>
-                <SectionTitle>Spending summary</SectionTitle>
+            <UserSurface title="Spending Summary" sx={{ p: { xs: 2, sm: 3 } }}>
                 <Box
                     sx={{
                         p: { xs: 2, sm: 2.5 },
@@ -291,11 +300,9 @@ export default function StatisticsPage() {
                         Sum of completed print jobs minus approved refunds
                     </Typography>
                 </Box>
-            </Paper>
+            </UserSurface>
 
-            {/* ── Pages by printer chart ── */}
-            <Paper sx={{ p: { xs: 2, sm: 3 } }}>
-                <SectionTitle>Pages by Printer</SectionTitle>
+            <UserSurface title="Pages by Printer" sx={{ p: { xs: 2, sm: 3 } }}>
                 {isLoading ? (
                     <Skeleton variant="rectangular" height={chartHeight} />
                 ) : printerChartData.length === 0 ? (
@@ -309,7 +316,7 @@ export default function StatisticsPage() {
                         isMobile={isMobile}
                     />
                 )}
-            </Paper>
+            </UserSurface>
 
         </Box>
     );

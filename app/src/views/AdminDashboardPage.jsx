@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper, Typography, Stack } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { useSnackbar } from "notistack";
 
@@ -7,6 +7,8 @@ import { useAdmin } from "../context/AdminContext";
 import PrinterStatusGrid from "../components/adminComponents/PrinterStatusGrid";
 import AdminJobsTable from "../components/adminComponents/AdminJobsTable";
 import EditPrinterModal from "../components/adminComponents/EditPrinterModal";
+import AdminPageHero from "../components/adminComponents/AdminPageHero";
+import AdminSurface from "../components/adminComponents/AdminSurface";
 
 
 export default function AdminDashboardPage() {
@@ -43,45 +45,42 @@ export default function AdminDashboardPage() {
     };
 
     return (
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2.25 }}>
+            <AdminPageHero
+                title="Admin Dashboard"
+                description="Monitor printers and review the latest print activity from one focused workspace."
+                action={(
+                    <Button
+                        startIcon={<RefreshIcon />}
+                        variant="contained"
+                        size="medium"
+                        onClick={refreshAll}
+                        color="primary"
+                        sx={{ width: { xs: "100%", md: "auto" } }}
+                    >
+                        Refresh
+                    </Button>
+                )}
+            />
 
-            {/* Header */}
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
-                <Typography variant="h5" fontWeight="bold">
-                    Admin Dashboard
-                </Typography>
-                <Button
-                    startIcon={<RefreshIcon />}
-                    variant="outlined"
-                    size="small"
-                    onClick={refreshAll}
-                >
-                    Refresh
-                </Button>
-            </Stack>
-
-            {/* Printers */}
-            <Paper sx={{ p: 3 }}>
-                <Typography variant="h6">Printer Status</Typography>
-                <Typography variant="body2" color="text.secondary">
-                    Overview of all registered printers and their current configuration.
-                </Typography>
+            <AdminSurface
+                title="Printer Status"
+                description="Overview of all registered printers, their availability, and their live supply information."
+            >
                 <PrinterStatusGrid
                     printers={printers}
                     isLoading={printersLoading}
                     onEdit={(p) => setEditPrinter(p)}
                     onDelete={(p) => setConfirmDeletePrinter(p)}
                 />
-            </Paper>
+            </AdminSurface>
 
-            {/* All Print Jobs */}
-            <Paper sx={{ p: 3 }}>
-                <Typography variant="h6">All Print Jobs</Typography>
-                <Typography variant="body2" color="text.secondary">
-                    Complete print history across all users.
-                </Typography>
+            <AdminSurface
+                title="All Print Jobs"
+                description="Complete print history across all users, with quick access to job details."
+            >
                 <AdminJobsTable jobs={allJobs} isLoading={jobsLoading} userById={userById} />
-            </Paper>
+            </AdminSurface>
 
             {/* Edit Printer Modal */}
             <EditPrinterModal

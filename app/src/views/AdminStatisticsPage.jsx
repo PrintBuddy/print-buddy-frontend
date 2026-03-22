@@ -4,7 +4,6 @@ import {
     Button,
     Card,
     CardContent,
-    Paper,
     Skeleton,
     Stack,
     Table,
@@ -40,6 +39,8 @@ import {
 
 import { getStatsOverview } from "../api/stats";
 import { getPrinters } from "../api/printer";
+import AdminPageHero from "../components/adminComponents/AdminPageHero";
+import AdminSurface from "../components/adminComponents/AdminSurface";
 
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -62,7 +63,17 @@ function shortLabelMobile(label, maxLen = 9) {
 
 function StatCard({ icon, label, value, accentColor, loading, subtitle }) {
     return (
-        <Card sx={{ height: "100%" }}>
+        <Card
+            elevation={0}
+            sx={{
+                height: "100%",
+                borderRadius: 3,
+                border: "1px solid",
+                borderColor: "divider",
+                background: "linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.96) 100%)",
+                boxShadow: "0 14px 34px rgba(15, 23, 42, 0.08)"
+            }}
+        >
             <CardContent sx={{ p: { xs: 1.5, sm: 2 }, "&:last-child": { pb: { xs: 1.5, sm: 2 } } }}>
                 <Stack direction="row" alignItems="center" spacing={1} mb={1}>
                     <Box
@@ -154,14 +165,6 @@ function FinanceBreakdownItem({ icon, label, value, color, subtitle, loading }) 
                 </Typography>
             )}
         </Box>
-    );
-}
-
-function SectionTitle({ children }) {
-    return (
-        <Typography variant="h6" fontWeight="bold" mb={2} sx={{ fontSize: { xs: "1rem", sm: "1.25rem" } }}>
-            {children}
-        </Typography>
     );
 }
 
@@ -335,17 +338,24 @@ export default function AdminStatisticsPage() {
     const chartHeight = isMobile ? 220 : 260;
 
     return (
-        <Box sx={{ display: "flex", flexDirection: "column", gap: { xs: 2, sm: 3 } }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: { xs: 1.75, sm: 2.25 } }}>
 
-            {/* ── Header ── */}
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
-                <Typography variant="h5" fontWeight="bold" sx={{ fontSize: { xs: "1.15rem", sm: "1.5rem" } }}>
-                    Statistics
-                </Typography>
-                <Button startIcon={<RefreshIcon />} variant="outlined" size="small" onClick={refresh}>
-                    Refresh
-                </Button>
-            </Stack>
+            <AdminPageHero
+                title="Statistics"
+                description="Review printing volume, revenue, and balance metrics in a cleaner analytics workspace."
+                action={(
+                    <Button
+                        startIcon={<RefreshIcon />}
+                        variant="contained"
+                        size="medium"
+                        onClick={refresh}
+                        color="primary"
+                        sx={{ width: { xs: "100%", md: "auto" } }}
+                    >
+                        Refresh
+                    </Button>
+                )}
+            />
 
             {/* ── Summary cards ── */}
             <Box
@@ -398,8 +408,7 @@ export default function AdminStatisticsPage() {
             </Box>
 
             {/* ── Finance card ── */}
-            <Paper sx={{ p: { xs: 2, sm: 3 } }}>
-                <SectionTitle>Finance Overview</SectionTitle>
+            <AdminSurface title="Finance Overview" sx={{ p: { xs: 2, sm: 3 } }}>
 
                 {/* Total recharged — primary metric */}
                 <Box
@@ -479,19 +488,18 @@ export default function AdminStatisticsPage() {
                         loading={isLoading}
                     />
                 </Stack>
-            </Paper>
+            </AdminSurface>
 
             {/* ── Charts ── */}
             <Box
                 sx={{
                     display: "grid",
                     gridTemplateColumns: { xs: "1fr", lg: "1fr 1fr" },
-                    gap: { xs: 2, sm: 3 },
+                    gap: { xs: 1.75, sm: 2.25 },
                 }}
             >
                 {/* Pages by printer */}
-                <Paper sx={{ p: { xs: 2, sm: 3 } }}>
-                    <SectionTitle>Pages by Printer</SectionTitle>
+                <AdminSurface title="Pages by Printer" sx={{ p: { xs: 2, sm: 3 } }}>
                     {isLoading ? (
                         <Skeleton variant="rectangular" height={chartHeight} />
                     ) : printerChartData.length === 0 ? (
@@ -505,11 +513,10 @@ export default function AdminStatisticsPage() {
                             isMobile={isMobile}
                         />
                     )}
-                </Paper>
+                </AdminSurface>
 
                 {/* Top 10 users by pages */}
-                <Paper sx={{ p: { xs: 2, sm: 3 } }}>
-                    <SectionTitle>Top 10 Users by Pages</SectionTitle>
+                <AdminSurface title="Top 10 Users by Pages" sx={{ p: { xs: 2, sm: 3 } }}>
                     {isLoading ? (
                         <Skeleton variant="rectangular" height={chartHeight} />
                     ) : topUserChartData.length === 0 ? (
@@ -523,11 +530,10 @@ export default function AdminStatisticsPage() {
                             isMobile={isMobile}
                         />
                     )}
-                </Paper>
+                </AdminSurface>
 
                 {/* Revenue by printer */}
-                <Paper sx={{ p: { xs: 2, sm: 3 } }}>
-                    <SectionTitle>Revenue by Printer</SectionTitle>
+                <AdminSurface title="Revenue by Printer" sx={{ p: { xs: 2, sm: 3 } }}>
                     {isLoading ? (
                         <Skeleton variant="rectangular" height={chartHeight} />
                     ) : printerRevenueChartData.length === 0 ? (
@@ -541,12 +547,11 @@ export default function AdminStatisticsPage() {
                             isMobile={isMobile}
                         />
                     )}
-                </Paper>
+                </AdminSurface>
             </Box>
 
             {/* ── Printer table ── */}
-            <Paper sx={{ p: { xs: 2, sm: 3 } }}>
-                <SectionTitle>Pages per Printer</SectionTitle>
+            <AdminSurface title="Pages per Printer" sx={{ p: { xs: 2, sm: 3 } }}>
                 <TableContainer sx={{ overflowX: "auto" }}>
                     <Table size="small" sx={{ minWidth: 300 }}>
                         <TableHead>
@@ -597,11 +602,10 @@ export default function AdminStatisticsPage() {
                         </TableBody>
                     </Table>
                 </TableContainer>
-            </Paper>
+            </AdminSurface>
 
             {/* ── User table ── */}
-            <Paper sx={{ p: { xs: 2, sm: 3 } }}>
-                <SectionTitle>Pages per User</SectionTitle>
+            <AdminSurface title="Pages per User" sx={{ p: { xs: 2, sm: 3 } }}>
                 <TableContainer sx={{ overflowX: "auto" }}>
                     <Table size="small" sx={{ minWidth: 300 }}>
                         <TableHead>
@@ -646,7 +650,7 @@ export default function AdminStatisticsPage() {
                         </TableBody>
                     </Table>
                 </TableContainer>
-            </Paper>
+            </AdminSurface>
 
         </Box>
     );

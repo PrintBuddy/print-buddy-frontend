@@ -38,6 +38,8 @@ import { useAdmin } from "../context/AdminContext";
 import EditUserModal from "../components/adminComponents/EditUserModal";
 import RechargeModal from "../components/adminComponents/RechargeModal";
 import UserTransactionsModal from "../components/adminComponents/UserTransactionsModal";
+import AdminPageHero from "../components/adminComponents/AdminPageHero";
+import AdminSurface from "../components/adminComponents/AdminSurface";
 
 
 export default function AdminUsersPage() {
@@ -108,51 +110,62 @@ export default function AdminUsersPage() {
         });
 
     return (
-        <Box>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} gap={1} flexWrap="wrap">
-                <Box minWidth={0}>
-                    <Typography variant="h5" fontWeight="bold">Users</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        Manage all registered users, their info and balance.
-                    </Typography>
-                </Box>
-                <Button
-                    startIcon={<RefreshIcon />}
-                    variant="outlined"
-                    size="small"
-                    onClick={refreshAll}
-                    sx={{ flexShrink: 0 }}
-                >
-                    Refresh
-                </Button>
-            </Box>
-
-            <TextField
-                placeholder="Search by name or username…"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                size="small"
-                fullWidth
-                sx={{ mb: 2 }}
-                slotProps={{
-                    input: {
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <SearchIcon fontSize="small" />
-                            </InputAdornment>
-                        ),
-                        endAdornment: search ? (
-                            <InputAdornment position="end">
-                                <IconButton size="small" onClick={() => setSearch("")}>
-                                    <ClearIcon fontSize="small" />
-                                </IconButton>
-                            </InputAdornment>
-                        ) : null
-                    }
-                }}
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2.25 }}>
+            <AdminPageHero
+                title="Users"
+                description="Manage registered users, search accounts quickly, and handle balance-related actions from one place."
+                action={(
+                    <Button
+                        startIcon={<RefreshIcon />}
+                        variant="contained"
+                        size="medium"
+                        onClick={refreshAll}
+                        color="primary"
+                        sx={{ width: { xs: "100%", md: "auto" } }}
+                    >
+                        Refresh
+                    </Button>
+                )}
             />
 
-            <TableContainer component={Paper} sx={{ maxHeight: "calc(80vh - 180px)", overflowY: "auto" }}>
+            <AdminSurface title="User Directory" description="Search users and open account actions directly from the list.">
+                <TextField
+                    placeholder="Search by name or username…"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    size="small"
+                    fullWidth
+                    slotProps={{
+                        input: {
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon fontSize="small" />
+                                </InputAdornment>
+                            ),
+                            endAdornment: search ? (
+                                <InputAdornment position="end">
+                                    <IconButton size="small" onClick={() => setSearch("")}>
+                                        <ClearIcon fontSize="small" />
+                                    </IconButton>
+                                </InputAdornment>
+                            ) : null
+                        }
+                    }}
+                />
+
+                <TableContainer
+                    component={Paper}
+                    elevation={0}
+                    sx={{
+                        maxHeight: "calc(80vh - 180px)",
+                        overflowY: "auto",
+                        borderRadius: 2.5,
+                        border: "1px solid",
+                        borderColor: "divider",
+                        boxShadow: "none",
+                        bgcolor: "rgba(255,255,255,0.75)"
+                    }}
+                >
                 <Table size="small">
                     <TableHead>
                         <TableRow>
@@ -282,7 +295,8 @@ export default function AdminUsersPage() {
                         }
                     </TableBody>
                 </Table>
-            </TableContainer>
+                </TableContainer>
+            </AdminSurface>
 
             {/* Mobile action sheet */}
             <Dialog

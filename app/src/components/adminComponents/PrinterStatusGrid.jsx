@@ -203,7 +203,16 @@ function PrinterCard({ printer, onEdit, onDelete }) {
     const statusLabel = printer.status ?? "unknown";
 
     return (
-        <Card variant="outlined" sx={{ opacity: printer.is_active ? 1 : 0.6 }}>
+        <Card
+            variant="outlined"
+            sx={{
+                opacity: printer.is_active ? 1 : 0.7,
+                borderRadius: 3,
+                borderColor: "divider",
+                background: "linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.95) 100%)",
+                boxShadow: "0 12px 28px rgba(15, 23, 42, 0.06)"
+            }}
+        >
             <CardContent>
                 <Box>
                     <Box display="flex" alignItems="center" minWidth={0} justifyContent="space-between">
@@ -273,7 +282,7 @@ function PrinterCard({ printer, onEdit, onDelete }) {
 export default function PrinterStatusGrid({ printers, isLoading, onEdit, onDelete }) {
     if (isLoading) {
         return (
-            <Grid container spacing={2} sx={{ mt: 1 }}>
+            <Grid container spacing={1.5} sx={{ mt: 0.75 }}>
                 {Array.from({ length: 4 }).map((_, i) => (
                     <Grid key={i} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
                         <Skeleton variant="rounded" height={120} />
@@ -292,7 +301,7 @@ export default function PrinterStatusGrid({ printers, isLoading, onEdit, onDelet
     }
 
     return (
-        <Grid container spacing={2} sx={{ mt: 1 }}>
+        <Grid container spacing={1.5} sx={{ mt: 0.75 }}>
             {[...printers]
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .map((printer) => (
