@@ -46,6 +46,9 @@ export default function StepSend({ onPrev }) {
         setTotalCost(value);
     }, [files])
 
+    const availableCredit = Math.round((((user?.balance || 0) + (user?.credit_limit || 0)) + Number.EPSILON) * 100) / 100;
+    const hasEnoughCredit = availableCredit >= totalCost;
+
     const handleBack = () => {
         onPrev?.();
     }
@@ -157,7 +160,7 @@ export default function StepSend({ onPrev }) {
                             
                     <LoadingTypography 
                         variant="h6" 
-                        color={user?.balance + user?.credit_limit >= totalCost ? "primary" : "error"} 
+                        color={hasEnoughCredit ? "primary" : "error"} 
                         sx={{ fontWeight: "bold" }}
                         loadingWidth={50}
                         isLoading={isLoadingFiles}
@@ -166,7 +169,7 @@ export default function StepSend({ onPrev }) {
                     </LoadingTypography>
             </Box>
 
-                {(user?.balance + user?.credit_limit < totalCost) && (
+                {!hasEnoughCredit && (
                     <Typography variant="body2" color="error">
                         Insufficient credit!
                     </Typography>
@@ -186,7 +189,7 @@ export default function StepSend({ onPrev }) {
                     variant="contained" 
                     onClick={handlePrint} 
                     startIcon={<PrintIcon />} 
-                    disabled={user?.balance + user?.credit_limit < totalCost}
+                    disabled={!hasEnoughCredit}
                 >
                     Print
                 </Button>

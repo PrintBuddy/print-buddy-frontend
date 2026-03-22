@@ -52,5 +52,8 @@ export function calculateTotalCost(selectedFiles, printerOptionsByFile, selected
 
     // Calcular costo total
     const totalCost = totalColorPages * priceColor + totalBWPages * priceBW;
-    return totalCost;
+    return roundCurrency(totalCost);
+}
+function roundCurrency(value) {
+    return Math.round((value + Number.EPSILON) * 100) / 100;
 }
