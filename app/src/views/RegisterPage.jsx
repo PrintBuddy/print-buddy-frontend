@@ -3,8 +3,8 @@ import { Grid, Paper, Stack, Typography, TextField, Button, CircularProgress } f
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 
-const USERNAME_REGEX = /^[a-zA-Z_][a-zA-Z0-9_-]{2,19}$/;
-const USERNAME_HELPER = "3–20 characters. Start with a letter or underscore. Only letters, digits, _ and - allowed.";
+const USERNAME_REGEX = /^[a-zA-Z_][a-zA-Z0-9_.-]{2,19}$/;
+const USERNAME_HELPER = "3–20 characters. Start with a letter or underscore. Only letters, digits, _, . and - allowed.";
 
 
 export default function RegisterPage() {
@@ -83,7 +83,7 @@ export default function RegisterPage() {
                     fullWidth
                     required
                     error={!!usernameError}
-                    helperText={usernameError || "Letters, digits, _ and - only; 3–20 chars"}
+                    helperText={usernameError || "Letters, digits, _, . and - only; 3–20 chars"}
                 />
 
                 <TextField
