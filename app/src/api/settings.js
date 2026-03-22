@@ -13,6 +13,16 @@ export async function updateADConfig(data) {
     return response.data;
 }
 
+export async function importADUsers(data) {
+    const response = await api.post(`${SETTINGS_ROUTE}/ad-config/import-users`, data);
+    return response.data;
+}
+
+export async function previewADUsersImport(data) {
+    const response = await api.post(`${SETTINGS_ROUTE}/ad-config/preview-import-users`, data);
+    return response.data;
+}
+
 export async function getRechargeInfo() {
     const response = await api.get(`${SETTINGS_ROUTE}/recharge-info`);
     return response.data;
