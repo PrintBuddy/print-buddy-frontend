@@ -49,7 +49,11 @@ export default function EditUserModal({ open, onClose, user, onSave }) {
         setLoading(true);
         setError("");
         try {
-            await onSave(user.id, form);
+            const payload = {
+                ...form,
+                email: form.email.trim() ? form.email.trim() : null,
+            };
+            await onSave(user.id, payload);
             onClose();
         } catch (err) {
             const detail = err?.response?.data?.detail;
