@@ -1,5 +1,6 @@
 import {
     Box,
+    FormHelperText,
     FormControl,
     InputLabel,
     Select,
@@ -83,10 +84,10 @@ export default function PrintOptionsForm({ options, onChange, colorDisabled, dup
     return (
         <Box
             sx={{ 
-                display: "flex", 
-                flexDirection: "column", 
-                gap: 2 , 
-                alignItems: "center"
+                display: "grid",
+                gridTemplateColumns: { xs: "1fr", md: "repeat(2, minmax(0, 1fr))" },
+                gap: 2,
+                alignItems: "start",
             }}
         >
             <FormControl fullWidth disabled={colorDisabled}>
@@ -99,6 +100,9 @@ export default function PrintOptionsForm({ options, onChange, colorDisabled, dup
                     <MenuItem value="Color">Color</MenuItem>
                     <MenuItem value="B&W">Black and White</MenuItem>
                 </Select>
+                <FormHelperText>
+                    {colorDisabled ? "Black and white only." : "Choose color or B/W."}
+                </FormHelperText>
             </FormControl>
 
             <Box display="flex" alignItems="center" gap={1} width="100%">
@@ -113,6 +117,9 @@ export default function PrintOptionsForm({ options, onChange, colorDisabled, dup
                         <MenuItem value="2SLng">Two-sided (long edge)</MenuItem>
                         <MenuItem value="2SSht">Two-sided (short edge)</MenuItem>
                     </Select>
+                    <FormHelperText>
+                        {duplexDisabled ? "Duplex not available." : "Choose one- or two-sided printing."}
+                    </FormHelperText>
                 </FormControl>
                 {duplexDisabled && (
                     <Tooltip title="This printer does not support automatic 2-sided (duplex) printing." arrow>
@@ -137,10 +144,14 @@ export default function PrintOptionsForm({ options, onChange, colorDisabled, dup
                     <MenuItem value={9}>9</MenuItem>
                     <MenuItem value={16}>16</MenuItem>
                 </Select>
+                <FormHelperText>
+                    Print multiple pages on one sheet.
+                </FormHelperText>
             </FormControl>
 
             <TextField
                 label="Number of copies"
+                type="number"
                 value={options?.copies || 1}
                 onChange={(e) => {
                     const value = Number(e.target.value);
@@ -154,6 +165,8 @@ export default function PrintOptionsForm({ options, onChange, colorDisabled, dup
                 onBlur={handleCopiesBlur}
                 onFocus={(e) => e.target.select()}
                 fullWidth
+                inputProps={{ min: 1 }}
+                helperText="How many copies to print."
             />
 
             <TextField
@@ -162,8 +175,9 @@ export default function PrintOptionsForm({ options, onChange, colorDisabled, dup
                 value={options?.pageRanges || ""}
                 onChange={handlePageRangesChange}
                 fullWidth
+                sx={{ gridColumn: { xs: "span 1", md: "span 2" } }}
                 error={!!pageRangeError}
-                helperText={pageRangeError || "Leave empty to print all pages"}
+                helperText={pageRangeError || "Leave empty for all pages"}
             />
         </Box>
     )

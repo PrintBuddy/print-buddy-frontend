@@ -12,7 +12,7 @@ export default function MainHeader({ user, isLoading, isError }) {
     return (
         <UserPageHero
             title={`Welcome${user?.name ? `, ${user.name}` : ""}`}
-            description="Start a new print, review recent activity, and keep an eye on your available balance."
+            description="Start a print and check your balance."
             action={(
                 <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ width: { xs: "100%", md: "auto" } }}>
                     <Button
@@ -41,7 +41,7 @@ export default function MainHeader({ user, isLoading, isError }) {
                     Available balance
                 </Typography>
                 <LoadingTypography
-                    variant="h5"
+                    variant="h4"
                     loadingWidth={120}
                     isLoading={isLoading || isError}
                     sx={{ fontWeight: 700, color: "primary.main" }}

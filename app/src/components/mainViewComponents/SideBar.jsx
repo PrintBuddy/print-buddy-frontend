@@ -26,9 +26,9 @@ export default function SideBar({ open, onClose, isDesktop, width }) {
 
     const menuItems = [
         { text: "Home", icon: <HomeIcon />, path: "/" },
-        { text: "My files", icon: <DescriptionIcon />, path: "/files" },
         { text: "Print", icon: <PrintIcon />, path: "/print" },
         { text: "Print history", icon: <HistoryIcon />, path: "/history"},
+        { text: "My files", icon: <DescriptionIcon />, path: "/files" },
         { text: "My balance", icon: <AccountBalanceWalletIcon />, path: "/balance" },
         { text: "My statistics", icon: <BarChartIcon />, path: "/statistics" },
     ];

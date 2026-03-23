@@ -1,6 +1,7 @@
 import { 
-    Box, Button, Stack, Typography, 
+    Box, Button, Chip, Stack, Typography, 
 } from "@mui/material";
+import { useMediaQuery, useTheme } from "@mui/material";
 
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -16,6 +17,8 @@ import { useEffect } from "react";
 
 export default function StepPrintPrefs({ onNext, onPrev }) {
     const { selectedPrinter } = usePrinter();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     
     const {
         printerOptionsByFile, setPreferencesByFile, 
@@ -43,28 +46,49 @@ export default function StepPrintPrefs({ onNext, onPrev }) {
         <Box sx={{ 
             width: "100%"
         }}>
-            <Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-                sx={{
-                    mb: 0
-                }}
-            >
+            <Stack spacing={2.5}>
                 <Box>
-                <Typography variant="h6">
-                    Select printing options 
-                </Typography>
-                <Typography variant="body1">
-                    Click on the files and set the printing options.
-                </Typography>
+                    <Typography variant="subtitle1" fontWeight={700}>
+                        Fine-tune the print settings
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary">
+                        Set the print options for each file.
+                    </Typography>
                 </Box>
-                
+
+                <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+                    <Chip
+                        label={isMobile
+                            ? `${selectedFiles.length} file${selectedFiles.length === 1 ? "" : "s"}`
+                            : `${selectedFiles.length} file${selectedFiles.length === 1 ? "" : "s"} in this job`
+                        }
+                        color="primary"
+                        sx={{ borderRadius: 999, fontWeight: 600 }}
+                    />
+                    {selectedPrinter && (
+                        <Chip
+                            variant="outlined"
+                            label={isMobile ? selectedPrinter.name : `Printer: ${selectedPrinter.name}`}
+                            sx={{
+                                borderRadius: 999,
+                                maxWidth: { xs: "100%", sm: "none" },
+                                "& .MuiChip-label": {
+                                    display: "block",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    whiteSpace: "nowrap",
+                                },
+                            }}
+                        />
+                    )}
+                </Stack>
             </Stack>
 
             <Box sx={{
                 width: '100%',
-                p: 2
+                pt: 3,
+                pb: 1,
+                overflow: "hidden",
                 }}>
 
                 {isLoading ? (
@@ -83,11 +107,20 @@ export default function StepPrintPrefs({ onNext, onPrev }) {
 
             </Box>
 
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    gap: 1,
+                    flexDirection: { xs: "column-reverse", sm: "row" },
+                    alignItems: { xs: "stretch", sm: "center" },
+                }}
+            >
                 <Button
                     variant="outlined"
                     startIcon={<ArrowBackIcon />}
                     onClick={handleBack} 
+                    sx={{ borderRadius: 999, width: { xs: "100%", sm: "auto" } }}
                 >
                     Back
                 </Button>
@@ -97,6 +130,7 @@ export default function StepPrintPrefs({ onNext, onPrev }) {
                     onClick={handleNext}
                     disabled={!allValid}
                     endIcon={<ArrowForwardIcon />}
+                    sx={{ borderRadius: 999, px: 3, width: { xs: "100%", sm: "auto" } }}
                 >
                     Next
                 </Button>

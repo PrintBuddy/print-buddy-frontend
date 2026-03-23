@@ -1,6 +1,7 @@
 import { Box } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMediaQuery } from "@mui/material";
+import { useLocation } from "react-router-dom";
 
 import TopBar from "./TopBar";
 import SideBar from "./SideBar";
@@ -12,12 +13,21 @@ import ForceEmailModal from "./ForceEmailModal";
 export default function DashboardLayout({ children }) {
     const [ mobileOpen, setMobileOpen ] = useState(false);
     const isDesktop = useMediaQuery("(min-width:900px)");
+    const location = useLocation();
 
     const drawerWidth = 220;
 
     const handleDrawerToggle = () => {
-        setMobileOpen(!mobileOpen);
+        setMobileOpen((prev) => !prev);
     }
+
+    const handleDrawerClose = () => {
+        setMobileOpen(false);
+    }
+
+    useEffect(() => {
+        setMobileOpen(false);
+    }, [location.pathname]);
 
     return (
         <Box>
@@ -30,7 +40,7 @@ export default function DashboardLayout({ children }) {
 
             <SideBar
                 open={mobileOpen}
-                onClose={handleDrawerToggle}
+                onClose={handleDrawerClose}
                 isDesktop={isDesktop}
                 width={drawerWidth}
             />
