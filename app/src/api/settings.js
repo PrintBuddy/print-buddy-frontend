@@ -13,6 +13,16 @@ export async function updateADConfig(data) {
     return response.data;
 }
 
+export async function importADUsers(data) {
+    const response = await api.post(`${SETTINGS_ROUTE}/ad-config/import-users`, data);
+    return response.data;
+}
+
+export async function previewADUsersImport(data) {
+    const response = await api.post(`${SETTINGS_ROUTE}/ad-config/preview-import-users`, data);
+    return response.data;
+}
+
 export async function getRechargeInfo() {
     const response = await api.get(`${SETTINGS_ROUTE}/recharge-info`);
     return response.data;
@@ -45,6 +55,16 @@ export async function getActivityLog() {
 
 export async function getTonerAlertConfig() {
     const response = await api.get(`${SETTINGS_ROUTE}/toner-alert`);
+    return response.data;
+}
+
+export async function getVoucherRedeemConfig() {
+    const response = await api.get(`${SETTINGS_ROUTE}/voucher-redeem`);
+    return response.data;
+}
+
+export async function updateVoucherRedeemConfig(data) {
+    const response = await api.put(`${SETTINGS_ROUTE}/voucher-redeem`, data);
     return response.data;
 }
 

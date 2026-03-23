@@ -3,11 +3,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSnackbar } from "notistack";
 import { getTelegramAdmins, addTelegramAdmin, removeTelegramAdmin } from "../../api/settings";
 import {
-    Accordion, AccordionSummary, AccordionDetails, Typography, Stack, TextField, Button, Box, Divider, IconButton, Tooltip, InputAdornment
+    Typography, Stack, TextField, Button, Box, Divider, IconButton, Tooltip, InputAdornment, Paper
 } from "@mui/material";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import SettingsSectionCard from "./SettingsSectionCard";
 
 export default function TelegramAdminsSection() {
     const queryClient = useQueryClient();
@@ -54,69 +54,81 @@ export default function TelegramAdminsSection() {
         addMutation.mutate({ username: newUsername.trim(), telegram_id: newTelegramId.trim() });
     };
     return (
-        <Accordion>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography fontWeight="bold">Telegram Admins</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-                {isLoading ? (
-                    <Typography color="text.secondary">Loading…</Typography>
-                ) : admins.length === 0 ? (
-                    <Typography variant="body2" color="text.disabled" fontStyle="italic" mb={2}>
-                        No Telegram admins configured.
+        <SettingsSectionCard
+            title="Telegram Admins"
+            description="Manage the Telegram accounts allowed to receive admin bot actions and notifications."
+            badge="Access"
+        >
+            <Stack spacing={3}>
+                <Box>
+                    <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
+                        Current Admins
                     </Typography>
-                ) : (
-                    <Stack spacing={1} mb={3}>
-                        {admins.map((ta) => (
-                            <Box
-                                key={ta.id}
-                                display="flex"
-                                justifyContent="space-between"
-                                alignItems="center"
-                                sx={{
-                                    bgcolor: "action.hover",
-                                    borderRadius: 1,
-                                    px: 1.5,
-                                    py: 1
-                                }}
-                            >
-                                <Box>
-                                    <Typography variant="body2" fontWeight="medium">
-                                        @{ta.username ?? ta.user_id}
-                                        {ta.name && (
-                                            <Typography
-                                                component="span"
-                                                variant="caption"
-                                                color="text.secondary"
-                                                ml={1}
-                                            >
-                                                {ta.name} {ta.surname}
-                                            </Typography>
-                                        )}
-                                    </Typography>
-                                    <Typography variant="caption" color="text.disabled">
-                                        Telegram ID: {ta.telegram_id}
-                                    </Typography>
-                                </Box>
-                                <Tooltip title="Remove">
-                                    <IconButton
-                                        size="small"
-                                        color="error"
-                                        onClick={() => removeMutation.mutate(ta.id)}
-                                        disabled={removeMutation.isPending}
+                    {isLoading ? (
+                        <Typography color="text.secondary">Loading…</Typography>
+                    ) : admins.length === 0 ? (
+                        <Typography variant="body2" color="text.disabled" fontStyle="italic" mt={1}>
+                            No Telegram admins configured.
+                        </Typography>
+                    ) : (
+                        <Stack spacing={1.25} mt={1.5}>
+                            {admins.map((ta) => (
+                                <Paper
+                                    key={ta.id}
+                                    variant="outlined"
+                                    sx={{
+                                        borderRadius: 2,
+                                        px: 1.5,
+                                        py: 1.25,
+                                        bgcolor: "rgba(15, 23, 42, 0.02)"
+                                    }}
+                                >
+                                    <Stack
+                                        direction={{ xs: "column", sm: "row" }}
+                                        justifyContent="space-between"
+                                        alignItems={{ xs: "flex-start", sm: "center" }}
+                                        spacing={1}
                                     >
-                                        <DeleteIcon fontSize="small" />
-                                    </IconButton>
-                                </Tooltip>
-                            </Box>
-                        ))}
-                    </Stack>
-                )}
-                <Divider sx={{ mb: 2 }} />
-                <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
-                    Add New Telegram Admin
-                </Typography>
+                                        <Box>
+                                            <Typography variant="body2" fontWeight="medium">
+                                                @{ta.username ?? ta.user_id}
+                                                {ta.name && (
+                                                    <Typography
+                                                        component="span"
+                                                        variant="caption"
+                                                        color="text.secondary"
+                                                        ml={1}
+                                                    >
+                                                        {ta.name} {ta.surname}
+                                                    </Typography>
+                                                )}
+                                            </Typography>
+                                            <Typography variant="caption" color="text.disabled">
+                                                Telegram ID: {ta.telegram_id}
+                                            </Typography>
+                                        </Box>
+                                        <Tooltip title="Remove">
+                                            <IconButton
+                                                size="small"
+                                                color="error"
+                                                onClick={() => removeMutation.mutate(ta.id)}
+                                                disabled={removeMutation.isPending}
+                                                sx={{ alignSelf: { xs: "flex-end", sm: "center" } }}
+                                            >
+                                                <DeleteIcon fontSize="small" />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </Stack>
+                                </Paper>
+                            ))}
+                        </Stack>
+                    )}
+                </Box>
+                <Divider />
                 <Stack spacing={1.5}>
+                    <Typography variant="subtitle2" fontWeight="bold">
+                        Add New Telegram Admin
+                    </Typography>
                     <Stack spacing={1.5} direction={{ xs: "column", sm: "row" }}>
                         <TextField
                             label="PrintBuddy username"
@@ -144,16 +156,17 @@ export default function TelegramAdminsSection() {
                     <Box>
                         <Button
                             variant="outlined"
-                            size="small"
+                            size="medium"
                             startIcon={<AddIcon />}
                             onClick={handleAdd}
                             disabled={addMutation.isPending}
+                            sx={{ width: { xs: "100%", sm: "auto" } }}
                         >
                             {addMutation.isPending ? "Adding…" : "Add Admin"}
                         </Button>
                     </Box>
                 </Stack>
-            </AccordionDetails>
-        </Accordion>
+            </Stack>
+        </SettingsSectionCard>
     );
 }

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
     Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle,
-    Divider, Paper, Skeleton, Table, TableBody, TableCell, TableContainer,
+    Divider, Skeleton, Table, TableBody, TableCell, TableContainer,
     TableHead, TableRow, Typography, useMediaQuery
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
@@ -70,8 +70,17 @@ export default function AdminJobsTable({ jobs, isLoading, userById = {} }) {
     return (
         <>
             <TableContainer
-                component={Paper}
-                sx={{ mt: 2, maxHeight: "calc(80vh - 250px)", overflowY: "auto", overflowX: "hidden" }}
+                component={Box}
+                sx={{
+                    mt: 0.5,
+                    maxHeight: "calc(80vh - 250px)",
+                    overflowY: "auto",
+                    overflowX: "hidden",
+                    borderRadius: 2.5,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    bgcolor: "rgba(255,255,255,0.75)"
+                }}
             >
                 <Table size="small" sx={isMobile ? { tableLayout: "fixed", width: "100%" } : {}}>
                     {!isMobile && (

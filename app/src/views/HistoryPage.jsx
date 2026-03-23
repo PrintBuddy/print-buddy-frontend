@@ -28,6 +28,8 @@ import RequestRefundModal from "../components/historyJobComponents/RequestRefund
 import JobDetailsModal from "../components/historyJobComponents/JobDetailsModal";
 import RefundDetailsModal from "../components/historyJobComponents/RefundDetailsModal";
 import SkeletonRow from "../components/historyJobComponents/SkeletonRow";
+import UserPageHero from "../components/userViewComponents/UserPageHero";
+import UserSurface from "../components/userViewComponents/UserSurface";
 
 
 const COMPLETED_STATUS = ["completed"];
@@ -86,15 +88,26 @@ export default function HistoryPage() {
     const skeletonRows = Array.from({ length: 5 });
 
     return (
-        <Paper sx={{ p: 3, gap: 2 }}>
-            <Typography variant="h5">Print History</Typography>
-            <Typography variant="body1">
-                Last print jobs sent and their status. Completed jobs can be refunded.
-            </Typography>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2.25 }}>
+            <UserPageHero
+                title="Print History"
+                description="Review your previous print jobs, check their status, and request refunds for eligible completed jobs."
+            />
 
+            <UserSurface title="Job Timeline" description="Select a job to view its details or inspect an existing refund request.">
             <TableContainer
                 component={Paper}
-                sx={{ mt: 2, maxHeight: "calc(80vh - 200px)", overflowY: "auto", overflowX: "hidden" }}
+                elevation={0}
+                sx={{
+                    maxHeight: "calc(80vh - 200px)",
+                    overflowY: "auto",
+                    overflowX: "hidden",
+                    borderRadius: 2.5,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    boxShadow: "none",
+                    bgcolor: "rgba(255,255,255,0.75)"
+                }}
             >
                 <Table sx={isMobile ? { tableLayout: "fixed", width: "100%" } : {}}>
                     {!isMobile && (
@@ -264,6 +277,7 @@ export default function HistoryPage() {
                 job={refundJob}
                 onSubmit={handleRefundSubmit}
             />
-        </Paper>
+            </UserSurface>
+        </Box>
     );
 }

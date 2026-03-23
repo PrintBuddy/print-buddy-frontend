@@ -1,54 +1,45 @@
-import { Paper, Button, Box, Typography } from "@mui/material";
+import { Button, Box, Typography } from "@mui/material";
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 
 import LoadingTypography from "../utils/LoadingTypography";
+import UserPageHero from "../userViewComponents/UserPageHero";
 
-export default function BalanceHeader({ user, isLoading, onClickButton }) {
+export default function BalanceHeader({ user, isLoading, onClickButton, voucherRedeemEnabled = true }) {
 
     return (
-        <Paper sx={{ p: 3, mb: 3 }}>
-            <Box
-                sx={{
-                    display: "flex",
-                    flexDirection: { xs: "column", sm: "row" }, 
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: 2,
-                }}
-            >
-
-                <Box sx={{ display: "flex", flexDirection: "row", gap: 1 }}>
-                    <Typography variant="h5">
-                        My Balance:
-                    </Typography>
-
-                    <LoadingTypography 
-                        isLoading={isLoading}
-                        variant="h5" color="primary.main"
-                        loadingWidth={35}
-                    >
-                        <strong>€{user?.balance.toFixed(2)}</strong>
-                    </LoadingTypography>
-                </Box>
-
-                <Box
-                    sx={{
-                        display: "flex",
-                        flexDirection: "row", 
-                        gap: 1,
-                        mt: { xs: 2, sm: 0 }, 
-                    }}
+        <UserPageHero
+            title="My Balance"
+            description={
+                voucherRedeemEnabled
+                    ? "Track your available credit, review top-up instructions, and redeem voucher codes."
+                    : "Track your available credit and review top-up instructions."
+            }
+            action={voucherRedeemEnabled ? (
+                <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<AttachMoneyIcon />}
+                    onClick={onClickButton}
+                    sx={{ width: { xs: "100%", md: "auto" } }}
                 >
-                    <Button 
-                        variant="contained" 
-                        color="primary"
-                        startIcon={<AttachMoneyIcon />}
-                        onClick={onClickButton}
-                    >
-                        Redeem code
-                    </Button>
-                </Box>
+                    Redeem code
+                </Button>
+            ) : null}
+        >
+            <Box sx={{ display: "flex", alignItems: "baseline", gap: 1 }}>
+                <Typography variant="caption" color="text.secondary">
+                    Available balance
+                </Typography>
+                <LoadingTypography
+                    isLoading={isLoading}
+                    variant="h5"
+                    color="primary.main"
+                    loadingWidth={80}
+                    sx={{ fontWeight: 700 }}
+                >
+                    €{user?.balance?.toFixed(2)}
+                </LoadingTypography>
             </Box>
-        </Paper>
+        </UserPageHero>
     );
 }

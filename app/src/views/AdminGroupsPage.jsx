@@ -4,7 +4,6 @@ import {
     Button,
     Chip,
     IconButton,
-    Paper,
     Skeleton,
     Stack,
     Table,
@@ -25,6 +24,8 @@ import { useSnackbar } from "notistack";
 import { useAdmin } from "../context/AdminContext";
 import GroupDetailModal from "../components/adminComponents/GroupDetailModal";
 import CustomModal from "../components/utils/CustomModal";
+import AdminPageHero from "../components/adminComponents/AdminPageHero";
+import AdminSurface from "../components/adminComponents/AdminSurface";
 
 
 function CreateGroupModal({ open, onClose, onCreate }) {
@@ -111,26 +112,28 @@ export default function AdminGroupsPage() {
     };
 
     return (
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2.25 }}>
+            <AdminPageHero
+                title="Groups"
+                description="Control who can access restricted printers and keep group pricing rules organized."
+                action={(
+                    <Button
+                        startIcon={<AddIcon />}
+                        variant="contained"
+                        size="medium"
+                        onClick={() => setCreateOpen(true)}
+                        color="primary"
+                        sx={{ width: { xs: "100%", md: "auto" } }}
+                    >
+                        New Group
+                    </Button>
+                )}
+            />
 
-            {/* Header */}
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
-                <Typography variant="h5" fontWeight="bold">Groups</Typography>
-                <Button
-                    startIcon={<AddIcon />}
-                    variant="contained"
-                    size="small"
-                    onClick={() => setCreateOpen(true)}
-                >
-                    New Group
-                </Button>
-            </Stack>
-
-            {/* Table */}
-            <Paper sx={{ p: 2 }}>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    Groups control which users can access restricted printers and at what price.
-                </Typography>
+            <AdminSurface
+                title="Group Directory"
+                description="Each group defines which members can use specific printers and under which pricing rules."
+            >
 
                 {groupsLoading ? (
                     <Stack spacing={1}>
@@ -187,7 +190,7 @@ export default function AdminGroupsPage() {
                         </TableBody>
                     </Table>
                 )}
-            </Paper>
+            </AdminSurface>
 
             {/* Modals */}
             <CreateGroupModal

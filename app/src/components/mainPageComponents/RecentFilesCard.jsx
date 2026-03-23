@@ -1,19 +1,20 @@
-import { Paper, Typography, Box, Button, List, ListItem, ListItemText, ListItemIcon } from "@mui/material";
+import { Box, Button, List, ListItem, ListItemText, ListItemIcon } from "@mui/material";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import LoadingList from "../utils/LoadingList";
+import UserSurface from "../userViewComponents/UserSurface";
 
 export default function RecentFilesCard({ files, isLoading, onViewAll }) {
     return (
-        <Paper sx={{ p: 3, position: "relative", height: "100%"}}>
-        <Typography variant="h6" sx={{ mb: 1 }}>
-            Recent Files
-        </Typography>
-
+        <UserSurface
+            title="Recent Files"
+            description="Recently uploaded documents ready to print again."
+            sx={{ height: "100%" }}
+        >
         <Button
             variant="text"
             size="small"
             endIcon={<InsertDriveFileIcon />}
-            sx={{ position: "absolute", top: 10, right: 10 }}
+            sx={{ alignSelf: "flex-end", mt: -1 }}
             onClick={onViewAll}
         >
             View all
@@ -59,6 +60,6 @@ export default function RecentFilesCard({ files, isLoading, onViewAll }) {
                 </List>
             )}
         </Box>
-        </Paper>
+        </UserSurface>
     );
 }

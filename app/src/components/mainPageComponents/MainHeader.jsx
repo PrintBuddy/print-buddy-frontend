@@ -1,68 +1,54 @@
-import { Paper, Button, Box } from "@mui/material";
+import { Button, Box, Stack, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import PrintIcon from '@mui/icons-material/Print';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 
 import LoadingTypography from "../utils/LoadingTypography";
+import UserPageHero from "../userViewComponents/UserPageHero";
 
 export default function MainHeader({ user, isLoading, isError }) {
     const navigate = useNavigate();
 
     return (
-        <Paper sx={{ p: 3, mb: 3 }}>
-            <Box
-                sx={{
-                    display: "flex",
-                    flexDirection: { xs: "column", sm: "row" }, 
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: 2,
-                }}
-            >
-                <Box>
-                    <LoadingTypography
-                        variant="h5"
-                        loadingWidth={200}
-                        isLoading={isLoading || isError}
-                    >
-                        Welcome, {user?.name}!
-                    </LoadingTypography>
-
-                    <LoadingTypography
-                        variant="body1"
-                        loadingWidth={150}
-                        isLoading={isLoading || isError}
-                    >
-                        Current balance: €{user?.balance?.toFixed(2)}
-                    </LoadingTypography>
-                </Box>
-
-                <Box
-                    sx={{
-                        display: "flex",
-                        flexDirection: "row", 
-                        gap: 1,
-                        mt: { xs: 2, sm: 0 }, 
-                    }}
-                >
-                    <Button 
-                        variant="contained" 
+        <UserPageHero
+            title={`Welcome${user?.name ? `, ${user.name}` : ""}`}
+            description="Start a print and check your balance."
+            action={(
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ width: { xs: "100%", md: "auto" } }}>
+                    <Button
+                        variant="contained"
                         color="primary"
                         startIcon={<PrintIcon />}
                         onClick={() => navigate("/print")}
+                        sx={{ width: { xs: "100%", sm: "auto" } }}
                     >
                         Print
                     </Button>
-                    <Button 
-                        variant="outlined" 
-                        color="secondary"
+                    <Button
+                        variant="outlined"
+                        color="primary"
                         startIcon={<AttachMoneyIcon />}
                         onClick={() => navigate("/balance")}
+                        sx={{ width: { xs: "100%", sm: "auto" } }}
                     >
                         Add credit
                     </Button>
-                </Box>
+                </Stack>
+            )}
+        >
+            <Box>
+                <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 0.5 }}>
+                    Available balance
+                </Typography>
+                <LoadingTypography
+                    variant="h4"
+                    loadingWidth={120}
+                    isLoading={isLoading || isError}
+                    sx={{ fontWeight: 700, color: "primary.main" }}
+                >
+                    €{user?.balance?.toFixed(2)}
+                </LoadingTypography>
             </Box>
-        </Paper>
+        </UserPageHero>
     );
 }
