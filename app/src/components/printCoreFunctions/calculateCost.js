@@ -38,9 +38,13 @@ export function calculateTotalCost(selectedFiles, printerOptionsByFile, selected
         // Contar páginas usando la función dedicada
         const pagesCount = countPagesInRange(opts.pageRanges, file.pages);
 
+        // Calculate effective pages accounting for n-up (pages per sheet)
+        // e.g., 4 pages with 2-up = 2 physical sheets
+        const effectivePages = Math.ceil(pagesCount / (opts.numberUp || 1));
+
         // Multiplicar por el número de copias
         const copies = new Number(opts.copies);
-        const totalPagesForFile = pagesCount * (copies || 1);
+        const totalPagesForFile = effectivePages * (copies || 1);
 
         // Sumar según colorMode
         if (opts.colorMode === "Color") {
