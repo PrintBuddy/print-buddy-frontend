@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSnackbar } from "notistack";
-import { getTonerAlertConfig, updateTonerAlertConfig, testTonerAlert, getVoucherRedeemConfig, updateVoucherRedeemConfig } from "../../api/settings";
+import { getTonerAlertConfig, updateTonerAlertConfig, testTonerAlert } from "../../api/settings";
 import {
-    Typography, Stack, FormControlLabel, Switch, TextField, Button, Box, Divider
+    Typography, Stack, FormControlLabel, Switch, TextField, Button
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import EmailIcon from "@mui/icons-material/Email";
@@ -17,14 +17,8 @@ export default function TonerAlertSection() {
         queryFn: getTonerAlertConfig,
         staleTime: 1000 * 60 * 5,
     });
-    const { data: voucherData, isLoading: isVoucherLoading } = useQuery({
-        queryKey: ["admin-voucher-redeem"],
-        queryFn: getVoucherRedeemConfig,
-        staleTime: 1000 * 60 * 5,
-    });
     const [enabled, setEnabled] = useState(false);
     const [intervalHours, setIntervalHours] = useState(24);
-    const [voucherEnabled, setVoucherEnabled] = useState(true);
     const [intervalError, setIntervalError] = useState("");
     const [testing, setTesting] = useState(false);
     useEffect(() => {
@@ -33,11 +27,6 @@ export default function TonerAlertSection() {
             setIntervalHours(data.interval_hours ?? 24);
         }
     }, [data]);
-    useEffect(() => {
-        if (voucherData) {
-            setVoucherEnabled(voucherData.enabled ?? true);
-        }
-    }, [voucherData]);
     const saveMutation = useMutation({
         mutationFn: (payload) => updateTonerAlertConfig(payload),
         onSuccess: () => {
@@ -45,15 +34,6 @@ export default function TonerAlertSection() {
             enqueueSnackbar("Toner alert settings saved.", { variant: "success" });
         },
         onError: () => enqueueSnackbar("Failed to save toner alert settings.", { variant: "error" }),
-    });
-    const saveVoucherMutation = useMutation({
-        mutationFn: updateVoucherRedeemConfig,
-        onSuccess: () => {
-            queryClient.invalidateQueries(["admin-voucher-redeem"]);
-            queryClient.invalidateQueries(["voucher-redeem-config"]);
-            enqueueSnackbar("Voucher redeem setting saved.", { variant: "success" });
-        },
-        onError: () => enqueueSnackbar("Failed to save voucher redeem setting.", { variant: "error" }),
     });
     const handleSave = () => {
         const hours = parseInt(intervalHours, 10);
@@ -63,9 +43,6 @@ export default function TonerAlertSection() {
         }
         setIntervalError("");
         saveMutation.mutate({ enabled, interval_hours: hours });
-    };
-    const handleVoucherSave = () => {
-        saveVoucherMutation.mutate({ enabled: voucherEnabled });
     };
     const handleTest = async () => {
         setTesting(true);
@@ -82,48 +59,16 @@ export default function TonerAlertSection() {
     return (
         <SettingsSectionCard
             title="General Settings"
-            description="Manage voucher redemption and operational notifications from one place."
+            description="Manage operational notifications."
             badge="Controls"
         >
-            {isLoading || isVoucherLoading ? (
+            {isLoading ? (
                 <Typography color="text.secondary">Loading…</Typography>
             ) : (
                 <Stack spacing={3}>
-                    <Box>
-                        <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
-                            Voucher Redeem
-                        </Typography>
-                        <Stack
-                            direction={{ xs: "column", sm: "row" }}
-                            spacing={2}
-                            alignItems={{ xs: "stretch", sm: "center" }}
-                            justifyContent="space-between"
-                        >
-                            <FormControlLabel
-                                control={
-                                    <Switch
-                                        checked={voucherEnabled}
-                                        onChange={(e) => setVoucherEnabled(e.target.checked)}
-                                    />
-                                }
-                                label={voucherEnabled ? "Voucher redeem enabled" : "Voucher redeem disabled"}
-                            />
-                            <Button
-                                variant="contained"
-                                size="medium"
-                                startIcon={<SaveIcon />}
-                                onClick={handleVoucherSave}
-                                disabled={saveVoucherMutation.isPending}
-                                sx={{ width: { xs: "100%", sm: "auto" } }}
-                            >
-                                {saveVoucherMutation.isPending ? "Saving…" : "Save"}
-                            </Button>
-                        </Stack>
-                    </Box>
                     <Stack
                         spacing={2}
                     >
-                        <Divider />
                         <Typography variant="subtitle2" fontWeight="bold">
                             Toner Alert Emails
                         </Typography>

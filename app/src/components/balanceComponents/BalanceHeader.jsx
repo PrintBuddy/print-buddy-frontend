@@ -1,30 +1,14 @@
-import { Button, Box, Typography } from "@mui/material";
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import { Box, Typography } from "@mui/material";
 
 import LoadingTypography from "../utils/LoadingTypography";
 import UserPageHero from "../userViewComponents/UserPageHero";
 
-export default function BalanceHeader({ user, isLoading, onClickButton, voucherRedeemEnabled = true }) {
+export default function BalanceHeader({ user, isLoading }) {
 
     return (
         <UserPageHero
             title="My Balance"
-            description={
-                voucherRedeemEnabled
-                    ? "Track your available credit, review top-up instructions, and redeem voucher codes."
-                    : "Track your available credit and review top-up instructions."
-            }
-            action={voucherRedeemEnabled ? (
-                <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<AttachMoneyIcon />}
-                    onClick={onClickButton}
-                    sx={{ width: { xs: "100%", md: "auto" } }}
-                >
-                    Redeem code
-                </Button>
-            ) : null}
+            description="Track your available credit and review top-up instructions."
         >
             <Box sx={{ display: "flex", alignItems: "baseline", gap: 1 }}>
                 <Typography variant="caption" color="text.secondary">
