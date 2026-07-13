@@ -1,5 +1,5 @@
 
-import api from "../services/api";
+import api, { fetchAllPages } from "../services/api";
 
 
 const USER_ROUTE = "/users";
@@ -31,8 +31,7 @@ export async function updateMyEmail(email) {
 // ─── Admin ────────────────────────────────────────────────────────────────────
 
 export async function getAllUsers() {
-    const response = await api.get(USER_ROUTE);
-    return response.data;
+    return fetchAllPages(USER_ROUTE);
 }
 
 export async function getUserById(userId) {
@@ -56,8 +55,7 @@ export async function rechargeUserBalance(userId, amount) {
 }
 
 export async function getUserTransactions(userId) {
-    const response = await api.get(`${USER_ROUTE}/${userId}/transactions`);
-    return response.data;
+    return fetchAllPages(`${USER_ROUTE}/${userId}/transactions`);
 }
 
 export async function deleteUser(userId) {

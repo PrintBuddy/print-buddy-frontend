@@ -1,4 +1,4 @@
-import api from "../services/api";
+import api, { fetchAllPages } from "../services/api";
 
 const SETTINGS_ROUTE = "/settings";
 
@@ -34,8 +34,7 @@ export async function updateRechargeInfo(data) {
 }
 
 export async function getTelegramAdmins() {
-    const response = await api.get(`${SETTINGS_ROUTE}/telegram-admins`);
-    return response.data;
+    return fetchAllPages(`${SETTINGS_ROUTE}/telegram-admins`);
 }
 
 export async function addTelegramAdmin(username, telegram_id) {
@@ -49,8 +48,7 @@ export async function removeTelegramAdmin(id) {
 }
 
 export async function getActivityLog() {
-    const response = await api.get(`${SETTINGS_ROUTE}/activity-log`);
-    return response.data;
+    return fetchAllPages(`${SETTINGS_ROUTE}/activity-log`);
 }
 
 export async function getTonerAlertConfig() {

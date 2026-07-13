@@ -1,4 +1,4 @@
-import api from "../services/api";
+import api, { fetchAllPages } from "../services/api";
 
 
 const REFUND_ROUTE = "/refunds";
@@ -10,20 +10,17 @@ export async function requestRefund(jobId, message) {
 }
 
 export async function getMyRefunds() {
-    const response = await api.get(`${REFUND_ROUTE}/me`);
-    return response.data;
+    return fetchAllPages(`${REFUND_ROUTE}/me`);
 }
 
 // ─── Admin ────────────────────────────────────────────────────────────────────
 
 export async function getAllRefunds() {
-    const response = await api.get(REFUND_ROUTE);
-    return response.data;
+    return fetchAllPages(REFUND_ROUTE);
 }
 
 export async function getPendingRefunds() {
-    const response = await api.get(`${REFUND_ROUTE}/pending`);
-    return response.data;
+    return fetchAllPages(`${REFUND_ROUTE}/pending`);
 }
 
 export async function resolveRefund(refundId, status, adminMessage) {

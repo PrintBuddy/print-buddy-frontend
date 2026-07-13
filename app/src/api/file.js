@@ -1,13 +1,11 @@
-import api from "../services/api";
+import api, { fetchAllPages } from "../services/api";
 
 
 const FILE_ROUTE = "/files"
 
 
 export async function getFiles() {
-    const response = await api.get(`${FILE_ROUTE}`);
-
-    return response.data;
+    return fetchAllPages(FILE_ROUTE);
 }
 
 

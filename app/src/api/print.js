@@ -1,17 +1,15 @@
-import api from "../services/api"
+import api, { fetchAllPages } from "../services/api"
 
 
 const PRINT_ROUTE = "/print"
 
 
 export async function getMyJobs() {
-    const response = await api.get(`${PRINT_ROUTE}/my-jobs`);
-    return response.data;
+    return fetchAllPages(`${PRINT_ROUTE}/my-jobs`);
 }
 
 export async function getAllJobs() {
-    const response = await api.get(`${PRINT_ROUTE}/all-jobs`);
-    return response.data;
+    return fetchAllPages(`${PRINT_ROUTE}/all-jobs`);
 }
 
 

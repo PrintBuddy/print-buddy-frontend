@@ -51,4 +51,24 @@ api.interceptors.response.use(
 );
 
 
+// Several endpoints enforce a server-side page size (default 50, max 200)
+// and return a plain list with no "has more" indicator. Callers that need
+// the full collection (there's no pagination UI in this app) loop pages
+// until a short page confirms there's nothing left, rather than assuming
+// a single request returns everything.
+export async function fetchAllPages(url, extraParams = {}) {
+    const limit = 200;
+    let offset = 0;
+    let all = [];
+
+    while (true) {
+        const response = await api.get(url, { params: { ...extraParams, limit, offset } });
+        all = all.concat(response.data);
+        if (response.data.length < limit) break;
+        offset += limit;
+    }
+
+    return all;
+}
+
 export default api;
