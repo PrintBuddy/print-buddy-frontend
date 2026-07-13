@@ -32,7 +32,7 @@ export default function StepSend({ onPrev }) {
     const { user, isLoading: isLoadingUser } = useUser()
     const { selectedPrinter } = usePrinter();
     const { selectedIds, files, isLoading: isLoadingFiles } = useFile();
-    const { printerOptionsByFile } = usePrint();
+    const { printerOptionsByFile, validByFile } = usePrint();
     const { enqueueSnackbar } = useSnackbar();
 
     const [ selectedFiles, setSelectedFiles ] = useState([]);
@@ -55,6 +55,7 @@ export default function StepSend({ onPrev }) {
     const creditLimit = Math.round(((user?.credit_limit || 0) + Number.EPSILON) * 100) / 100;
     const availableToSpend = Math.round(((currentBalance + creditLimit) + Number.EPSILON) * 100) / 100;
     const hasEnoughCredit = availableToSpend >= totalCost;
+    const allValid = selectedFiles.every(f => !Object.prototype.hasOwnProperty.call(validByFile, f.id) || validByFile[f.id]);
     const totalPages = selectedFiles.reduce((sum, file) => {
         const opts = printerOptionsByFile[file.id];
         return sum + countPagesInRange(opts?.pageRanges, file.pages) * (opts?.copies || 1);
@@ -78,7 +79,7 @@ export default function StepSend({ onPrev }) {
             }
 
             try {
-                const response = await print(selectedPrinter.name, id, printerOptionsByFile[id]);
+                await print(selectedPrinter.name, id, printerOptionsByFile[id]);
                 printStatus[id].status = true;
 
             } catch (err) {
@@ -332,6 +333,11 @@ export default function StepSend({ onPrev }) {
                                             Not enough credit.
                                         </Typography>
                                     )}
+                                    {hasEnoughCredit && !allValid && (
+                                        <Typography variant="caption" color="error" fontWeight={700}>
+                                            Fix invalid print options before sending.
+                                        </Typography>
+                                    )}
                                 </Stack>
                             </Paper>
                         </>
@@ -539,6 +545,11 @@ export default function StepSend({ onPrev }) {
                                                 Insufficient credit. Add funds or adjust the print settings to continue.
                                             </Typography>
                                         )}
+                                        {hasEnoughCredit && !allValid && (
+                                            <Typography variant="body2" color="error" fontWeight={600}>
+                                                Fix invalid print options before sending.
+                                            </Typography>
+                                        )}
                                     </Stack>
                                 </Paper>
                             </Stack>
@@ -557,11 +568,11 @@ export default function StepSend({ onPrev }) {
                     Back
                 </Button>
 
-                <Button 
-                    variant="contained" 
-                    onClick={handlePrint} 
-                    startIcon={<PrintIcon />} 
-                    disabled={!hasEnoughCredit}
+                <Button
+                    variant="contained"
+                    onClick={handlePrint}
+                    startIcon={<PrintIcon />}
+                    disabled={!hasEnoughCredit || !allValid}
                     sx={{ borderRadius: 999, px: 3 }}
                 >
                     Send
