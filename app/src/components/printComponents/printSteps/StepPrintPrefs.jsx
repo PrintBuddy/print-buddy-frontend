@@ -28,7 +28,7 @@ export default function StepPrintPrefs({ onNext, onPrev }) {
     const { files, selectedIds, isLoading } = useFile();
 
     const selectedFiles = files?.filter(f => selectedIds.includes(f.id)) || [];
-    const allValid = selectedFiles.every(f => !validByFile.hasOwnProperty(f.id) || validByFile[f.id]);
+    const allValid = selectedFiles.every(f => !Object.prototype.hasOwnProperty.call(validByFile, f.id) || validByFile[f.id]);
 
     const handleBack = () => {
         onPrev?.();

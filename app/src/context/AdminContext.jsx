@@ -6,7 +6,7 @@ import { useUser } from "./UserContext";
 import { getAllUsers, updateUser, adjustUserBalance, rechargeUserBalance, getUserTransactions, deleteUser } from "../api/user";
 import { getAllJobs } from "../api/print";
 import { getAllRefunds, resolveRefund } from "../api/refund";
-import { getPrinters, getAllPrinters, updatePrinter, deletePrinter } from "../api/printer";
+import { getAllPrinters, updatePrinter, deletePrinter } from "../api/printer";
 import { getGroups, createGroup, updateGroup, deleteGroup } from "../api/group";
 
 
@@ -61,6 +61,7 @@ export function AdminProvider({ children }) {
     const printersQuery = useQuery({
         queryKey: ["admin-printers"],
         queryFn: getAllPrinters,
+        enabled: isAdmin,
         staleTime: 1000 * 30,
         retry: false
     });

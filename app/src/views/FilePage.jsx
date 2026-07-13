@@ -45,7 +45,7 @@ export default function FilePage() {
 
     const handleDeleteFile = async (fileId, filename) => {
         try {
-            const success = await deleteFileFromWeb(fileId);
+            await deleteFileFromWeb(fileId);
             enqueueSnackbar(`File ${filename} deleted.`, { variant: "success" })
         } catch {
             enqueueSnackbar(`Error while deleting ${filename}.`, { variant: "error" })

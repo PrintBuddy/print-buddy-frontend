@@ -23,7 +23,17 @@ export default defineConfig([
       },
     },
     rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]', ignoreRestSiblings: true }],
+    },
+  },
+  {
+    // Every context file deliberately exports both its Provider component
+    // and a useX() accessor hook — a consistent, intentional pattern, not
+    // an accident. Restructuring each into two files just to satisfy Fast
+    // Refresh's single-export convention isn't worth the churn.
+    files: ['src/context/**/*.jsx'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
     },
   },
 ])

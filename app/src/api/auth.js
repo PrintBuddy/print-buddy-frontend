@@ -66,14 +66,10 @@ export async function registerUser({
             const code = err.response.status;
 
             if (code == 409) {
-                const msg = err.response.data.detail;
-
-                if (msg.toLowerCase().includes("email")) {
-                    answer.message = "Email already exists!"
-                } else {
-                    answer.message = "Username already exists!"
-                }
-
+                // Deliberately generic — revealing which specific field
+                // (email vs username) already exists lets an attacker
+                // probe which accounts are registered.
+                answer.message = "Registration failed. Please check your details and try again.";
             } else if (code < 500) {
                 answer.message = "Invalid request!";
             } else {
