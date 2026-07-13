@@ -12,7 +12,7 @@ export default function ForceLoginModal() {
 
 
     const [ open, setOpen ] = useState(false);
-    const [ username, setUsername ] = useState(lastUsername || "");
+    const username = lastUsername || "";
     const [ password, setPassword ] = useState("");
     const [ loading, setLoading ] = useState(false);
     const [ error, setError ] = useState("");

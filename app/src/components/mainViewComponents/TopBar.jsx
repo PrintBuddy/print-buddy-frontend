@@ -59,7 +59,7 @@ export default function TopBar({ onMenuClick, isDesktop }) {
     const [ isSubmitting, setIsSubmitting ] = useState(false);
     const [ appName, setAppName ] = useState("PrintBuddy");
     const [ appVersion, setAppVersion ] = useState("0.1.0");
-    const [ loadingAppInfo, setLoadingAppInfo ] = useState(false);
+    const [ , setLoadingAppInfo ] = useState(false);
 
     const [ current_pwd, setCurrentPwd ] = useState("");
     const [ new_pwd, setNewPwd ] = useState("");
@@ -84,7 +84,7 @@ export default function TopBar({ onMenuClick, isDesktop }) {
         setIsSubmitting(true)
 
         try {
-            const response = await updatePwd(current_pwd, new_pwd);
+            await updatePwd(current_pwd, new_pwd);
             setOpenModal(false);
             enqueueSnackbar("Password changed succesfully!", { variant: "success" });
         } catch (err) {

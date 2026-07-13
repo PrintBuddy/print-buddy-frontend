@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
-import { getPrinters, getPrinter } from "../api/printer";
+import { getPrinters } from "../api/printer";
 
 
 const PrinterContext = createContext(null);
