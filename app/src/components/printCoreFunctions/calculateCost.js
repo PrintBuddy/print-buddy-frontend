@@ -43,8 +43,8 @@ export function calculateTotalCost(selectedFiles, printerOptionsByFile, selected
         const effectivePages = Math.ceil(pagesCount / (opts.numberUp || 1));
 
         // Multiplicar por el número de copias
-        const copies = new Number(opts.copies);
-        const totalPagesForFile = effectivePages * (copies || 1);
+        const copies = Number(opts.copies) || 1;
+        const totalPagesForFile = effectivePages * copies;
 
         // Sumar según colorMode
         if (opts.colorMode === "Color") {
