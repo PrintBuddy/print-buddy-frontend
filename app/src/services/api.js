@@ -40,17 +40,6 @@ api.interceptors.response.use(
 );
 
 
-api.interceptors.response.use(
-    res => res,
-    err => {
-        if (!err.response && err.request) {
-            if (typeof authExpiredCallback === 'function') authExpiredCallback();
-        }
-        return Promise.reject(err);
-    }
-);
-
-
 // Several endpoints enforce a server-side page size (default 50, max 200)
 // and return a plain list with no "has more" indicator. Callers that need
 // the full collection (there's no pagination UI in this app) loop pages

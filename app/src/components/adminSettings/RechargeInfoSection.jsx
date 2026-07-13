@@ -34,6 +34,7 @@ export default function RechargeInfoSection() {
     }, [data]);
     const saveMutation = useMutation({
         mutationFn: updateRechargeInfo,
+        meta: { skipGlobalErrorToast: true },
         onSuccess: () => {
             queryClient.invalidateQueries(["admin-recharge-info"]);
             enqueueSnackbar("Recharge info saved.", { variant: "success" });
@@ -167,6 +168,7 @@ export default function RechargeInfoSection() {
                                             color="error"
                                             onClick={() => removeContact(i)}
                                             sx={{ alignSelf: { xs: "flex-end", md: "center" } }}
+                                            aria-label="Remove contact"
                                         >
                                             <DeleteIcon fontSize="small" />
                                         </IconButton>

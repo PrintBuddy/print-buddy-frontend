@@ -29,6 +29,7 @@ export default function TonerAlertSection() {
     }, [data]);
     const saveMutation = useMutation({
         mutationFn: (payload) => updateTonerAlertConfig(payload),
+        meta: { skipGlobalErrorToast: true },
         onSuccess: () => {
             queryClient.invalidateQueries(["admin-toner-alert"]);
             enqueueSnackbar("Toner alert settings saved.", { variant: "success" });

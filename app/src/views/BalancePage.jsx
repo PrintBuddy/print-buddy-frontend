@@ -17,7 +17,8 @@ export default function BalancePage() {
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2.25 }}>
         <BalanceHeader
             user={user}
-            isLoading={isLoadingUser || isErrorUser}
+            isLoading={isLoadingUser}
+            isError={isErrorUser}
         />
 
         <UserSurface title="Recharge Options" description="See the available ways to add credit to your account.">

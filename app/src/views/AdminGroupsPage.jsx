@@ -174,12 +174,12 @@ export default function AdminGroupsPage() {
                                     <TableCell align="center">
                                         <Stack direction="row" justifyContent="center" spacing={0.5}>
                                             <Tooltip title="Manage members & permits">
-                                                <IconButton size="small" onClick={() => setDetailGroup(group)}>
+                                                <IconButton size="small" onClick={() => setDetailGroup(group)} aria-label="Manage members & permits">
                                                     <EditIcon fontSize="small" />
                                                 </IconButton>
                                             </Tooltip>
                                             <Tooltip title="Delete group">
-                                                <IconButton size="small" color="error" onClick={() => handleDelete(group)}>
+                                                <IconButton size="small" color="error" onClick={() => handleDelete(group)} aria-label="Delete group">
                                                     <DeleteIcon fontSize="small" />
                                                 </IconButton>
                                             </Tooltip>

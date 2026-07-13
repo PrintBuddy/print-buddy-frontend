@@ -110,8 +110,8 @@ export default function TopBar({ onMenuClick, isDesktop }) {
                 const info = await getAppInfo();
                 setAppName(info.app);
                 setAppVersion(info.version);
-            } catch (err) {
-                console.error("Failed to fetch app info:", err);
+            } catch {
+                // Non-critical (version string in the UI) — quietly keep the defaults.
             } finally {
                 setLoadingAppInfo(false);
             }
@@ -134,6 +134,7 @@ export default function TopBar({ onMenuClick, isDesktop }) {
                         edge="start"
                         onClick={onMenuClick}
                         sx={{ mr: 2 }}
+                        aria-label="Open menu"
                     >
                         <MenuIcon />
                     </IconButton>
@@ -151,7 +152,7 @@ export default function TopBar({ onMenuClick, isDesktop }) {
 
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                     <Tooltip title="Account settings">
-                        <IconButton onClick={handleMenuOpen} sx={{ p: 0 }}>
+                        <IconButton onClick={handleMenuOpen} sx={{ p: 0 }} aria-label="Account settings">
                             <Avatar sx={{ bgcolor: "secondary.main" }}>
                                 { (isLoading || isError)? (
                                     <CircularProgress color="inherit" size={20}/>

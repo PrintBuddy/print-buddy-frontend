@@ -123,7 +123,7 @@ export default function PrintOptionsForm({ options, onChange, colorDisabled, dup
                 </FormControl>
                 {duplexDisabled && (
                     <Tooltip title="This printer does not support automatic 2-sided (duplex) printing." arrow>
-                        <IconButton size="small" tabIndex={-1} sx={{ flexShrink: 0 }}>
+                        <IconButton size="small" tabIndex={-1} sx={{ flexShrink: 0 }} aria-label="Duplex unavailable info">
                             <InfoOutlinedIcon fontSize="small" color="disabled" />
                         </IconButton>
                     </Tooltip>

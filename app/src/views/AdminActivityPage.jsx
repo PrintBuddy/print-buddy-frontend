@@ -227,7 +227,7 @@ export default function AdminActivityPage() {
                             ),
                             endAdornment: search ? (
                                 <InputAdornment position="end">
-                                    <IconButton size="small" onClick={() => setSearch("")}>
+                                    <IconButton size="small" onClick={() => setSearch("")} aria-label="Clear search">
                                         <ClearIcon fontSize="small" />
                                     </IconButton>
                                 </InputAdornment>

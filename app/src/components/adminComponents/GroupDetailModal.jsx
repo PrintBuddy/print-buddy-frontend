@@ -179,7 +179,7 @@ export default function GroupDetailModal({ open, onClose, group, users, printers
                                 disableGutters
                                 secondaryAction={
                                     <Tooltip title="Remove from group">
-                                        <IconButton size="small" color="error" onClick={() => handleRemoveMember(u.id)}>
+                                        <IconButton size="small" color="error" onClick={() => handleRemoveMember(u.id)} aria-label="Remove from group">
                                             <DeleteIcon fontSize="small" />
                                         </IconButton>
                                     </Tooltip>
@@ -237,12 +237,12 @@ export default function GroupDetailModal({ open, onClose, group, users, printers
                                         isEditing ? (
                                             <Stack direction="row" spacing={0.5}>
                                                 <Tooltip title="Save">
-                                                    <IconButton size="small" color="success" onClick={() => handleUpdatePermit(permit.printer_id)}>
+                                                    <IconButton size="small" color="success" onClick={() => handleUpdatePermit(permit.printer_id)} aria-label="Save">
                                                         <CheckIcon fontSize="small" />
                                                     </IconButton>
                                                 </Tooltip>
                                                 <Tooltip title="Cancel">
-                                                    <IconButton size="small" onClick={() => setEditingPermit(null)}>
+                                                    <IconButton size="small" onClick={() => setEditingPermit(null)} aria-label="Cancel">
                                                         <CloseIcon fontSize="small" />
                                                     </IconButton>
                                                 </Tooltip>
@@ -254,12 +254,12 @@ export default function GroupDetailModal({ open, onClose, group, users, printers
                                                         printerId: permit.printer_id,
                                                         bw: permit.custom_price_bw ?? "",
                                                         color: permit.custom_price_color ?? "",
-                                                    })}>
+                                                    })} aria-label="Edit prices">
                                                         <EditIcon fontSize="small" />
                                                     </IconButton>
                                                 </Tooltip>
                                                 <Tooltip title="Remove permit">
-                                                    <IconButton size="small" color="error" onClick={() => handleRemovePermit(permit.printer_id)}>
+                                                    <IconButton size="small" color="error" onClick={() => handleRemovePermit(permit.printer_id)} aria-label="Remove permit">
                                                         <DeleteIcon fontSize="small" />
                                                     </IconButton>
                                                 </Tooltip>

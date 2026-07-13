@@ -70,6 +70,7 @@ export default function PwdRequestPage() {
                 color="primary"
                 sx={{ position: "absolute", top: 8, right: 8 }}
                 onClick={() => setHelpOpen(true)}
+                aria-label="Help"
             >
                 <HelpOutlineIcon />
             </IconButton>
@@ -79,6 +80,7 @@ export default function PwdRequestPage() {
                 color="primary"
                 sx={{ position: "absolute", top: 8, left: 8 }}
                 onClick={() => navigate(-1)}
+                aria-label="Go back"
             >
                 <ArrowBackIcon />
             </IconButton>

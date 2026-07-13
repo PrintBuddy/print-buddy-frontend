@@ -3,7 +3,7 @@ import { Box, Typography } from "@mui/material";
 import LoadingTypography from "../utils/LoadingTypography";
 import UserPageHero from "../userViewComponents/UserPageHero";
 
-export default function BalanceHeader({ user, isLoading }) {
+export default function BalanceHeader({ user, isLoading, isError }) {
 
     return (
         <UserPageHero
@@ -14,15 +14,21 @@ export default function BalanceHeader({ user, isLoading }) {
                 <Typography variant="caption" color="text.secondary">
                     Available balance
                 </Typography>
-                <LoadingTypography
-                    isLoading={isLoading}
-                    variant="h5"
-                    color="primary.main"
-                    loadingWidth={80}
-                    sx={{ fontWeight: 700 }}
-                >
-                    €{user?.balance?.toFixed(2)}
-                </LoadingTypography>
+                {isError ? (
+                    <Typography variant="h5" color="error.main" sx={{ fontWeight: 700 }}>
+                        Unavailable
+                    </Typography>
+                ) : (
+                    <LoadingTypography
+                        isLoading={isLoading}
+                        variant="h5"
+                        color="primary.main"
+                        loadingWidth={80}
+                        sx={{ fontWeight: 700 }}
+                    >
+                        €{user?.balance?.toFixed(2)}
+                    </LoadingTypography>
+                )}
             </Box>
         </UserPageHero>
     );

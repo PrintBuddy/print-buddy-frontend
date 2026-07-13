@@ -215,7 +215,7 @@ export default function AdminRefundsPage() {
                                     <TableCell align="right">
                                         {refund.status === "pending" && (
                                             <Tooltip title="Resolve request">
-                                                <IconButton size="small" onClick={(e) => { e.stopPropagation(); openModal(); }}>
+                                                <IconButton size="small" onClick={(e) => { e.stopPropagation(); openModal(); }} aria-label="Resolve request">
                                                     <GavelIcon fontSize="small" />
                                                 </IconButton>
                                             </Tooltip>

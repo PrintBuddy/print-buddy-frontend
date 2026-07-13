@@ -225,14 +225,14 @@ function PrinterCard({ printer, onEdit, onDelete }) {
                         <Box display="flex" gap={0.5} alignItems="center">
                             {onEdit && (
                                 <Tooltip title="Edit printer">
-                                    <IconButton size="small" onClick={() => onEdit(printer)}>
+                                    <IconButton size="small" onClick={() => onEdit(printer)} aria-label="Edit printer">
                                         <SettingsIcon fontSize="small" />
                                     </IconButton>
                                 </Tooltip>
                             )}
                             {onDelete && (
                                 <Tooltip title="Delete printer">
-                                    <IconButton size="small" color="error" onClick={() => onDelete(printer)}>
+                                    <IconButton size="small" color="error" onClick={() => onDelete(printer)} aria-label="Delete printer">
                                         <DeleteIcon fontSize="small" />
                                     </IconButton>
                                 </Tooltip>
