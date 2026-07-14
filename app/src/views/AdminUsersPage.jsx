@@ -144,7 +144,7 @@ export default function AdminUsersPage() {
                             ),
                             endAdornment: search ? (
                                 <InputAdornment position="end">
-                                    <IconButton size="small" onClick={() => setSearch("")}>
+                                    <IconButton size="small" onClick={() => setSearch("")} aria-label="Clear search">
                                         <ClearIcon fontSize="small" />
                                     </IconButton>
                                 </InputAdornment>
@@ -270,22 +270,22 @@ export default function AdminUsersPage() {
                                     </TableCell>
                                     <TableCell align="right">
                                         <Tooltip title="Edit user info">
-                                            <IconButton size="small" onClick={(e) => { e.stopPropagation(); setEditUser(user); }}>
+                                            <IconButton size="small" onClick={(e) => { e.stopPropagation(); setEditUser(user); }} aria-label="Edit user info">
                                                 <EditIcon fontSize="small" />
                                             </IconButton>
                                         </Tooltip>
                                         <Tooltip title="Adjust balance">
-                                            <IconButton size="small" onClick={(e) => { e.stopPropagation(); setRechargeUser(user); }}>
+                                            <IconButton size="small" onClick={(e) => { e.stopPropagation(); setRechargeUser(user); }} aria-label="Adjust balance">
                                                 <AccountBalanceWalletIcon fontSize="small" />
                                             </IconButton>
                                         </Tooltip>
                                         <Tooltip title="View transactions">
-                                            <IconButton size="small" onClick={(e) => { e.stopPropagation(); setTxUser(user); }}>
+                                            <IconButton size="small" onClick={(e) => { e.stopPropagation(); setTxUser(user); }} aria-label="View transactions">
                                                 <ReceiptLongIcon fontSize="small" />
                                             </IconButton>
                                         </Tooltip>
                                         <Tooltip title="Delete user">
-                                            <IconButton size="small" color="error" onClick={(e) => { e.stopPropagation(); setConfirmDeleteUser(user); }}>
+                                            <IconButton size="small" color="error" onClick={(e) => { e.stopPropagation(); setConfirmDeleteUser(user); }} aria-label="Delete user">
                                                 <DeleteIcon fontSize="small" />
                                             </IconButton>
                                         </Tooltip>
@@ -314,6 +314,7 @@ export default function AdminUsersPage() {
                         onClick={() => setSelectedUser(null)}
                         size="small"
                         sx={{ position: "absolute", top: 8, right: 8 }}
+                        aria-label="Close"
                     >
                         <CloseIcon fontSize="small" />
                     </IconButton>

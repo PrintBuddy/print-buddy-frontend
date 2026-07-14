@@ -37,6 +37,7 @@ export default function ADConfigSection() {
             const { silent, ...payload } = variables;
             return updateADConfig(payload);
         },
+        meta: { skipGlobalErrorToast: true },
         onSuccess: (_data, variables) => {
             queryClient.invalidateQueries(["admin-ad-config"]);
             if (!variables?.silent) {
@@ -50,6 +51,7 @@ export default function ADConfigSection() {
     });
     const importMutation = useMutation({
         mutationFn: importADUsers,
+        meta: { skipGlobalErrorToast: true },
         onSuccess: (result) => {
             queryClient.invalidateQueries(["admin-users"]);
             setImportModalOpen(false);
@@ -66,6 +68,7 @@ export default function ADConfigSection() {
     });
     const previewMutation = useMutation({
         mutationFn: previewADUsersImport,
+        meta: { skipGlobalErrorToast: true },
         onSuccess: (result) => {
             setPreviewResult(result);
         },

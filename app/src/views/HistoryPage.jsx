@@ -158,6 +158,7 @@ export default function HistoryPage() {
                                                         size="small"
                                                         color="warning"
                                                         onClick={(e) => { e.stopPropagation(); setRefundJob(job); }}
+                                                        aria-label="Re-submit refund request"
                                                     >
                                                         <ReplayIcon fontSize="small" />
                                                     </IconButton>
@@ -170,6 +171,7 @@ export default function HistoryPage() {
                                                     size="small"
                                                     color="warning"
                                                     onClick={(e) => { e.stopPropagation(); setRefundJob(job); }}
+                                                    aria-label="Request refund"
                                                 >
                                                     <ReplayIcon fontSize="small" />
                                                 </IconButton>

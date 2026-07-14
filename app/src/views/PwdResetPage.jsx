@@ -79,6 +79,7 @@ export default function PwdResetPage() {
                             color="primary"
                             sx={{ position: "absolute", top: 8, right: 8 }}
                             onClick={() => setHelpOpen(true)}
+                            aria-label="Help"
                         >
                             <HelpOutlineIcon />
                         </IconButton>

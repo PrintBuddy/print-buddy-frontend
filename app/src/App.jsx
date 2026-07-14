@@ -1,13 +1,16 @@
 import { RootProvider } from "./context/RootContext";
+import ErrorBoundary from "./components/utils/ErrorBoundary";
 import AppRouter from "./Router"
 
 
 function App() {
 
     return (
-        <RootProvider>
-            <AppRouter />
-        </RootProvider>
+        <ErrorBoundary>
+            <RootProvider>
+                <AppRouter />
+            </RootProvider>
+        </ErrorBoundary>
     )
 }
 

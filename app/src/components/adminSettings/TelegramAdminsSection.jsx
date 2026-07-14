@@ -22,6 +22,7 @@ export default function TelegramAdminsSection() {
     const [addError, setAddError] = useState("");
     const addMutation = useMutation({
         mutationFn: ({ username, telegram_id }) => addTelegramAdmin(username, telegram_id),
+        meta: { skipGlobalErrorToast: true },
         onSuccess: () => {
             queryClient.invalidateQueries(["admin-telegram-admins"]);
             setNewUsername("");
@@ -36,6 +37,7 @@ export default function TelegramAdminsSection() {
     });
     const removeMutation = useMutation({
         mutationFn: removeTelegramAdmin,
+        meta: { skipGlobalErrorToast: true },
         onSuccess: () => {
             queryClient.invalidateQueries(["admin-telegram-admins"]);
             enqueueSnackbar("Telegram admin removed.", { variant: "success" });
@@ -114,6 +116,7 @@ export default function TelegramAdminsSection() {
                                                 onClick={() => removeMutation.mutate(ta.id)}
                                                 disabled={removeMutation.isPending}
                                                 sx={{ alignSelf: { xs: "flex-end", sm: "center" } }}
+                                                aria-label="Remove telegram admin"
                                             >
                                                 <DeleteIcon fontSize="small" />
                                             </IconButton>
