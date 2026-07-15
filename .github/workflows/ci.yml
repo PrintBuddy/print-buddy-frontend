@@ -34,6 +34,94 @@ jobs:
       - name: Build
         run: npm run build
 
+  e2e:
+    needs: test
+    runs-on: ubuntu-latest
+    # Cancels out the workflow-level `defaults.run.working-directory: app`
+    # above — this job's steps mostly run from infra/e2e or repo root, not
+    # this repo's own app/ subdirectory.
+    defaults:
+      run:
+        working-directory: .
+    env:
+      # Every docker compose invocation in this job re-validates the whole
+      # compose file (image refs included), even when a step only touches
+      # one service (e.g. seed.py's `exec postgres` calls, or the final
+      # teardown) — so these need to be job-scoped, not just set on the
+      # "Start the E2E stack" step.
+      BACKEND_IMAGE: ghcr.io/printbuddy/print-buddy-backend:latest
+      FRONTEND_IMAGE: local-frontend:e2e
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout print-buddy-infra (E2E stack + Playwright suite)
+        uses: actions/checkout@v4
+        with:
+          repository: PrintBuddy/print-buddy-infra
+          path: infra
+
+      - name: Build frontend image (this PR's code)
+        # VITE_API_BASE_URL is baked in at build time — must point at the
+        # backend's host-published port, since Playwright's browser runs
+        # on this runner, not inside the compose network (see
+        # infra/e2e/README.md). Backend has no equivalent build-time
+        # baking, so it's just pulled below rather than rebuilt.
+        run: |
+          docker build \
+            --build-arg VITE_API_BASE_URL=http://localhost:8000/api \
+            -t local-frontend:e2e \
+            ./app
+
+      - name: Pull backend image
+        run: docker pull ghcr.io/printbuddy/print-buddy-backend:latest
+
+      - name: Start the E2E stack
+        working-directory: infra/e2e
+        run: |
+          docker compose -f docker-compose.e2e.yml up -d --build
+
+      - name: Wait for backend health
+        # docker-entrypoint.sh already runs `alembic upgrade head` before
+        # starting uvicorn, so a healthy response means migrations are
+        # applied too — no separate migration step needed here.
+        run: |
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:8000/api/health >/dev/null; then
+              echo "Backend is healthy."
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "Backend never became healthy." >&2
+          exit 1
+
+      - name: Seed test users, admin, and printer pricing
+        working-directory: infra/e2e
+        run: python3 seed.py
+
+      - name: Install Playwright
+        working-directory: infra/e2e
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
+
+      - name: Run E2E tests
+        working-directory: infra/e2e
+        run: npx playwright test
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: infra/e2e/playwright-report/
+          retention-days: 7
+
+      - name: Tear down the E2E stack
+        if: always()
+        working-directory: infra/e2e
+        run: docker compose -f docker-compose.e2e.yml down -v
+
   build-and-push:
     needs: test
     if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
