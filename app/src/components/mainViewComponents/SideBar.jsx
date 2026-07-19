@@ -13,6 +13,8 @@ import PaymentsIcon from "@mui/icons-material/Payments";
 import PriceCheckIcon from "@mui/icons-material/PriceCheck";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
+import StorefrontIcon from "@mui/icons-material/Storefront";
+import SellIcon from "@mui/icons-material/Sell";
 import SettingsIcon from "@mui/icons-material/Settings";
 import HistoryEduIcon from "@mui/icons-material/HistoryEdu";
 import BarChartIcon from "@mui/icons-material/BarChart";
@@ -35,6 +37,7 @@ export default function SideBar({ open, onClose, isDesktop, width }) {
         { text: "Print history", icon: <HistoryIcon />, path: "/history"},
         { text: "My files", icon: <DescriptionIcon />, path: "/files" },
         { text: "My balance", icon: <AccountBalanceWalletIcon />, path: "/balance" },
+        { text: "Extras", icon: <StorefrontIcon />, path: "/extras" },
         { text: "My statistics", icon: <BarChartIcon />, path: "/statistics" },
     ];
 
@@ -46,6 +49,7 @@ export default function SideBar({ open, onClose, isDesktop, width }) {
         { text: "Recharge Requests", icon: <PaymentsIcon />, path: "/admin/recharge-requests" },
         { text: "Expenses", icon: <ReceiptLongIcon />, path: "/admin/expenses" },
         { text: "Inventory", icon: <Inventory2Icon />, path: "/admin/inventory" },
+        { text: "Products", icon: <SellIcon />, path: "/admin/products" },
         { text: "Activity Log", icon: <HistoryEduIcon />, path: "/admin/activity" },
         { text: "Statistics", icon: <BarChartIcon />, path: "/admin/statistics" },
         { text: "Settings", icon: <SettingsIcon />, path: "/admin/settings" },

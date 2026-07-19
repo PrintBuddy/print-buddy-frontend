@@ -10,6 +10,7 @@ import { getPendingRechargeRequests, resolveRechargeRequest } from "../api/recha
 import { getOutstandingFloats, collectFromAdmin, getCollectionHistory } from "../api/collectionEvent";
 import { createExpense, getAllExpenses } from "../api/expense";
 import { getAllInventoryItems, createInventoryItem, adjustStock, restockItem } from "../api/inventory";
+import { getAllProductsAdmin, createProduct, updateProduct } from "../api/product";
 import { getAllPrinters, updatePrinter, deletePrinter } from "../api/printer";
 import { getGroups, createGroup, updateGroup, deleteGroup } from "../api/group";
 
@@ -207,6 +208,25 @@ export function AdminProvider({ children }) {
         }
     });
 
+    // ─── Products ───────────────────────────────────────────────────────────────
+    const productsQuery = useQuery({
+        queryKey: ["admin-products"],
+        queryFn: getAllProductsAdmin,
+        enabled: isAdmin,
+        staleTime: 1000 * 60,
+        retry: false
+    });
+
+    const createProductMutation = useMutation({
+        mutationFn: (data) => createProduct(data),
+        onSuccess: () => queryClient.invalidateQueries(["admin-products"])
+    });
+
+    const updateProductMutation = useMutation({
+        mutationFn: ({ productId, data }) => updateProduct(productId, data),
+        onSuccess: () => queryClient.invalidateQueries(["admin-products"])
+    });
+
     const refreshAll = () => {
         queryClient.invalidateQueries(["admin-users"]);
         queryClient.invalidateQueries(["admin-jobs"]);
@@ -218,6 +238,7 @@ export function AdminProvider({ children }) {
         queryClient.invalidateQueries(["admin-collection-history"]);
         queryClient.invalidateQueries(["admin-expenses"]);
         queryClient.invalidateQueries(["admin-inventory-items"]);
+        queryClient.invalidateQueries(["admin-products"]);
     };
 
     return (
@@ -280,6 +301,12 @@ export function AdminProvider({ children }) {
             adjustStock: (itemId, delta, reason) => adjustStockMutation.mutateAsync({ itemId, delta, reason }),
             restockItem: (itemId, quantity, expenseCategory, expenseAmount, expenseDescription) =>
                 restockItemMutation.mutateAsync({ itemId, quantity, expenseCategory, expenseAmount, expenseDescription }),
+
+            // products
+            products: productsQuery.data ?? [],
+            productsLoading: productsQuery.isLoading,
+            createProduct: (data) => createProductMutation.mutateAsync(data),
+            updateProduct: (productId, data) => updateProductMutation.mutateAsync({ productId, data }),
 
             refreshAll,
             isAdmin,

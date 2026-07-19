@@ -11,6 +11,7 @@ import PrintPage from "./views/PrintPage";
 import FilePage from "./views/FilePage";
 import HistoryPage from "./views/HistoryPage";
 import BalancePage from "./views/BalancePage";
+import ExtrasPage from "./views/ExtrasPage";
 import PwdResetPage from "./views/PwdResetPage";
 import PwdRequestPage from "./views/PwdRequestPage";
 import AdminDashboardPage from "./views/AdminDashboardPage";
@@ -20,6 +21,7 @@ import AdminRechargeRequestsPage from "./views/AdminRechargeRequestsPage";
 import AdminCollectionsPage from "./views/AdminCollectionsPage";
 import AdminExpensesPage from "./views/AdminExpensesPage";
 import AdminInventoryPage from "./views/AdminInventoryPage";
+import AdminProductsPage from "./views/AdminProductsPage";
 import AdminSettingsPage from "./views/AdminSettingsPage";
 import AdminActivityPage from "./views/AdminActivityPage";
 import AdminStatisticsPage from "./views/AdminStatisticsPage";
@@ -144,6 +146,12 @@ export default function AppRouter() {
                     </ProtectedRoute>
                 } />
 
+                <Route path="/extras" element={
+                    <ProtectedRoute>
+                        <ExtrasPage />
+                    </ProtectedRoute>
+                } />
+
                 <Route path="/statistics" element={
                     <ProtectedRoute>
                         <StatisticsPage />
@@ -190,6 +198,12 @@ export default function AppRouter() {
                 <Route path="/admin/inventory" element={
                     <AdminRoute>
                         <AdminInventoryPage />
+                    </AdminRoute>
+                } />
+
+                <Route path="/admin/products" element={
+                    <AdminRoute>
+                        <AdminProductsPage />
                     </AdminRoute>
                 } />
 
