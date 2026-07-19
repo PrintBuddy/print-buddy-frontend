@@ -4,8 +4,8 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useUser } from "./UserContext";
 
 import { getAllUsers, updateUser, adjustUserBalance, rechargeUserBalance, getUserTransactions, deleteUser } from "../api/user";
-import { getAllJobs } from "../api/print";
-import { getAllRefunds, resolveRefund } from "../api/refund";
+import { getAllJobs, freeReprint } from "../api/print";
+import { getAllRefunds, resolveRefund, overrideRefund } from "../api/refund";
 import { getPendingRechargeRequests, resolveRechargeRequest } from "../api/rechargeRequest";
 import { getOutstandingFloats, collectFromAdmin, getCollectionHistory } from "../api/collectionEvent";
 import { createExpense, getAllExpenses } from "../api/expense";
@@ -121,6 +121,19 @@ export function AdminProvider({ children }) {
         onSuccess: () => {
             queryClient.invalidateQueries(["admin-refunds"]);
         }
+    });
+
+    const overrideRefundMutation = useMutation({
+        mutationFn: ({ jobId, reason }) => overrideRefund(jobId, reason),
+        onSuccess: () => {
+            queryClient.invalidateQueries(["admin-refunds"]);
+            queryClient.invalidateQueries(["admin-users"]);
+        }
+    });
+
+    const freeReprintMutation = useMutation({
+        mutationFn: ({ jobId, reason }) => freeReprint(jobId, reason),
+        onSuccess: () => queryClient.invalidateQueries(["admin-jobs"])
     });
 
     // ─── Recharge requests ─────────────────────────────────────────────────────
@@ -274,6 +287,8 @@ export function AdminProvider({ children }) {
             refundsLoading: refundsQuery.isLoading,
             resolveRefund: (refundId, status, adminMessage) =>
                 resolveRefundMutation.mutateAsync({ refundId, status, adminMessage }),
+            overrideRefund: (jobId, reason) => overrideRefundMutation.mutateAsync({ jobId, reason }),
+            freeReprint: (jobId, reason) => freeReprintMutation.mutateAsync({ jobId, reason }),
 
             // recharge requests
             pendingRechargeRequests: pendingRechargeRequestsQuery.data ?? [],
