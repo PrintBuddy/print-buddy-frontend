@@ -8,6 +8,7 @@ import { FileProvider } from "./FileContext";
 import { PrintProvider } from "./PrintContext";
 import { NotifProvider } from "./NotificationContext";
 import { TransactionProvider } from "./TransactionContext";
+import { RechargeRequestProvider } from "./RechargeRequestContext";
 import { AdminProvider } from "./AdminContext";
 
 
@@ -23,11 +24,13 @@ export function RootProvider({ children }) {
                     <AuthProvider>
                         <FileProvider>
                             <TransactionProvider>
+                            <RechargeRequestProvider>
                             <UserProvider>
                                 <AdminProvider>
                                     {children}
                                 </AdminProvider>
                             </UserProvider>
+                            </RechargeRequestProvider>
                             </TransactionProvider>
                         </FileProvider>
                     </AuthProvider>

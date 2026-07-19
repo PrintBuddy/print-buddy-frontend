@@ -6,6 +6,10 @@ import { useUser } from "./UserContext";
 import { getAllUsers, updateUser, adjustUserBalance, rechargeUserBalance, getUserTransactions, deleteUser } from "../api/user";
 import { getAllJobs } from "../api/print";
 import { getAllRefunds, resolveRefund } from "../api/refund";
+import { getPendingRechargeRequests, resolveRechargeRequest } from "../api/rechargeRequest";
+import { getOutstandingFloats, collectFromAdmin, getCollectionHistory } from "../api/collectionEvent";
+import { createExpense, getAllExpenses } from "../api/expense";
+import { getAllInventoryItems, createInventoryItem, adjustStock, restockItem } from "../api/inventory";
 import { getAllPrinters, updatePrinter, deletePrinter } from "../api/printer";
 import { getGroups, createGroup, updateGroup, deleteGroup } from "../api/group";
 
@@ -16,6 +20,7 @@ const AdminContext = createContext(null);
 export function AdminProvider({ children }) {
     const { user } = useUser();
     const isAdmin = user?.is_admin ?? false;
+    const isSuperAdmin = user?.role === "super_admin";
 
     const queryClient = useQueryClient();
 
@@ -117,12 +122,102 @@ export function AdminProvider({ children }) {
         }
     });
 
+    // ─── Recharge requests ─────────────────────────────────────────────────────
+    // Short staleTime + refetch-on-focus: this queue can change from the
+    // Telegram side too (an admin approving from their phone), so a long
+    // cache window would hide that from whoever's looking at this page.
+    const pendingRechargeRequestsQuery = useQuery({
+        queryKey: ["admin-recharge-requests-pending"],
+        queryFn: getPendingRechargeRequests,
+        enabled: isAdmin,
+        staleTime: 1000 * 15,
+        refetchOnWindowFocus: true,
+        retry: false
+    });
+
+    const resolveRechargeRequestMutation = useMutation({
+        mutationFn: ({ requestId, status }) => resolveRechargeRequest(requestId, status),
+        onSuccess: () => queryClient.invalidateQueries(["admin-recharge-requests-pending"])
+    });
+
+    // ─── Cash reconciliation (Super Admin only) ────────────────────────────────
+    const outstandingFloatsQuery = useQuery({
+        queryKey: ["admin-outstanding-floats"],
+        queryFn: getOutstandingFloats,
+        enabled: isSuperAdmin,
+        staleTime: 1000 * 30,
+        retry: false
+    });
+
+    const collectionHistoryQuery = useQuery({
+        queryKey: ["admin-collection-history"],
+        queryFn: getCollectionHistory,
+        enabled: isSuperAdmin,
+        staleTime: 1000 * 60,
+        retry: false
+    });
+
+    const collectFromAdminMutation = useMutation({
+        mutationFn: (adminId) => collectFromAdmin(adminId),
+        onSuccess: () => {
+            queryClient.invalidateQueries(["admin-outstanding-floats"]);
+            queryClient.invalidateQueries(["admin-collection-history"]);
+        }
+    });
+
+    // ─── Expenses ───────────────────────────────────────────────────────────────
+    const expensesQuery = useQuery({
+        queryKey: ["admin-expenses"],
+        queryFn: getAllExpenses,
+        enabled: isAdmin,
+        staleTime: 1000 * 60,
+        retry: false
+    });
+
+    const createExpenseMutation = useMutation({
+        mutationFn: ({ category, amount, description }) => createExpense(category, amount, description),
+        onSuccess: () => queryClient.invalidateQueries(["admin-expenses"])
+    });
+
+    // ─── Inventory ──────────────────────────────────────────────────────────────
+    const inventoryItemsQuery = useQuery({
+        queryKey: ["admin-inventory-items"],
+        queryFn: getAllInventoryItems,
+        enabled: isAdmin,
+        staleTime: 1000 * 30,
+        retry: false
+    });
+
+    const createInventoryItemMutation = useMutation({
+        mutationFn: (data) => createInventoryItem(data),
+        onSuccess: () => queryClient.invalidateQueries(["admin-inventory-items"])
+    });
+
+    const adjustStockMutation = useMutation({
+        mutationFn: ({ itemId, delta, reason }) => adjustStock(itemId, delta, reason),
+        onSuccess: () => queryClient.invalidateQueries(["admin-inventory-items"])
+    });
+
+    const restockItemMutation = useMutation({
+        mutationFn: ({ itemId, quantity, expenseCategory, expenseAmount, expenseDescription }) =>
+            restockItem(itemId, quantity, expenseCategory, expenseAmount, expenseDescription),
+        onSuccess: () => {
+            queryClient.invalidateQueries(["admin-inventory-items"]);
+            queryClient.invalidateQueries(["admin-expenses"]);
+        }
+    });
+
     const refreshAll = () => {
         queryClient.invalidateQueries(["admin-users"]);
         queryClient.invalidateQueries(["admin-jobs"]);
         queryClient.invalidateQueries(["admin-refunds"]);
         queryClient.invalidateQueries(["admin-printers"]);
         queryClient.invalidateQueries(["admin-groups"]);
+        queryClient.invalidateQueries(["admin-recharge-requests-pending"]);
+        queryClient.invalidateQueries(["admin-outstanding-floats"]);
+        queryClient.invalidateQueries(["admin-collection-history"]);
+        queryClient.invalidateQueries(["admin-expenses"]);
+        queryClient.invalidateQueries(["admin-inventory-items"]);
     };
 
     return (
@@ -159,8 +254,36 @@ export function AdminProvider({ children }) {
             resolveRefund: (refundId, status, adminMessage) =>
                 resolveRefundMutation.mutateAsync({ refundId, status, adminMessage }),
 
+            // recharge requests
+            pendingRechargeRequests: pendingRechargeRequestsQuery.data ?? [],
+            pendingRechargeRequestsLoading: pendingRechargeRequestsQuery.isLoading,
+            resolveRechargeRequest: (requestId, status) =>
+                resolveRechargeRequestMutation.mutateAsync({ requestId, status }),
+
+            // cash reconciliation
+            outstandingFloats: outstandingFloatsQuery.data ?? [],
+            outstandingFloatsLoading: outstandingFloatsQuery.isLoading,
+            collectionHistory: collectionHistoryQuery.data ?? [],
+            collectionHistoryLoading: collectionHistoryQuery.isLoading,
+            collectFromAdmin: (adminId) => collectFromAdminMutation.mutateAsync(adminId),
+
+            // expenses
+            expenses: expensesQuery.data ?? [],
+            expensesLoading: expensesQuery.isLoading,
+            createExpense: (category, amount, description) =>
+                createExpenseMutation.mutateAsync({ category, amount, description }),
+
+            // inventory
+            inventoryItems: inventoryItemsQuery.data ?? [],
+            inventoryItemsLoading: inventoryItemsQuery.isLoading,
+            createInventoryItem: (data) => createInventoryItemMutation.mutateAsync(data),
+            adjustStock: (itemId, delta, reason) => adjustStockMutation.mutateAsync({ itemId, delta, reason }),
+            restockItem: (itemId, quantity, expenseCategory, expenseAmount, expenseDescription) =>
+                restockItemMutation.mutateAsync({ itemId, quantity, expenseCategory, expenseAmount, expenseDescription }),
+
             refreshAll,
-            isAdmin
+            isAdmin,
+            isSuperAdmin
         }}>
             {children}
         </AdminContext.Provider>

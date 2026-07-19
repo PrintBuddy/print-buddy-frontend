@@ -16,6 +16,10 @@ import PwdRequestPage from "./views/PwdRequestPage";
 import AdminDashboardPage from "./views/AdminDashboardPage";
 import AdminUsersPage from "./views/AdminUsersPage";
 import AdminRefundsPage from "./views/AdminRefundsPage";
+import AdminRechargeRequestsPage from "./views/AdminRechargeRequestsPage";
+import AdminCollectionsPage from "./views/AdminCollectionsPage";
+import AdminExpensesPage from "./views/AdminExpensesPage";
+import AdminInventoryPage from "./views/AdminInventoryPage";
 import AdminSettingsPage from "./views/AdminSettingsPage";
 import AdminActivityPage from "./views/AdminActivityPage";
 import AdminStatisticsPage from "./views/AdminStatisticsPage";
@@ -71,6 +75,25 @@ const AdminRoute = ({ children }) => {
 
     if (user && !user.is_admin) {
         return <Navigate to="/" replace />;
+    }
+
+    return (
+        <DashboardLayout>
+            { children }
+        </DashboardLayout>
+    );
+};
+
+const SuperAdminRoute = ({ children }) => {
+    const { statusLoggedIn } = useAuth();
+    const { user } = useUser();
+
+    if (statusLoggedIn == "loggedOut") {
+        return <Navigate to="/login" replace />;
+    }
+
+    if (user && user.role !== "super_admin") {
+        return <Navigate to="/admin" replace />;
     }
 
     return (
@@ -143,6 +166,30 @@ export default function AppRouter() {
                 <Route path="/admin/refunds" element={
                     <AdminRoute>
                         <AdminRefundsPage />
+                    </AdminRoute>
+                } />
+
+                <Route path="/admin/recharge-requests" element={
+                    <AdminRoute>
+                        <AdminRechargeRequestsPage />
+                    </AdminRoute>
+                } />
+
+                <Route path="/admin/collections" element={
+                    <SuperAdminRoute>
+                        <AdminCollectionsPage />
+                    </SuperAdminRoute>
+                } />
+
+                <Route path="/admin/expenses" element={
+                    <AdminRoute>
+                        <AdminExpensesPage />
+                    </AdminRoute>
+                } />
+
+                <Route path="/admin/inventory" element={
+                    <AdminRoute>
+                        <AdminInventoryPage />
                     </AdminRoute>
                 } />
 

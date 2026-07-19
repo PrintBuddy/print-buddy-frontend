@@ -9,6 +9,10 @@ import HomeIcon from "@mui/icons-material/Home";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PeopleIcon from "@mui/icons-material/People";
 import AssignmentReturnIcon from "@mui/icons-material/AssignmentReturn";
+import PaymentsIcon from "@mui/icons-material/Payments";
+import PriceCheckIcon from "@mui/icons-material/PriceCheck";
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
+import Inventory2Icon from "@mui/icons-material/Inventory2";
 import SettingsIcon from "@mui/icons-material/Settings";
 import HistoryEduIcon from "@mui/icons-material/HistoryEdu";
 import BarChartIcon from "@mui/icons-material/BarChart";
@@ -23,6 +27,7 @@ export default function SideBar({ open, onClose, isDesktop, width }) {
     const currentPath = location.pathname;
     const { user } = useUser();
     const isAdmin = user?.is_admin ?? false;
+    const isSuperAdmin = user?.role === "super_admin";
 
     const menuItems = [
         { text: "Home", icon: <HomeIcon />, path: "/" },
@@ -38,9 +43,16 @@ export default function SideBar({ open, onClose, isDesktop, width }) {
         { text: "Users", icon: <PeopleIcon />, path: "/admin/users" },
         { text: "Groups", icon: <GroupsIcon />, path: "/admin/groups" },
         { text: "Refunds", icon: <AssignmentReturnIcon />, path: "/admin/refunds" },
+        { text: "Recharge Requests", icon: <PaymentsIcon />, path: "/admin/recharge-requests" },
+        { text: "Expenses", icon: <ReceiptLongIcon />, path: "/admin/expenses" },
+        { text: "Inventory", icon: <Inventory2Icon />, path: "/admin/inventory" },
         { text: "Activity Log", icon: <HistoryEduIcon />, path: "/admin/activity" },
         { text: "Statistics", icon: <BarChartIcon />, path: "/admin/statistics" },
         { text: "Settings", icon: <SettingsIcon />, path: "/admin/settings" },
+    ];
+
+    const superAdminMenuItems = [
+        { text: "Cash Reconciliation", icon: <PriceCheckIcon />, path: "/admin/collections" },
     ];
 
     const drawerContent = (
@@ -84,6 +96,33 @@ export default function SideBar({ open, onClose, isDesktop, width }) {
                             <ListItemText primary={text} />
                         </ListItemButton>
                     ))}
+
+                    {isSuperAdmin && (
+                        <>
+                            <Divider sx={{ my: 0.75 }} />
+                            <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                sx={{ pl: 2, pb: 0.25, display: "block" }}
+                            >
+                                Super Admin
+                            </Typography>
+                            {superAdminMenuItems.map(({ text, icon, path }) => (
+                                <ListItemButton
+                                    key={text}
+                                    component={Link}
+                                    to={path}
+                                    selected={currentPath === path}
+                                    sx={{ py: 0.75, px: 2 }}
+                                >
+                                    <ListItemIcon sx={{ minWidth: 38 }}>
+                                        {icon}
+                                    </ListItemIcon>
+                                    <ListItemText primary={text} />
+                                </ListItemButton>
+                            ))}
+                        </>
+                    )}
                 </>
             )}
         </List>
