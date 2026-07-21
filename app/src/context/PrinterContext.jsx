@@ -2,6 +2,7 @@ import { createContext, useContext, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { getPrinters } from "../api/printer";
+import { useAuth } from "./AuthContext";
 
 
 const PrinterContext = createContext(null);
@@ -9,9 +10,12 @@ const PrinterContext = createContext(null);
 
 export function PrinterProvider({ children }) {
 
+    const { statusLoggedIn } = useAuth();
+
     const queryPrinters = useQuery({
         queryKey: ['printers'],
         queryFn: getPrinters,
+        enabled: statusLoggedIn === "loggedIn",
         staleTime: 1000 * 60 * 5,
         retry: false
     })

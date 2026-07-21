@@ -6,10 +6,11 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import PrintIcon from "@mui/icons-material/Print";
 import LockIcon from "@mui/icons-material/Lock";
-import { useSnackbar } from "notistack";
+import { useSnackbar } from "../../hooks/useSnackbar";
 
 import { addGroupPrinterPermit, updateGroupPrinterPermit, removeGroupPrinterPermit } from "../../api/group";
 import useAsyncAction from "../../hooks/useAsyncAction";
+import ConfirmDialog from "../utils/ConfirmDialog";
 
 export default function GroupPrinterPermitsTab({ group, printers, detail, refresh }) {
     const { enqueueSnackbar } = useSnackbar();
@@ -19,6 +20,7 @@ export default function GroupPrinterPermitsTab({ group, printers, detail, refres
     const [addPermitColor, setAddPermitColor] = useState("");
     // { printerId, bw, color }
     const [editingPermit, setEditingPermit] = useState(null);
+    const [removeTarget, setRemoveTarget] = useState(null);
 
     const permitPrinterIds = new Set((detail?.printer_permits ?? []).map((p) => p.printer_id));
     const availablePrinters = (printers ?? []).filter((p) => !permitPrinterIds.has(p.id ?? p.name));
@@ -52,11 +54,11 @@ export default function GroupPrinterPermitsTab({ group, printers, detail, refres
         }
     );
 
-    const [runRemovePermit] = useAsyncAction(
+    const [runRemovePermit, removeLoading] = useAsyncAction(
         (printerId) => removeGroupPrinterPermit(group.id, printerId),
         {
-            onSuccess: () => refresh(),
-            onError: () => enqueueSnackbar("Failed to remove printer permit.", { variant: "error" }),
+            onSuccess: () => { refresh(); setRemoveTarget(null); },
+            onError: () => { enqueueSnackbar("Failed to remove printer permit.", { variant: "error" }); setRemoveTarget(null); },
         }
     );
 
@@ -102,7 +104,7 @@ export default function GroupPrinterPermitsTab({ group, printers, detail, refres
                                                 </IconButton>
                                             </Tooltip>
                                             <Tooltip title="Remove permit">
-                                                <IconButton size="small" color="error" onClick={() => runRemovePermit(permit.printer_id)} aria-label="Remove permit">
+                                                <IconButton size="small" color="error" onClick={() => setRemoveTarget(permit)} aria-label="Remove permit">
                                                     <DeleteIcon fontSize="small" />
                                                 </IconButton>
                                             </Tooltip>
@@ -225,6 +227,15 @@ export default function GroupPrinterPermitsTab({ group, printers, detail, refres
                     </Button>
                 </Stack>
             </Stack>
+
+            <ConfirmDialog
+                open={Boolean(removeTarget)}
+                title="Remove printer permit?"
+                message={`Remove this group's permit for "${printerById[removeTarget?.printer_id]?.name ?? removeTarget?.printer_id}"? Members will lose access to that printer through this group.`}
+                onClose={() => setRemoveTarget(null)}
+                onConfirm={() => runRemovePermit(removeTarget.printer_id)}
+                loading={removeLoading}
+            />
         </>
     );
 }

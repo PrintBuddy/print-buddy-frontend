@@ -1,4 +1,4 @@
-import { Drawer, Toolbar, List, ListItemButton, ListItemText, ListItemIcon, Divider, Typography } from "@mui/material";
+import { Drawer, Toolbar, List, ListItemButton, ListItemText, ListItemIcon } from "@mui/material";
 import { useLocation, Link } from "react-router-dom";
 
 import DescriptionIcon from "@mui/icons-material/Description";
@@ -9,12 +9,9 @@ import HomeIcon from "@mui/icons-material/Home";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PeopleIcon from "@mui/icons-material/People";
 import AssignmentReturnIcon from "@mui/icons-material/AssignmentReturn";
-import PaymentsIcon from "@mui/icons-material/Payments";
 import PriceCheckIcon from "@mui/icons-material/PriceCheck";
-import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
 import StorefrontIcon from "@mui/icons-material/Storefront";
-import SellIcon from "@mui/icons-material/Sell";
 import SettingsIcon from "@mui/icons-material/Settings";
 import HistoryEduIcon from "@mui/icons-material/HistoryEdu";
 import BarChartIcon from "@mui/icons-material/BarChart";
@@ -23,13 +20,11 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import { useUser } from "../../context/UserContext";
 
 
-export default function SideBar({ open, onClose, isDesktop, width }) {
+export default function SideBar({ open, onClose, isDesktop, width, isAdminView }) {
 
     const location = useLocation();
     const currentPath = location.pathname;
-    const { user } = useUser();
-    const isAdmin = user?.is_admin ?? false;
-    const isSuperAdmin = user?.role === "super_admin";
+    const { isAdmin } = useUser();
 
     const menuItems = [
         { text: "Home", icon: <HomeIcon />, path: "/" },
@@ -43,92 +38,41 @@ export default function SideBar({ open, onClose, isDesktop, width }) {
 
     const adminMenuItems = [
         { text: "Dashboard", icon: <DashboardIcon />, path: "/admin" },
+        { text: "Printers", icon: <PrintIcon />, path: "/admin/printers" },
         { text: "Users", icon: <PeopleIcon />, path: "/admin/users" },
         { text: "Groups", icon: <GroupsIcon />, path: "/admin/groups" },
-        { text: "Refunds", icon: <AssignmentReturnIcon />, path: "/admin/refunds" },
-        { text: "Recharge Requests", icon: <PaymentsIcon />, path: "/admin/recharge-requests" },
-        { text: "Expenses", icon: <ReceiptLongIcon />, path: "/admin/expenses" },
-        { text: "Inventory", icon: <Inventory2Icon />, path: "/admin/inventory" },
-        { text: "Products", icon: <SellIcon />, path: "/admin/products" },
+        { text: "Requests", icon: <AssignmentReturnIcon />, path: "/admin/requests" },
+        { text: "Supplies", icon: <Inventory2Icon />, path: "/admin/supplies" },
+        { text: "Cash Reconciliation", icon: <PriceCheckIcon />, path: "/admin/collections" },
         { text: "Activity Log", icon: <HistoryEduIcon />, path: "/admin/activity" },
         { text: "Statistics", icon: <BarChartIcon />, path: "/admin/statistics" },
         { text: "Settings", icon: <SettingsIcon />, path: "/admin/settings" },
     ];
 
-    const superAdminMenuItems = [
-        { text: "Cash Reconciliation", icon: <PriceCheckIcon />, path: "/admin/collections" },
-    ];
+    const renderItem = ({ text, icon, path }) => (
+        <ListItemButton
+            key={text}
+            component={Link}
+            to={path}
+            selected={currentPath === path}
+            sx={{ py: 0.75, px: 2 }}
+        >
+            <ListItemIcon sx={{ minWidth: 38 }}>
+                {icon}
+            </ListItemIcon>
+            <ListItemText primary={text} />
+        </ListItemButton>
+    );
 
+    // Never mix the two sets: on an /admin/* route an admin sees only the
+    // admin items; everywhere else, only the regular user items. Which set
+    // to show is derived from the route itself (isAdminView), not a
+    // separately-tracked mode, so it can't desync from what's on screen.
     const drawerContent = (
         <List disablePadding sx={{ pt: 0.5 }}>
-            {menuItems.map(({ text, icon, path}) => (
-                <ListItemButton 
-                    key={text}
-                    component={Link}
-                    to={path}
-                    selected={currentPath == path}
-                    sx={{ py: 0.75, px: 2 }}
-                >
-                    <ListItemIcon sx={{ minWidth: 38 }}>
-                        {icon}
-                    </ListItemIcon>
-                    <ListItemText primary={text} />
-                </ListItemButton>
-            ))}
-
-            {isAdmin && (
-                <>
-                    <Divider sx={{ my: 0.75 }} />
-                    <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        sx={{ pl: 2, pb: 0.25, display: "block" }}
-                    >
-                        Admin
-                    </Typography>
-                    {adminMenuItems.map(({ text, icon, path }) => (
-                        <ListItemButton
-                            key={text}
-                            component={Link}
-                            to={path}
-                            selected={currentPath === path}
-                            sx={{ py: 0.75, px: 2 }}
-                        >
-                            <ListItemIcon sx={{ minWidth: 38 }}>
-                                {icon}
-                            </ListItemIcon>
-                            <ListItemText primary={text} />
-                        </ListItemButton>
-                    ))}
-
-                    {isSuperAdmin && (
-                        <>
-                            <Divider sx={{ my: 0.75 }} />
-                            <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                sx={{ pl: 2, pb: 0.25, display: "block" }}
-                            >
-                                Super Admin
-                            </Typography>
-                            {superAdminMenuItems.map(({ text, icon, path }) => (
-                                <ListItemButton
-                                    key={text}
-                                    component={Link}
-                                    to={path}
-                                    selected={currentPath === path}
-                                    sx={{ py: 0.75, px: 2 }}
-                                >
-                                    <ListItemIcon sx={{ minWidth: 38 }}>
-                                        {icon}
-                                    </ListItemIcon>
-                                    <ListItemText primary={text} />
-                                </ListItemButton>
-                            ))}
-                        </>
-                    )}
-                </>
-            )}
+            {isAdminView && isAdmin
+                ? adminMenuItems.map(renderItem)
+                : menuItems.map(renderItem)}
         </List>
     );
 

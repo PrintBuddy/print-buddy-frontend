@@ -29,6 +29,10 @@ export async function getPendingRechargeRequests() {
     return fetchAllPages(`${RECHARGE_REQUEST_ROUTE}/pending`);
 }
 
+export async function getAllRechargeRequests() {
+    return fetchAllPages(RECHARGE_REQUEST_ROUTE);
+}
+
 export async function resolveRechargeRequest(requestId, status) {
     const response = await api.patch(`${RECHARGE_REQUEST_ROUTE}/${requestId}`, { status });
     return response.data;

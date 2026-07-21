@@ -6,7 +6,7 @@ export default function ConfirmCollectDialog({ admin, onClose, onConfirm }) {
             <DialogTitle>Collect from {admin?.username}?</DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    Confirm you've physically received <strong>€{Number(admin?.outstanding_amount ?? 0).toFixed(2)}</strong> from{" "}
+                    Confirm you've physically received <strong>€{Number(admin?.net_amount ?? 0).toFixed(2)}</strong> from{" "}
                     <strong>{admin?.name} {admin?.surname}</strong> before marking it collected — this cannot be undone.
                 </DialogContentText>
             </DialogContent>

@@ -6,17 +6,20 @@ import {
     createRechargeRequest,
     getMyRechargeRequests,
 } from "../api/rechargeRequest";
+import { useAuth } from "./AuthContext";
 
 
 const RechargeRequestContext = createContext(null);
 
 
 export function RechargeRequestProvider({ children }) {
+    const { statusLoggedIn } = useAuth();
     const queryClient = useQueryClient();
 
     const adminsQuery = useQuery({
         queryKey: ["recharge-request-admins"],
         queryFn: getEligibleAdmins,
+        enabled: statusLoggedIn === "loggedIn",
         staleTime: 1000 * 60 * 5,
         retry: false,
     });
@@ -28,6 +31,7 @@ export function RechargeRequestProvider({ children }) {
     const myRequestsQuery = useQuery({
         queryKey: ["my-recharge-requests"],
         queryFn: getMyRechargeRequests,
+        enabled: statusLoggedIn === "loggedIn",
         staleTime: 1000 * 15,
         refetchOnWindowFocus: true,
         retry: false,

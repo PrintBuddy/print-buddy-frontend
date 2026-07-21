@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import { AppBar, Toolbar, Typography, IconButton, Box, Tooltip, Avatar, Menu, MenuItem, CircularProgress, Stack, TextField, Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from "@mui/icons-material/Logout";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import PersonIcon from "@mui/icons-material/Person";
 
 import { useUser } from "../../context/UserContext";
 import { useAuth } from "../../context/AuthContext";
-import { useSnackbar } from "notistack";
+import { useSnackbar } from "../../hooks/useSnackbar";
 
 import { updatePwd } from "../../api/user";
 import { getAppInfo } from "../../api/app";
@@ -14,11 +17,12 @@ import CustomModal from "../utils/CustomModal";
 import LoadingTypography from "../utils/LoadingTypography";
 
 
-export default function TopBar({ onMenuClick, isDesktop }) {
+export default function TopBar({ onMenuClick, isDesktop, isAdminView }) {
 
-    const { user, isLoading, isError, updateEmail } = useUser();
+    const { user, isAdmin, isLoading, isError, updateEmail } = useUser();
     const { logout } = useAuth()
     const { enqueueSnackbar } = useSnackbar();
+    const navigate = useNavigate();
 
     const [ anchorEl, setAnchorEl ] = useState(null);
     const open = Boolean(anchorEl);
@@ -150,7 +154,32 @@ export default function TopBar({ onMenuClick, isDesktop }) {
                 </LoadingTypography>
 
 
-                <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    {isAdmin && (
+                        isDesktop ? (
+                            <Button
+                                color="inherit"
+                                variant="outlined"
+                                size="small"
+                                onClick={() => navigate(isAdminView ? "/" : "/admin")}
+                                startIcon={isAdminView ? <PersonIcon /> : <AdminPanelSettingsIcon />}
+                                sx={{ borderColor: "rgba(255,255,255,0.5)" }}
+                            >
+                                {isAdminView ? "Back to My Account" : "Admin View"}
+                            </Button>
+                        ) : (
+                            <Tooltip title={isAdminView ? "Back to My Account" : "Admin View"}>
+                                <IconButton
+                                    color="inherit"
+                                    onClick={() => navigate(isAdminView ? "/" : "/admin")}
+                                    aria-label={isAdminView ? "Back to My Account" : "Admin View"}
+                                >
+                                    {isAdminView ? <PersonIcon /> : <AdminPanelSettingsIcon />}
+                                </IconButton>
+                            </Tooltip>
+                        )
+                    )}
+
                     <Tooltip title="Account settings">
                         <IconButton onClick={handleMenuOpen} sx={{ p: 0 }} aria-label="Account settings">
                             <Avatar sx={{ bgcolor: "secondary.main" }}>

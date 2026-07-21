@@ -33,7 +33,11 @@ vi.mock("../api/printer", () => ({
 
 let mockUser = null;
 vi.mock("./UserContext", () => ({
-    useUser: () => ({ user: mockUser }),
+    useUser: () => ({
+        user: mockUser,
+        isAdmin: mockUser?.is_admin ?? false,
+        isSuperAdmin: mockUser?.role === "super_admin",
+    }),
 }));
 
 // Import after mocks are registered so AdminContext picks up the mocked modules.

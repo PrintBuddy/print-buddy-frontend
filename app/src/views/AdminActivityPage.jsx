@@ -17,6 +17,8 @@ import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import TuneIcon from "@mui/icons-material/Tune";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
+import StorefrontIcon from "@mui/icons-material/Storefront";
+import RemoveShoppingCartIcon from "@mui/icons-material/RemoveShoppingCart";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -28,6 +30,11 @@ import AdminSurface from "../components/adminComponents/AdminSurface";
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
+// Each activity *family* (recharge, adjustment, refund, purchase) gets its
+// own color so they're distinguishable at a glance; within a family, a
+// negative resolution (denied/rejected) always falls back to "error" red —
+// that convention is worth keeping consistent across families rather than
+// giving every single action its own unique hue.
 const ACTION_META = {
     recharge: {
         label: "Recharge",
@@ -43,8 +50,8 @@ const ACTION_META = {
     },
     refund_approved: {
         label: "Refund approved",
-        color: "success",
-        bgColor: "success.main",
+        color: "secondary",
+        bgColor: "secondary.main",
         icon: <CheckCircleIcon fontSize="small" />,
     },
     refund_denied: {
@@ -52,6 +59,18 @@ const ACTION_META = {
         color: "error",
         bgColor: "error.main",
         icon: <CancelIcon fontSize="small" />,
+    },
+    purchase_fulfilled: {
+        label: "Purchase fulfilled",
+        color: "warning",
+        bgColor: "warning.main",
+        icon: <StorefrontIcon fontSize="small" />,
+    },
+    purchase_rejected: {
+        label: "Purchase rejected",
+        color: "error",
+        bgColor: "error.main",
+        icon: <RemoveShoppingCartIcon fontSize="small" />,
     },
 };
 
@@ -71,7 +90,7 @@ function formatDate(iso) {
 
 // ─── Single entry ─────────────────────────────────────────────────────────────
 
-function ActivityEntry({ entry }) {
+export function ActivityEntry({ entry }) {
     const meta = ACTION_META[entry.action] ?? {
         label: entry.action,
         color: "default",
@@ -196,7 +215,7 @@ export default function AdminActivityPage() {
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2.25 }}>
             <AdminPageHero
                 title="Activity Log"
-                description="Track admin-initiated recharges, balance adjustments, and refund resolutions with a cleaner audit view."
+                description="Track admin-initiated recharges, balance adjustments, and refund and purchase resolutions with a cleaner audit view."
                 action={(
                     <Button
                         startIcon={<RefreshIcon />}

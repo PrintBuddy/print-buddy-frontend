@@ -6,7 +6,6 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 
 import ADConfigSection from "../components/adminSettings/ADConfigSection";
-import RechargeInfoSection from "../components/adminSettings/RechargeInfoSection";
 import TelegramAdminsSection from "../components/adminSettings/TelegramAdminsSection";
 import TonerAlertSection from "../components/adminSettings/TonerAlertSection";
 
@@ -54,7 +53,6 @@ export default function AdminSettingsPage() {
                     alignItems: "start"
                 }}
             >
-                <RechargeInfoSection />
                 <TelegramAdminsSection />
                 <ADConfigSection />
                 <TonerAlertSection />

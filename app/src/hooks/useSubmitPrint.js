@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSnackbar } from "notistack";
+import { useSnackbar } from "./useSnackbar";
 
 import { print } from "../api/print";
 

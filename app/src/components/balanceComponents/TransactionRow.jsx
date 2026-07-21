@@ -1,21 +1,5 @@
 import { TableRow, TableCell, Box, Typography } from "@mui/material";
-import { ArrowUpward, ArrowDownward, Autorenew } from "@mui/icons-material";
-
-
-const getIconForType = (type) => {
-    switch (type) {
-        case "recharge":
-            return <ArrowUpward color="success" />;
-        case "refund":
-            return <ArrowUpward color="info" />;
-        case "adjustment":
-            return <Autorenew color="warning" />;
-        case "print":
-            return <ArrowDownward color="error" />;
-        default:
-            return null;
-    }
-};
+import { getIconForType, getLabelForType } from "./transactionDisplay";
 
 export default function TransactionRow({ tx, isMobile, onClick }) {
     return (
@@ -31,7 +15,7 @@ export default function TransactionRow({ tx, isMobile, onClick }) {
                 {getIconForType(tx.type)}
                 </Box>
             </TableCell>
-            <TableCell>{tx.type.toUpperCase()}</TableCell>
+            <TableCell>{getLabelForType(tx.type)}</TableCell>
             <TableCell align="right" sx={{ fontWeight: 600 }}>
                 <Typography
                 color={tx.amount > 0 ? "success.main" : "error.main"}
@@ -47,7 +31,7 @@ export default function TransactionRow({ tx, isMobile, onClick }) {
             <TableCell>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 {getIconForType(tx.type)}
-                {tx.type.toUpperCase()}
+                {getLabelForType(tx.type)}
                 </Box>
             </TableCell>
             <TableCell  sx={{ fontWeight: 600 }}>

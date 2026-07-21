@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Box, Button } from "@mui/material";
-import { useSnackbar } from "notistack";
+import { Box } from "@mui/material";
+import { useSnackbar } from "../hooks/useSnackbar";
 
 import TransactionsTable from "../components/balanceComponents/TransactionTable";
 import BalanceHeader from "../components/balanceComponents/BalanceHeader";
@@ -32,6 +32,7 @@ export default function BalancePage() {
             user={user}
             isLoading={isLoadingUser}
             isError={isErrorUser}
+            onRequestRecharge={() => setRequestModalOpen(true)}
         />
 
         <UserSurface title="Recharge Options" description="See the available ways to add credit to your account.">
@@ -42,9 +43,6 @@ export default function BalancePage() {
             title="Recharge Requests"
             description="Already paid an admin? Let us know and they'll approve it from Telegram or the admin panel."
         >
-            <Button variant="contained" onClick={() => setRequestModalOpen(true)} sx={{ width: { xs: "100%", sm: "auto" } }}>
-                Request a Recharge
-            </Button>
             <RechargeRequestsTable requests={myRequests} isLoading={myRequestsLoading} />
         </UserSurface>
 

@@ -23,22 +23,17 @@ export async function previewADUsersImport(data) {
     return response.data;
 }
 
-export async function getRechargeInfo() {
-    const response = await api.get(`${SETTINGS_ROUTE}/recharge-info`);
-    return response.data;
-}
-
-export async function updateRechargeInfo(data) {
-    const response = await api.put(`${SETTINGS_ROUTE}/recharge-info`, data);
-    return response.data;
-}
-
 export async function getTelegramAdmins() {
     return fetchAllPages(`${SETTINGS_ROUTE}/telegram-admins`);
 }
 
-export async function addTelegramAdmin(username, telegram_id) {
-    const response = await api.post(`${SETTINGS_ROUTE}/telegram-admins`, { username, telegram_id });
+export async function addTelegramAdmin(data) {
+    const response = await api.post(`${SETTINGS_ROUTE}/telegram-admins`, data);
+    return response.data;
+}
+
+export async function updateTelegramAdmin(id, data) {
+    const response = await api.patch(`${SETTINGS_ROUTE}/telegram-admins/${id}`, data);
     return response.data;
 }
 

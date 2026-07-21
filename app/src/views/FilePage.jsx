@@ -8,10 +8,11 @@ import { usePrint } from "../context/PrintContext";
 import { useFile } from "../context/FileContext";
 import LoadingList from "../components/utils/LoadingList";
 import { useState, useMemo } from "react";
-import { useSnackbar } from "notistack";
+import { useSnackbar } from "../hooks/useSnackbar";
 import { useNavigate } from "react-router-dom";
 import UserPageHero from "../components/userViewComponents/UserPageHero";
 import UserSurface from "../components/userViewComponents/UserSurface";
+import ConfirmDialog from "../components/utils/ConfirmDialog";
 
 
 
@@ -27,6 +28,8 @@ export default function FilePage() {
     const navigate = useNavigate();
 
     const [ selectedIds, setSelectedIds ] = useState([]);
+    const [ confirmDeleteOpen, setConfirmDeleteOpen ] = useState(false);
+    const [ deleting, setDeleting ] = useState(false);
 
     const sortedFiles = useMemo(() => {
         return [...(files || [])].sort((a, b) => 
@@ -53,16 +56,22 @@ export default function FilePage() {
     }
 
     const handleDelete = async () => {
-        const selectedFiles = files?.filter(f => selectedIds.includes(f.id)) || []
+        setDeleting(true);
+        try {
+            const selectedFiles = files?.filter(f => selectedIds.includes(f.id)) || []
 
-        for (let i = 0; i < selectedFiles.length; i++) {
-            const id = selectedFiles[i].id;
-            const name = selectedFiles[i].filename;
-            await handleDeleteFile(id, name);
+            for (let i = 0; i < selectedFiles.length; i++) {
+                const id = selectedFiles[i].id;
+                const name = selectedFiles[i].filename;
+                await handleDeleteFile(id, name);
+            }
+
+            await refreshFiles();
+            setSelectedIds([])
+        } finally {
+            setDeleting(false);
+            setConfirmDeleteOpen(false);
         }
-
-        await refreshFiles();
-        setSelectedIds([])
     }
 
     const handlePrint = () => {
@@ -136,7 +145,7 @@ export default function FilePage() {
                         color="error"
                         disabled={selectedIds.length === 0}
                         startIcon={<DeleteIcon />}
-                        onClick={handleDelete}
+                        onClick={() => setConfirmDeleteOpen(true)}
                         sx={{ width: { xs: "100%", sm: "auto" } }}
                     >
                         Delete
@@ -152,6 +161,15 @@ export default function FilePage() {
                     </Button>
                 </Stack>
             </UserSurface>
+
+            <ConfirmDialog
+                open={confirmDeleteOpen}
+                title="Delete selected files?"
+                message={`Are you sure you want to permanently delete ${selectedIds.length} file${selectedIds.length === 1 ? "" : "s"}? This action cannot be undone.`}
+                onClose={() => setConfirmDeleteOpen(false)}
+                onConfirm={handleDelete}
+                loading={deleting}
+            />
         </Box>
     )
 }

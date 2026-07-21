@@ -16,12 +16,16 @@ import { AdminProvider } from "./AdminContext";
 
 export function RootProvider({ children }) {
 
+    // AuthProvider is the outermost data provider (right under QueryContext)
+    // so every other provider below it can gate its queries on
+    // statusLoggedIn — none of them should hit an authenticated endpoint
+    // before we actually know a token exists (see each provider's `enabled`).
     return (
         <NotifProvider>
             <QueryContext>
-                <PrinterProvider>
+                <AuthProvider>
+                    <PrinterProvider>
                     <PrintProvider>
-                    <AuthProvider>
                         <FileProvider>
                             <TransactionProvider>
                             <RechargeRequestProvider>
@@ -33,9 +37,9 @@ export function RootProvider({ children }) {
                             </RechargeRequestProvider>
                             </TransactionProvider>
                         </FileProvider>
-                    </AuthProvider>
                     </PrintProvider>
-                </PrinterProvider>
+                    </PrinterProvider>
+                </AuthProvider>
             </QueryContext>
         </NotifProvider>
     );

@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 
 import { getMe, updateMyEmail } from "../api/user";
+import { useAuth } from "./AuthContext";
 
 
 const UserContext = createContext(null);
@@ -9,15 +10,17 @@ const UserContext = createContext(null);
 
 export function UserProvider({ children }) {
 
-    const [ lastUsername, setLastUsername ] = useState(() => 
+    const [ lastUsername, setLastUsername ] = useState(() =>
         sessionStorage.getItem("lastUsername") || ""
     )
 
+    const { statusLoggedIn } = useAuth();
     const queryClient = useQueryClient();
 
     const query = useQuery({
         queryKey: ['user'],
         queryFn: getMe,
+        enabled: statusLoggedIn === "loggedIn",
         staleTime: 1000 * 60 * 5,
         retry: false
     })
@@ -54,9 +57,13 @@ export function UserProvider({ children }) {
         }
     };
 
+    const isAdmin = user?.is_admin ?? false;
+    const isSuperAdmin = user?.role === "super_admin";
+
     return (
         <UserContext.Provider value={{
-            user, refreshUser, resetUser, isError, isLoading, lastUsername, updateEmail
+            user, refreshUser, resetUser, isError, isLoading, lastUsername, updateEmail,
+            isAdmin, isSuperAdmin
         }}>
             { children }
         </UserContext.Provider>

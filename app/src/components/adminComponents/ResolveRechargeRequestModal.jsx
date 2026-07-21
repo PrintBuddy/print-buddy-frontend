@@ -3,7 +3,7 @@ import { Box, Button, Stack, Typography } from "@mui/material";
 import CustomModal from "../utils/CustomModal";
 
 
-export default function ResolveRechargeRequestModal({ open, onClose, request, onResolve }) {
+export default function ResolveRechargeRequestModal({ open, onClose, request, onResolve, readOnly = false }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -25,7 +25,7 @@ export default function ResolveRechargeRequestModal({ open, onClose, request, on
         <CustomModal
             open={open}
             onClose={onClose}
-            title="Resolve Recharge Request"
+            title={readOnly ? "Recharge Request Details" : "Resolve Recharge Request"}
             maxWidth="sm"
             content={
                 <Stack spacing={2} sx={{ mt: 1 }}>
@@ -56,6 +56,24 @@ export default function ResolveRechargeRequestModal({ open, onClose, request, on
                         </Box>
                     )}
 
+                    {readOnly && request?.resolved_by_username && (
+                        <Typography variant="caption" color="text.disabled">
+                            Resolved by <strong>@{request.resolved_by_username}</strong>
+                        </Typography>
+                    )}
+                    {readOnly && (
+                        <Box>
+                            <Typography variant="caption" color="text.disabled" display="block">
+                                Submitted: {request?.created_at ? new Date(request.created_at).toLocaleString() : "—"}
+                            </Typography>
+                            {request?.status !== "pending" && (
+                                <Typography variant="caption" color="text.disabled" display="block">
+                                    Resolved: {request?.updated_at ? new Date(request.updated_at).toLocaleString() : "—"}
+                                </Typography>
+                            )}
+                        </Box>
+                    )}
+
                     {error && (
                         <Typography color="error" variant="body2">
                             {error}
@@ -64,15 +82,19 @@ export default function ResolveRechargeRequestModal({ open, onClose, request, on
                 </Stack>
             }
             actions={
-                <>
-                    <Button onClick={onClose} disabled={loading}>Cancel</Button>
-                    <Button color="error" variant="outlined" disabled={loading} onClick={() => handleResolve("rejected")}>
-                        Reject
-                    </Button>
-                    <Button color="success" variant="contained" disabled={loading} onClick={() => handleResolve("approved")}>
-                        Approve
-                    </Button>
-                </>
+                readOnly ? (
+                    <Button onClick={onClose}>Close</Button>
+                ) : (
+                    <>
+                        <Button onClick={onClose} disabled={loading}>Cancel</Button>
+                        <Button color="error" variant="outlined" disabled={loading} onClick={() => handleResolve("rejected")}>
+                            Reject
+                        </Button>
+                        <Button color="success" variant="contained" disabled={loading} onClick={() => handleResolve("approved")}>
+                            Approve
+                        </Button>
+                    </>
+                )
             }
         />
     );

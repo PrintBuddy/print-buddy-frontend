@@ -2,14 +2,16 @@ import { useState } from "react";
 import { Autocomplete, Button, CircularProgress, Divider, IconButton, List, ListItem, ListItemText, Stack, TextField, Tooltip, Typography } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PersonIcon from "@mui/icons-material/Person";
-import { useSnackbar } from "notistack";
+import { useSnackbar } from "../../hooks/useSnackbar";
 
 import { addGroupMember, removeGroupMember } from "../../api/group";
 import useAsyncAction from "../../hooks/useAsyncAction";
+import ConfirmDialog from "../utils/ConfirmDialog";
 
 export default function GroupMembersTab({ group, users, detail, refresh }) {
     const { enqueueSnackbar } = useSnackbar();
     const [addMemberUser, setAddMemberUser] = useState(null);
+    const [removeTarget, setRemoveTarget] = useState(null);
 
     const memberIds = new Set(detail?.members ?? []);
     const availableUsers = (users ?? []).filter((u) => !memberIds.has(u.id));
@@ -23,11 +25,11 @@ export default function GroupMembersTab({ group, users, detail, refresh }) {
         }
     );
 
-    const [runRemoveMember] = useAsyncAction(
+    const [runRemoveMember, removeLoading] = useAsyncAction(
         (userId) => removeGroupMember(group.id, userId),
         {
-            onSuccess: () => refresh(),
-            onError: () => enqueueSnackbar("Failed to remove member.", { variant: "error" }),
+            onSuccess: () => { refresh(); setRemoveTarget(null); },
+            onError: () => { enqueueSnackbar("Failed to remove member.", { variant: "error" }); setRemoveTarget(null); },
         }
     );
 
@@ -45,7 +47,7 @@ export default function GroupMembersTab({ group, users, detail, refresh }) {
                             disableGutters
                             secondaryAction={
                                 <Tooltip title="Remove from group">
-                                    <IconButton size="small" color="error" onClick={() => runRemoveMember(u.id)} aria-label="Remove from group">
+                                    <IconButton size="small" color="error" onClick={() => setRemoveTarget(u)} aria-label="Remove from group">
                                         <DeleteIcon fontSize="small" />
                                     </IconButton>
                                 </Tooltip>
@@ -81,6 +83,15 @@ export default function GroupMembersTab({ group, users, detail, refresh }) {
                     {memberLoading ? <CircularProgress size={16} /> : "Add"}
                 </Button>
             </Stack>
+
+            <ConfirmDialog
+                open={Boolean(removeTarget)}
+                title="Remove member?"
+                message={`Remove @${removeTarget?.username} from "${group.name}"? They will lose access to this group's restricted printers and pricing.`}
+                onClose={() => setRemoveTarget(null)}
+                onConfirm={() => runRemoveMember(removeTarget.id)}
+                loading={removeLoading}
+            />
         </>
     );
 }

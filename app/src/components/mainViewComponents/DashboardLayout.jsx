@@ -14,6 +14,7 @@ export default function DashboardLayout({ children }) {
     const [ mobileOpen, setMobileOpen ] = useState(false);
     const isDesktop = useMediaQuery("(min-width:900px)");
     const location = useLocation();
+    const isAdminView = location.pathname.startsWith("/admin");
 
     const drawerWidth = 220;
 
@@ -36,13 +37,14 @@ export default function DashboardLayout({ children }) {
             <ForceLoginModal />
             <ForceEmailModal />
 
-            <TopBar onMenuClick={handleDrawerToggle} isDesktop={isDesktop} />
+            <TopBar onMenuClick={handleDrawerToggle} isDesktop={isDesktop} isAdminView={isAdminView} />
 
             <SideBar
                 open={mobileOpen}
                 onClose={handleDrawerClose}
                 isDesktop={isDesktop}
                 width={drawerWidth}
+                isAdminView={isAdminView}
             />
 
             <Box

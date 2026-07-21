@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 
 const mockUsers = [
     { id: "u1", username: "alice", name: "Alice", surname: "A", email: "a@x.com", balance: 5, is_admin: true, is_active: true },
@@ -22,7 +23,11 @@ const { default: AdminUsersPage } = await import("./AdminUsersPage");
 
 describe("AdminUsersPage smoke test", () => {
     it("renders the user directory without crashing", () => {
-        render(<AdminUsersPage />);
+        render(
+            <MemoryRouter>
+                <AdminUsersPage />
+            </MemoryRouter>
+        );
 
         expect(screen.getAllByText("alice").length).toBeGreaterThan(0);
         expect(screen.getAllByText("bob").length).toBeGreaterThan(0);

@@ -14,6 +14,11 @@ export async function collectFromAdmin(adminId) {
     return response.data;
 }
 
+export async function payAdmin(adminId) {
+    const response = await api.post(`${COLLECTIONS_ROUTE}/${adminId}/pay`);
+    return response.data;
+}
+
 export async function getCollectionHistory() {
     return fetchAllPages(COLLECTIONS_ROUTE);
 }

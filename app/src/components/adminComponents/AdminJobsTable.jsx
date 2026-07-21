@@ -5,7 +5,7 @@ import {
     TableHead, TableRow, Typography, useMediaQuery
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { useSnackbar } from "notistack";
+import { useSnackbar } from "../../hooks/useSnackbar";
 
 import { useAdmin } from "../../context/AdminContext";
 import OverrideReasonModal from "./OverrideReasonModal";

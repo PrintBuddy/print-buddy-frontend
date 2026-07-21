@@ -15,13 +15,12 @@ import ExtrasPage from "./views/ExtrasPage";
 import PwdResetPage from "./views/PwdResetPage";
 import PwdRequestPage from "./views/PwdRequestPage";
 import AdminDashboardPage from "./views/AdminDashboardPage";
+import AdminPrintersPage from "./views/AdminPrintersPage";
 import AdminUsersPage from "./views/AdminUsersPage";
-import AdminRefundsPage from "./views/AdminRefundsPage";
-import AdminRechargeRequestsPage from "./views/AdminRechargeRequestsPage";
+import AdminUserDetailPage from "./views/AdminUserDetailPage";
+import AdminRequestsPage from "./views/AdminRequestsPage";
 import AdminCollectionsPage from "./views/AdminCollectionsPage";
-import AdminExpensesPage from "./views/AdminExpensesPage";
-import AdminInventoryPage from "./views/AdminInventoryPage";
-import AdminProductsPage from "./views/AdminProductsPage";
+import AdminSuppliesPage from "./views/AdminSuppliesPage";
 import AdminSettingsPage from "./views/AdminSettingsPage";
 import AdminActivityPage from "./views/AdminActivityPage";
 import AdminStatisticsPage from "./views/AdminStatisticsPage";
@@ -77,25 +76,6 @@ const AdminRoute = ({ children }) => {
 
     if (user && !user.is_admin) {
         return <Navigate to="/" replace />;
-    }
-
-    return (
-        <DashboardLayout>
-            { children }
-        </DashboardLayout>
-    );
-};
-
-const SuperAdminRoute = ({ children }) => {
-    const { statusLoggedIn } = useAuth();
-    const { user } = useUser();
-
-    if (statusLoggedIn == "loggedOut") {
-        return <Navigate to="/login" replace />;
-    }
-
-    if (user && user.role !== "super_admin") {
-        return <Navigate to="/admin" replace />;
     }
 
     return (
@@ -165,47 +145,55 @@ export default function AppRouter() {
                     </AdminRoute>
                 } />
 
+                <Route path="/admin/printers" element={
+                    <AdminRoute>
+                        <AdminPrintersPage />
+                    </AdminRoute>
+                } />
+
                 <Route path="/admin/users" element={
                     <AdminRoute>
                         <AdminUsersPage />
                     </AdminRoute>
                 } />
 
-                <Route path="/admin/refunds" element={
+                <Route path="/admin/users/:id" element={
                     <AdminRoute>
-                        <AdminRefundsPage />
+                        <AdminUserDetailPage />
                     </AdminRoute>
                 } />
 
-                <Route path="/admin/recharge-requests" element={
+                <Route path="/admin/requests" element={
                     <AdminRoute>
-                        <AdminRechargeRequestsPage />
+                        <AdminRequestsPage />
                     </AdminRoute>
                 } />
+
+                {/* Old individual routes — redirect so bookmarks land on the
+                    fused Requests page instead of silently falling through
+                    to the catch-all Home route. */}
+                <Route path="/admin/refunds" element={<Navigate to="/admin/requests?tab=refunds" replace />} />
+                <Route path="/admin/recharge-requests" element={<Navigate to="/admin/requests?tab=recharge" replace />} />
+                <Route path="/admin/purchases" element={<Navigate to="/admin/requests?tab=purchases" replace />} />
 
                 <Route path="/admin/collections" element={
-                    <SuperAdminRoute>
+                    <AdminRoute>
                         <AdminCollectionsPage />
-                    </SuperAdminRoute>
-                } />
-
-                <Route path="/admin/expenses" element={
-                    <AdminRoute>
-                        <AdminExpensesPage />
                     </AdminRoute>
                 } />
 
-                <Route path="/admin/inventory" element={
+                <Route path="/admin/supplies" element={
                     <AdminRoute>
-                        <AdminInventoryPage />
+                        <AdminSuppliesPage />
                     </AdminRoute>
                 } />
 
-                <Route path="/admin/products" element={
-                    <AdminRoute>
-                        <AdminProductsPage />
-                    </AdminRoute>
-                } />
+                {/* Old individual routes — redirect so bookmarks land on the
+                    fused Supplies page instead of silently falling through
+                    to the catch-all Home route. */}
+                <Route path="/admin/expenses" element={<Navigate to="/admin/supplies?tab=expenses" replace />} />
+                <Route path="/admin/inventory" element={<Navigate to="/admin/supplies?tab=inventory" replace />} />
+                <Route path="/admin/products" element={<Navigate to="/admin/supplies?tab=products" replace />} />
 
                 <Route path="/admin/settings" element={
                     <AdminRoute>

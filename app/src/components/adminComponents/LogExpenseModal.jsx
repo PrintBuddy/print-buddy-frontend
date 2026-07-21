@@ -1,6 +1,8 @@
-import { useState } from "react";
-import { Button, MenuItem, Stack, TextField, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Autocomplete, Button, MenuItem, Stack, TextField, Typography } from "@mui/material";
 import CustomModal from "../utils/CustomModal";
+import { useAdmin } from "../../context/AdminContext";
+import { useUser } from "../../context/UserContext";
 
 const CATEGORIES = [
     { value: "toner", label: "Toner" },
@@ -10,16 +12,31 @@ const CATEGORIES = [
 ];
 
 export default function LogExpenseModal({ open, onClose, onSubmit }) {
+    const { users } = useAdmin();
+    const { user } = useUser();
+    const admins = (users ?? []).filter((u) => u.is_admin);
+
     const [category, setCategory] = useState("toner");
     const [amount, setAmount] = useState("");
     const [description, setDescription] = useState("");
+    const [payer, setPayer] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+
+    // Default the payer to the logged-in admin as soon as the picker's
+    // options (and the current user) are available.
+    useEffect(() => {
+        if (open && !payer && user) {
+            setPayer(admins.find((a) => a.id === user.id) ?? null);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open, user, users]);
 
     const reset = () => {
         setCategory("toner");
         setAmount("");
         setDescription("");
+        setPayer(null);
         setError("");
     };
 
@@ -37,7 +54,7 @@ export default function LogExpenseModal({ open, onClose, onSubmit }) {
         setLoading(true);
         setError("");
         try {
-            await onSubmit(category, parsedAmount, description || null);
+            await onSubmit(category, parsedAmount, description || null, payer?.id ?? null);
             handleClose();
         } catch (err) {
             setError(err?.response?.data?.detail ?? "Failed to log the expense.");
@@ -84,6 +101,16 @@ export default function LogExpenseModal({ open, onClose, onSubmit }) {
                         onChange={(e) => setDescription(e.target.value)}
                         fullWidth
                         size="small"
+                    />
+
+                    <Autocomplete
+                        size="small"
+                        options={admins}
+                        getOptionLabel={(a) => `${a.username} — ${a.name} ${a.surname}`}
+                        value={payer}
+                        onChange={(_, v) => setPayer(v)}
+                        isOptionEqualToValue={(o, v) => o.id === v.id}
+                        renderInput={(params) => <TextField {...params} label="Paid by" />}
                     />
 
                     {error && <Typography color="error" variant="body2">{error}</Typography>}
