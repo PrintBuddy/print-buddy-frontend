@@ -5,6 +5,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from "@mui/icons-material/Logout";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import PersonIcon from "@mui/icons-material/Person";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
 import { useUser } from "../../context/UserContext";
 import { useAuth } from "../../context/AuthContext";
@@ -17,7 +18,7 @@ import CustomModal from "../utils/CustomModal";
 import LoadingTypography from "../utils/LoadingTypography";
 
 
-export default function TopBar({ onMenuClick, isDesktop, isAdminView }) {
+export default function TopBar({ onMenuClick, isDesktop, isAdminView, onOpenTutorial }) {
 
     const { user, isAdmin, isLoading, isError, updateEmail } = useUser();
     const { logout } = useAuth()
@@ -175,6 +176,31 @@ export default function TopBar({ onMenuClick, isDesktop, isAdminView }) {
                                     aria-label={isAdminView ? "Back to My Account" : "Admin View"}
                                 >
                                     {isAdminView ? <PersonIcon /> : <AdminPanelSettingsIcon />}
+                                </IconButton>
+                            </Tooltip>
+                        )
+                    )}
+
+                    {!isAdminView && (
+                        isDesktop ? (
+                            <Button
+                                color="inherit"
+                                variant="outlined"
+                                size="small"
+                                onClick={onOpenTutorial}
+                                startIcon={<HelpOutlineIcon />}
+                                sx={{ borderColor: "rgba(255,255,255,0.5)" }}
+                            >
+                                Help
+                            </Button>
+                        ) : (
+                            <Tooltip title="Help">
+                                <IconButton
+                                    color="inherit"
+                                    onClick={onOpenTutorial}
+                                    aria-label="Help"
+                                >
+                                    <HelpOutlineIcon />
                                 </IconButton>
                             </Tooltip>
                         )

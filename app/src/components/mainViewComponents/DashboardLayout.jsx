@@ -8,10 +8,12 @@ import SideBar from "./SideBar";
 
 import ForceLoginModal from "./ForceLoginModal";
 import ForceEmailModal from "./ForceEmailModal";
+import TutorialGuide from "./TutorialGuide";
 
 
 export default function DashboardLayout({ children }) {
     const [ mobileOpen, setMobileOpen ] = useState(false);
+    const [ tutorialOpen, setTutorialOpen ] = useState(false);
     const isDesktop = useMediaQuery("(min-width:900px)");
     const location = useLocation();
     const isAdminView = location.pathname.startsWith("/admin");
@@ -36,8 +38,18 @@ export default function DashboardLayout({ children }) {
 
             <ForceLoginModal />
             <ForceEmailModal />
+            <TutorialGuide
+                open={tutorialOpen}
+                onOpen={() => setTutorialOpen(true)}
+                onClose={() => setTutorialOpen(false)}
+            />
 
-            <TopBar onMenuClick={handleDrawerToggle} isDesktop={isDesktop} isAdminView={isAdminView} />
+            <TopBar
+                onMenuClick={handleDrawerToggle}
+                isDesktop={isDesktop}
+                isAdminView={isAdminView}
+                onOpenTutorial={() => setTutorialOpen(true)}
+            />
 
             <SideBar
                 open={mobileOpen}
