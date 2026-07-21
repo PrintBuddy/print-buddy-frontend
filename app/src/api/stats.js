@@ -15,3 +15,11 @@ export async function getUserStats({ start, end } = {}) {
     });
     return response.data;
 }
+
+export async function exportFinanceWorkbook({ start, end } = {}) {
+    const response = await api.get(`${STATS_ROUTE}/export/finance`, {
+        params: { start_date: start ?? undefined, end_date: end ?? undefined },
+        responseType: "blob",
+    });
+    return response.data;
+}

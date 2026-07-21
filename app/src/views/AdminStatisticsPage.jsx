@@ -1,4 +1,5 @@
 import { useState } from "react";
+import dayjs from "dayjs";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
     Box,
@@ -11,6 +12,7 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import LayersIcon from "@mui/icons-material/Layers";
 import InvertColorsIcon from "@mui/icons-material/InvertColors";
 import InvertColorsOffIcon from "@mui/icons-material/InvertColorsOff";
@@ -23,8 +25,10 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import StorefrontIcon from "@mui/icons-material/Storefront";
 
-import { getStatsOverview } from "../api/stats";
+import { getStatsOverview, exportFinanceWorkbook } from "../api/stats";
 import { getPrinters } from "../api/printer";
+import { downloadBlob } from "../utils/download";
+import { useSnackbar } from "../hooks/useSnackbar";
 import AdminPageHero from "../components/adminComponents/AdminPageHero";
 import AdminSurface from "../components/adminComponents/AdminSurface";
 import StatCard from "../components/adminComponents/StatCard";
@@ -42,7 +46,9 @@ export default function AdminStatisticsPage() {
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     const queryClient = useQueryClient();
+    const { enqueueSnackbar } = useSnackbar();
     const [range, setRange] = useState({ start: null, end: null });
+    const [exporting, setExporting] = useState(false);
 
     // "All Time" (the default) reuses AdminContext's own all-time
     // ["admin-stats"] query key — the same one AdminDashboardPage's Finance
@@ -69,6 +75,18 @@ export default function AdminStatisticsPage() {
 
     const refresh = () => queryClient.invalidateQueries({ queryKey });
 
+    const handleExport = async () => {
+        setExporting(true);
+        try {
+            const blob = await exportFinanceWorkbook(range);
+            downloadBlob(blob, `print-buddy-finance-${dayjs().format("YYYY-MM-DD")}.xlsx`);
+        } catch {
+            enqueueSnackbar("Failed to export finance data.", { variant: "error" });
+        } finally {
+            setExporting(false);
+        }
+    };
+
     const {
         printerChartData,
         finance: { f, adjustmentsPositive, netCashChange },
@@ -87,16 +105,29 @@ export default function AdminStatisticsPage() {
                 title="Statistics"
                 description="Review printing volume, revenue, and cash-flow metrics for the selected time window."
                 action={(
-                    <Button
-                        startIcon={<RefreshIcon />}
-                        variant="contained"
-                        size="medium"
-                        onClick={refresh}
-                        color="primary"
-                        sx={{ width: { xs: "100%", md: "auto" } }}
-                    >
-                        Refresh
-                    </Button>
+                    <Stack direction={{ xs: "column", md: "row" }} spacing={1} sx={{ width: { xs: "100%", md: "auto" } }}>
+                        <Button
+                            startIcon={<FileDownloadIcon />}
+                            variant="outlined"
+                            size="medium"
+                            onClick={handleExport}
+                            disabled={exporting}
+                            color="primary"
+                            sx={{ width: { xs: "100%", md: "auto" } }}
+                        >
+                            {exporting ? "Exporting…" : "Export"}
+                        </Button>
+                        <Button
+                            startIcon={<RefreshIcon />}
+                            variant="contained"
+                            size="medium"
+                            onClick={refresh}
+                            color="primary"
+                            sx={{ width: { xs: "100%", md: "auto" } }}
+                        >
+                            Refresh
+                        </Button>
+                    </Stack>
                 )}
             />
 

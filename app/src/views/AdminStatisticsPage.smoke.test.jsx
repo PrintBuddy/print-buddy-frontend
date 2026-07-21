@@ -45,5 +45,6 @@ describe("AdminStatisticsPage smoke test", () => {
         await waitFor(() => expect(screen.getAllByText("Total Pages").length).toBeGreaterThan(0));
         await waitFor(() => expect(screen.getAllByText("Printer1").length).toBeGreaterThan(0));
         expect(screen.getAllByText("alice").length).toBeGreaterThan(0);
+        expect(screen.getByRole("button", { name: /export/i })).toBeInTheDocument();
     });
 });
