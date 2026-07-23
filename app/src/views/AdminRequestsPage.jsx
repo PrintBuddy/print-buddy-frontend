@@ -157,7 +157,7 @@ function RechargeRequestsTab() {
     ];
 
     return (
-        <AdminSurface title="Recharge Requests" description="Approve once you've confirmed the money was actually received.">
+        <AdminSurface title="Recharges" description="Approve once you've confirmed the money was actually received.">
             <StatusFilterToggle value={statusFilter} onChange={setStatusFilter} />
             <PendingQueueTable
                 columns={columns}
@@ -317,7 +317,7 @@ export default function AdminRequestsPage() {
                 sx={{ borderBottom: 1, borderColor: "divider" }}
             >
                 <Tab label={<TabLabel text="Refunds" count={pendingRefundsCount} />} value="refunds" />
-                <Tab label={<TabLabel text="Recharge Requests" count={pendingRechargeCount} />} value="recharge" />
+                <Tab label={<TabLabel text="Recharges" count={pendingRechargeCount} />} value="recharge" />
                 <Tab label={<TabLabel text="Purchases" count={pendingPurchasesCount} />} value="purchases" />
             </Tabs>
 
