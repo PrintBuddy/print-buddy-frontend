@@ -49,7 +49,16 @@ jobs:
       # one service (e.g. seed.py's `exec postgres` calls, or the final
       # teardown) — so these need to be job-scoped, not just set on the
       # "Start the E2E stack" step.
-      BACKEND_IMAGE: ghcr.io/printbuddy/print-buddy-backend:latest
+      #
+      # Both images are built fresh from each repo's current `main`, not
+      # pulled from GHCR — pulling `:latest` raced the backend's own
+      # build-and-push job (this e2e run could start and pull *before*
+      # backend's new image finished publishing) and, worse, silently
+      # tested against a stale backend whenever a feature spanned both
+      # repos and backend hadn't merged yet (see print-buddy-infra's
+      # README, "Cross-repo features"). Building from source removes both
+      # failure modes at the cost of a slightly longer job.
+      BACKEND_IMAGE: local-backend:e2e
       FRONTEND_IMAGE: local-frontend:e2e
     steps:
       - uses: actions/checkout@v4
@@ -60,20 +69,25 @@ jobs:
           repository: PrintBuddy/print-buddy-infra
           path: infra
 
+      - name: Checkout backend (built fresh below, from its current main)
+        uses: actions/checkout@v4
+        with:
+          repository: PrintBuddy/print-buddy
+          path: backend-src
+
       - name: Build frontend image (this PR's code)
         # VITE_API_BASE_URL is baked in at build time — must point at the
         # backend's host-published port, since Playwright's browser runs
         # on this runner, not inside the compose network (see
-        # infra/e2e/README.md). Backend has no equivalent build-time
-        # baking, so it's just pulled below rather than rebuilt.
+        # infra/e2e/README.md).
         run: |
           docker build \
             --build-arg VITE_API_BASE_URL=http://localhost:8000/api \
             -t local-frontend:e2e \
             ./app
 
-      - name: Pull backend image
-        run: docker pull ghcr.io/printbuddy/print-buddy-backend:latest
+      - name: Build backend image (backend's current main)
+        run: docker build -t local-backend:e2e ./backend-src
 
       - name: Start the E2E stack
         working-directory: infra/e2e
