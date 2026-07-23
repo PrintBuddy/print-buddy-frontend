@@ -4,7 +4,7 @@ import CustomModal from "../utils/CustomModal";
 
 export default function TelegramAdminEditModal({ open, admin, onClose, onSubmit }) {
     const [form, setForm] = useState({
-        phone_number: "", accepts_transfer: false, bank_name: "", bank_iban: "", bank_link: "",
+        telegram_id: "", phone_number: "", accepts_transfer: false, bank_name: "", bank_iban: "", bank_link: "",
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -12,6 +12,7 @@ export default function TelegramAdminEditModal({ open, admin, onClose, onSubmit 
     useEffect(() => {
         if (admin) {
             setForm({
+                telegram_id: admin.telegram_id ?? "",
                 phone_number: admin.phone_number ?? "",
                 accepts_transfer: admin.accepts_transfer ?? false,
                 bank_name: admin.bank_name ?? "",
@@ -25,10 +26,15 @@ export default function TelegramAdminEditModal({ open, admin, onClose, onSubmit 
     if (!admin) return null;
 
     const handleSave = async () => {
+        if (!form.telegram_id.trim()) {
+            setError("Telegram ID is required.");
+            return;
+        }
         setLoading(true);
         setError("");
         try {
             await onSubmit(admin.id, {
+                telegram_id: form.telegram_id.trim(),
                 phone_number: form.phone_number || null,
                 accepts_transfer: form.accepts_transfer,
                 bank_name: form.bank_name || null,
@@ -51,6 +57,13 @@ export default function TelegramAdminEditModal({ open, admin, onClose, onSubmit 
             maxWidth="sm"
             content={
                 <Stack spacing={2} sx={{ mt: 1 }}>
+                    <TextField
+                        label="Telegram chat ID"
+                        size="small"
+                        fullWidth
+                        value={form.telegram_id}
+                        onChange={(e) => { setForm((f) => ({ ...f, telegram_id: e.target.value })); setError(""); }}
+                    />
                     <TextField
                         label="Phone number (for cash payments)"
                         size="small"
