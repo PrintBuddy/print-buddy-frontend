@@ -148,15 +148,20 @@ export default function AdminUserDetailPage() {
     if (!user) {
         return (
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2.25 }}>
+                <Button
+                    component={Link}
+                    to="/admin/users"
+                    variant="text"
+                    size="small"
+                    startIcon={<ArrowBackIcon />}
+                    sx={{ alignSelf: "flex-start" }}
+                >
+                    Back to Users
+                </Button>
                 <AdminPageHero
                     eyebrow="User"
                     title="User not found"
                     description="This user may have been deleted or the link is invalid."
-                    action={(
-                        <Button component={Link} to="/admin/users" variant="contained" startIcon={<ArrowBackIcon />}>
-                            Back to Users
-                        </Button>
-                    )}
                 />
             </Box>
         );
@@ -167,16 +172,21 @@ export default function AdminUserDetailPage() {
 
     return (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2.25 }}>
+            <Button
+                component={Link}
+                to="/admin/users"
+                variant="text"
+                size="small"
+                startIcon={<ArrowBackIcon />}
+                sx={{ alignSelf: "flex-start" }}
+            >
+                Back to Users
+            </Button>
             <AdminPageHero
                 eyebrow="User"
                 title={`${user.name} ${user.surname}`}
                 description={`@${user.username} · ${user.email ?? "no email set"}`}
                 tags={tags}
-                action={(
-                    <Button component={Link} to="/admin/users" variant="outlined" startIcon={<ArrowBackIcon />}>
-                        Back to Users
-                    </Button>
-                )}
             />
 
             <Grid container spacing={2}>
@@ -186,6 +196,11 @@ export default function AdminUserDetailPage() {
                         label="Balance"
                         value={`€${Number(user.balance ?? 0).toFixed(2)}`}
                         accentColor={getBalanceColor(user.balance ?? 0)}
+                        action={
+                            <Button size="small" onClick={() => setRechargeOpen(true)}>
+                                Recharge / Adjust
+                            </Button>
+                        }
                     />
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6 }}>
@@ -197,16 +212,6 @@ export default function AdminUserDetailPage() {
                     />
                 </Grid>
             </Grid>
-
-            <Box>
-                <Button
-                    variant="contained"
-                    startIcon={<AccountBalanceWalletIcon />}
-                    onClick={() => setRechargeOpen(true)}
-                >
-                    Recharge / Adjust Balance
-                </Button>
-            </Box>
 
             <AdminSurface title="Profile" description="Edit this user's account details.">
                 {form && (
