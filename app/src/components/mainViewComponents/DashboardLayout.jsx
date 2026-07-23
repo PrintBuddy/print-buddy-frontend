@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useMediaQuery } from "@mui/material";
 import { useLocation } from "react-router-dom";
@@ -69,6 +69,19 @@ export default function DashboardLayout({ children }) {
                 }}
             >
                 { children }
+            </Box>
+
+            <Box
+                component="footer"
+                sx={{
+                    ml: isDesktop ? `${drawerWidth}px` : 0,
+                    py: 2,
+                    textAlign: "center",
+                }}
+            >
+                <Typography variant="caption" color="text.secondary">
+                    Made with ❤️ by rbenatuilv
+                </Typography>
             </Box>
 
         </Box>
