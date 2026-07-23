@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import {
+    Box,
     Dialog,
     DialogTitle,
     DialogContent,
@@ -16,9 +17,27 @@ import { useTheme } from "@mui/material/styles";
 import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
+import HomeIcon from "@mui/icons-material/Home";
+import PrintIcon from "@mui/icons-material/Print";
+import DescriptionIcon from "@mui/icons-material/Description";
+import HistoryIcon from "@mui/icons-material/History";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import StorefrontIcon from "@mui/icons-material/Storefront";
+import BarChartIcon from "@mui/icons-material/BarChart";
 
 import { useUser } from "../../context/UserContext";
 import tutorialSteps from "./tutorialSteps";
+
+// Mirrors SideBar.jsx's per-page icons, keyed by tutorialSteps' `icon` name.
+const STEP_ICONS = {
+    home: HomeIcon,
+    print: PrintIcon,
+    files: DescriptionIcon,
+    history: HistoryIcon,
+    balance: AccountBalanceWalletIcon,
+    extras: StorefrontIcon,
+    statistics: BarChartIcon,
+};
 
 // First-time onboarding guide. Auto-opens once per user account (backend
 // flag `has_seen_tutorial`, mirroring the existing `email_to_set` forced
@@ -60,6 +79,8 @@ export default function TutorialGuide({ open, onOpen, onClose }) {
 
     const handleBack = () => setActiveStep((prev) => prev - 1);
 
+    const StepIcon = STEP_ICONS[step.icon];
+
     return (
         <Dialog
             open={open}
@@ -74,16 +95,34 @@ export default function TutorialGuide({ open, onOpen, onClose }) {
                         backgroundColor: "rgba(0, 0, 0, 0.3)",
                     },
                 },
+                paper: {
+                    sx: isMobile ? { justifyContent: "center" } : undefined,
+                },
             }}
         >
-            <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                {step.title}
-                <IconButton onClick={onClose} aria-label="Close tutorial" size="small">
+            <DialogTitle sx={{ position: "relative", textAlign: "center" }}>
+                <IconButton
+                    onClick={onClose}
+                    aria-label="Close tutorial"
+                    size="small"
+                    sx={{ position: "absolute", top: 8, right: 8 }}
+                >
                     <CloseIcon fontSize="small" />
                 </IconButton>
+                {StepIcon ? (
+                    <StepIcon color="primary" sx={{ width: 48, height: 48, mb: 1 }} />
+                ) : (
+                    <Box
+                        component="img"
+                        src="/printbuddy.png"
+                        alt="PrintBuddy logo"
+                        sx={{ width: 56, height: 56, mb: 1 }}
+                    />
+                )}
+                <Box>{step.title}</Box>
             </DialogTitle>
 
-            <DialogContent sx={{ minHeight: { xs: "auto", sm: 160 }, flexGrow: isMobile ? 1 : 0 }}>
+            <DialogContent sx={{ minHeight: { xs: "auto", sm: 160 }, flexGrow: 0 }}>
                 {Array.isArray(step.body) ? (
                     <List dense sx={{ pt: 0 }}>
                         {step.body.map((line, i) => (
@@ -91,12 +130,12 @@ export default function TutorialGuide({ open, onOpen, onClose }) {
                                 key={i}
                                 sx={{ display: "list-item", listStyleType: "disc", pl: 0, ml: 2.5, py: 0.25 }}
                             >
-                                <ListItemText primary={line} />
+                                <ListItemText primary={line} slotProps={{ primary: { sx: { fontSize: "1.1rem" } } }} />
                             </ListItem>
                         ))}
                     </List>
                 ) : (
-                    <Typography>{step.body}</Typography>
+                    <Typography sx={{ fontSize: "1.1rem" }}>{step.body}</Typography>
                 )}
             </DialogContent>
 
