@@ -27,29 +27,13 @@ export default function useStatisticsData(stats, allPrinters, isMobile) {
         };
     });
 
-    const printerRevenueChartData = allPrinters.map((p) => {
-        const s = statsByPrinterName[p.name];
-        return {
-            name: labelFn(p.name),
-            fullName: p.name,
-            Revenue: s?.total_cost ?? 0,
-        };
-    });
-
-    const topUserChartData = (stats?.by_user ?? []).slice(0, 10).map((u) => ({
-        name: labelFn(u.username),
-        fullName: u.username,
-        "B/W": u.bw_pages,
-        Color: u.color_pages,
-    }));
-
     const f = stats?.finance ?? {};
     const adjustmentsPositive = (f.total_adjustments ?? 0) >= 0;
-    const computedSum = (f.total_current_balance ?? 0)
-        + (f.total_spent_on_print ?? 0)
-        - (f.total_refunded ?? 0)
-        - (f.total_adjustments ?? 0);
-    const discrepancy = Math.abs((f.total_recharged ?? 0) - computedSum) > 0.02;
+    // The only real-world cash flows in this system are recharges (in) and
+    // expenses (out) — refunds/print-spend/adjustments only move credit
+    // *within* the app's own ledger, they never pull cash back out once a
+    // recharge has been received. See Finance Overview's two groups.
+    const netCashChange = (f.total_recharged ?? 0) - (f.total_expenses ?? 0);
 
     const printerRows = (stats?.by_printer ?? []).map((p) => ({
         key: p.printer_name,
@@ -72,9 +56,7 @@ export default function useStatisticsData(stats, allPrinters, isMobile) {
 
     return {
         printerChartData,
-        printerRevenueChartData,
-        topUserChartData,
-        finance: { f, adjustmentsPositive, discrepancy },
+        finance: { f, adjustmentsPositive, netCashChange },
         printerRows,
         userRows,
     };

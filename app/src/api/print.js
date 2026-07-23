@@ -12,6 +12,11 @@ export async function getAllJobs() {
     return fetchAllPages(`${PRINT_ROUTE}/all-jobs`);
 }
 
+export async function freeReprint(jobId, reason) {
+    const response = await api.post(`${PRINT_ROUTE}/jobs/${jobId}/free-reprint`, { reason });
+    return response.data;
+}
+
 
 export async function print(
     printerName, fileId, options

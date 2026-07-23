@@ -3,14 +3,18 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 
 
 import { getFiles, uploadFile, deleteFile } from "../api/file";
+import { useAuth } from "./AuthContext";
 
 
 const FileContext = createContext(null);
 
 export function FileProvider({ children }){
+    const { statusLoggedIn } = useAuth();
+
     const queryFiles = useQuery({
         queryKey: ['files'],
         queryFn: getFiles,
+        enabled: statusLoggedIn === "loggedIn",
         staleTime: 1000 * 60 * 5,
         retry: false
     })

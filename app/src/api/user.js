@@ -28,6 +28,11 @@ export async function updateMyEmail(email) {
     return response.data;
 }
 
+export async function markTutorialSeen() {
+    const response = await api.patch(`${USER_ROUTE}/me/tutorial-seen`);
+    return response.data;
+}
+
 // ─── Admin ────────────────────────────────────────────────────────────────────
 
 export async function getAllUsers() {

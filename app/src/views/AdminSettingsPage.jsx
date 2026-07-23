@@ -1,16 +1,22 @@
 
+import { useState } from "react";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
+import CustomModal from "../components/utils/CustomModal";
 import ADConfigSection from "../components/adminSettings/ADConfigSection";
-import RechargeInfoSection from "../components/adminSettings/RechargeInfoSection";
 import TelegramAdminsSection from "../components/adminSettings/TelegramAdminsSection";
 import TonerAlertSection from "../components/adminSettings/TonerAlertSection";
 
+const SETTINGS_DESCRIPTION = "Configure payments, alerts, admin access, and directory sync from one place.";
+
 export default function AdminSettingsPage() {
+    const [descOpen, setDescOpen] = useState(false);
 
     return (
         <Stack spacing={3}>
@@ -37,15 +43,36 @@ export default function AdminSettingsPage() {
                                 fontWeight: 600
                             }}
                         />
-                        <Typography variant="h5" fontWeight={700} sx={{ fontSize: { xs: "1.6rem", sm: "1.9rem" } }}>
-                            Settings
-                        </Typography>
-                        <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 720 }}>
-                            Configure payments, alerts, admin access, and directory sync from one place.
+                        <Stack direction="row" alignItems="center" spacing={0.5}>
+                            <Typography variant="h5" fontWeight={700} sx={{ fontSize: { xs: "1.6rem", sm: "1.9rem" } }}>
+                                Settings
+                            </Typography>
+                            <IconButton
+                                size="small"
+                                aria-label="Section info"
+                                onClick={() => setDescOpen(true)}
+                                sx={{ display: { xs: "inline-flex", sm: "none" } }}
+                            >
+                                <InfoOutlinedIcon fontSize="small" />
+                            </IconButton>
+                        </Stack>
+                        <Typography
+                            variant="body1"
+                            color="text.secondary"
+                            sx={{ maxWidth: 720, display: { xs: "none", sm: "block" } }}
+                        >
+                            {SETTINGS_DESCRIPTION}
                         </Typography>
                     </Stack>
                 </Stack>
             </Paper>
+
+            <CustomModal
+                open={descOpen}
+                onClose={() => setDescOpen(false)}
+                title="Settings"
+                content={SETTINGS_DESCRIPTION}
+            />
             <Box
                 sx={{
                     display: "grid",
@@ -54,7 +81,6 @@ export default function AdminSettingsPage() {
                     alignItems: "start"
                 }}
             >
-                <RechargeInfoSection />
                 <TelegramAdminsSection />
                 <ADConfigSection />
                 <TonerAlertSection />

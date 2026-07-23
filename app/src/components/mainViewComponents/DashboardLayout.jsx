@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useMediaQuery } from "@mui/material";
 import { useLocation } from "react-router-dom";
@@ -8,12 +8,15 @@ import SideBar from "./SideBar";
 
 import ForceLoginModal from "./ForceLoginModal";
 import ForceEmailModal from "./ForceEmailModal";
+import TutorialGuide from "./TutorialGuide";
 
 
 export default function DashboardLayout({ children }) {
     const [ mobileOpen, setMobileOpen ] = useState(false);
+    const [ tutorialOpen, setTutorialOpen ] = useState(false);
     const isDesktop = useMediaQuery("(min-width:900px)");
     const location = useLocation();
+    const isAdminView = location.pathname.startsWith("/admin");
 
     const drawerWidth = 220;
 
@@ -35,14 +38,25 @@ export default function DashboardLayout({ children }) {
 
             <ForceLoginModal />
             <ForceEmailModal />
+            <TutorialGuide
+                open={tutorialOpen}
+                onOpen={() => setTutorialOpen(true)}
+                onClose={() => setTutorialOpen(false)}
+            />
 
-            <TopBar onMenuClick={handleDrawerToggle} isDesktop={isDesktop} />
+            <TopBar
+                onMenuClick={handleDrawerToggle}
+                isDesktop={isDesktop}
+                isAdminView={isAdminView}
+                onOpenTutorial={() => setTutorialOpen(true)}
+            />
 
             <SideBar
                 open={mobileOpen}
                 onClose={handleDrawerClose}
                 isDesktop={isDesktop}
                 width={drawerWidth}
+                isAdminView={isAdminView}
             />
 
             <Box
@@ -55,6 +69,19 @@ export default function DashboardLayout({ children }) {
                 }}
             >
                 { children }
+            </Box>
+
+            <Box
+                component="footer"
+                sx={{
+                    ml: isDesktop ? `${drawerWidth}px` : 0,
+                    py: 2,
+                    textAlign: "center",
+                }}
+            >
+                <Typography variant="caption" color="text.secondary">
+                    Made with ❤️ by rbenatuilv
+                </Typography>
             </Box>
 
         </Box>

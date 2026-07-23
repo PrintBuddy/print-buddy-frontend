@@ -2,12 +2,15 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { getMyJobs } from '../api/print'
+import { useAuth } from "./AuthContext";
 
 
 const PrintContext = createContext(null)
 
 
 export function PrintProvider({ children }) {
+
+    const { statusLoggedIn } = useAuth();
 
     // Control the steps for printing
     const [ activePrintStep, setActivePrintStep ] = useState(() => {
@@ -77,6 +80,7 @@ export function PrintProvider({ children }) {
     const queryJobs = useQuery({
         queryKey: ['jobs'],
         queryFn: getMyJobs,
+        enabled: statusLoggedIn === "loggedIn",
         staleTime: 1000 * 60 * 5,
         retry: false
     })

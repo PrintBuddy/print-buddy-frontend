@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useSnackbar } from "notistack";
+import { useSnackbar } from "../../hooks/useSnackbar";
 import { getADConfig, updateADConfig, importADUsers, previewADUsersImport } from "../../api/settings";
 import {
     Typography, Stack, FormControlLabel, Switch, TextField, Button, Box, List, ListItem, ListItemText, Divider

@@ -1,22 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import CustomModal from "../utils/CustomModal";
-import { ArrowUpward, ArrowDownward, Autorenew } from "@mui/icons-material";
-
-
-const getIconForType = (type) => {
-    switch (type) {
-        case "recharge":
-            return <ArrowUpward color="success" />;
-        case "refund":
-            return <ArrowUpward color="info" />;
-        case "adjustment":
-            return <Autorenew color="warning" />;
-        case "print":
-            return <ArrowDownward color="error" />;
-        default:
-            return null;
-    }
-};
+import { getIconForType, getLabelForType } from "./transactionDisplay";
 
 export default function TransactionDetailsModal({ transaction, onClose }) {
     if (!transaction) return null;
@@ -31,7 +15,7 @@ export default function TransactionDetailsModal({ transaction, onClose }) {
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 {getIconForType(transaction.type)}
                 <Typography variant="body1" fontWeight="600">
-                {transaction.type.toUpperCase()}
+                {getLabelForType(transaction.type)}
                 </Typography>
             </Box>
 

@@ -1,6 +1,6 @@
 import { QueryClient, QueryCache, MutationCache, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { enqueueSnackbar } from 'notistack'
+import { enqueueSnackbar } from '../hooks/useSnackbar'
 
 
 function reportError(error, query) {

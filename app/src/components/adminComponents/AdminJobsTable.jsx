@@ -5,6 +5,10 @@ import {
     TableHead, TableRow, Typography, useMediaQuery
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { useSnackbar } from "../../hooks/useSnackbar";
+
+import { useAdmin } from "../../context/AdminContext";
+import OverrideReasonModal from "./OverrideReasonModal";
 
 
 const STATUS_COLOR = {
@@ -21,9 +25,10 @@ function StatusChip({ status }) {
     return <Chip label={status} color={STATUS_COLOR[status] ?? "default"} size="small" />;
 }
 
-function JobDetailDialog({ job, userById, onClose }) {
+function JobDetailDialog({ job, userById, onClose, onOverrideRefund, onFreeReprint }) {
     if (!job) return null;
     const user = userById?.[job.user_id];
+    const isCompleted = job.status === "completed";
     return (
         <Dialog open onClose={onClose} fullWidth maxWidth="xs">
             <DialogTitle sx={{ pb: 0.5 }}>
@@ -54,7 +59,13 @@ function JobDetailDialog({ job, userById, onClose }) {
                     </Typography>
                 </Box>
             </DialogContent>
-            <DialogActions>
+            <DialogActions sx={{ flexWrap: "wrap", gap: 1 }}>
+                {isCompleted && (
+                    <>
+                        <Button color="warning" onClick={() => onFreeReprint(job)}>Free Reprint</Button>
+                        <Button color="error" onClick={() => onOverrideRefund(job)}>Override Refund</Button>
+                    </>
+                )}
                 <Button onClick={onClose}>Close</Button>
             </DialogActions>
         </Dialog>
@@ -65,7 +76,23 @@ export default function AdminJobsTable({ jobs, isLoading, userById = {} }) {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const [selectedJob, setSelectedJob] = useState(null);
+    const [overrideTarget, setOverrideTarget] = useState(null);
+    const [reprintTarget, setReprintTarget] = useState(null);
+    const { overrideRefund, freeReprint } = useAdmin();
+    const { enqueueSnackbar } = useSnackbar();
     const skeletonRows = Array.from({ length: 6 });
+
+    const handleOverrideRefund = async (reason) => {
+        await overrideRefund(overrideTarget.id, reason);
+        enqueueSnackbar(`Refund override issued for ${overrideTarget.file_name}.`, { variant: "success" });
+        setSelectedJob(null);
+    };
+
+    const handleFreeReprint = async (reason) => {
+        await freeReprint(reprintTarget.id, reason);
+        enqueueSnackbar(`Free reprint sent for ${reprintTarget.file_name}.`, { variant: "success" });
+        setSelectedJob(null);
+    };
 
     return (
         <>
@@ -189,8 +216,28 @@ export default function AdminJobsTable({ jobs, isLoading, userById = {} }) {
                     job={selectedJob}
                     userById={userById}
                     onClose={() => setSelectedJob(null)}
+                    onOverrideRefund={setOverrideTarget}
+                    onFreeReprint={setReprintTarget}
                 />
             )}
+
+            <OverrideReasonModal
+                open={Boolean(overrideTarget)}
+                onClose={() => setOverrideTarget(null)}
+                title="Override Refund"
+                description={`Refund ${overrideTarget?.file_name ?? "this job"} (€${overrideTarget?.cost?.toFixed(2)}) even though the user never requested it. This is logged permanently with your reason.`}
+                actionLabel="Issue Refund"
+                onSubmit={handleOverrideRefund}
+            />
+
+            <OverrideReasonModal
+                open={Boolean(reprintTarget)}
+                onClose={() => setReprintTarget(null)}
+                title="Free Reprint"
+                description={`Reprint ${reprintTarget?.file_name ?? "this job"} at no cost. This is logged permanently with your reason.`}
+                actionLabel="Send Reprint"
+                onSubmit={handleFreeReprint}
+            />
         </>
     );
 }

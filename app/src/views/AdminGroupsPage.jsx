@@ -19,11 +19,12 @@ import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import GroupsIcon from "@mui/icons-material/Groups";
-import { useSnackbar } from "notistack";
+import { useSnackbar } from "../hooks/useSnackbar";
 
 import { useAdmin } from "../context/AdminContext";
 import GroupDetailModal from "../components/adminComponents/GroupDetailModal";
 import CustomModal from "../components/utils/CustomModal";
+import ConfirmDialog from "../components/utils/ConfirmDialog";
 import AdminPageHero from "../components/adminComponents/AdminPageHero";
 import AdminSurface from "../components/adminComponents/AdminSurface";
 
@@ -100,14 +101,20 @@ export default function AdminGroupsPage() {
 
     const [createOpen, setCreateOpen] = useState(false);
     const [detailGroup, setDetailGroup] = useState(null);
+    const [deleteTarget, setDeleteTarget] = useState(null);
+    const [deleting, setDeleting] = useState(false);
 
-    const handleDelete = async (group) => {
-        if (!window.confirm(`Delete group "${group.name}"? This cannot be undone.`)) return;
+    const handleDelete = async () => {
+        if (!deleteTarget) return;
+        setDeleting(true);
         try {
-            await deleteGroup(group.id);
-            enqueueSnackbar(`Group "${group.name}" deleted.`, { variant: "success" });
+            await deleteGroup(deleteTarget.id);
+            enqueueSnackbar(`Group "${deleteTarget.name}" deleted.`, { variant: "success" });
         } catch {
             enqueueSnackbar("Failed to delete group.", { variant: "error" });
+        } finally {
+            setDeleting(false);
+            setDeleteTarget(null);
         }
     };
 
@@ -179,7 +186,7 @@ export default function AdminGroupsPage() {
                                                 </IconButton>
                                             </Tooltip>
                                             <Tooltip title="Delete group">
-                                                <IconButton size="small" color="error" onClick={() => handleDelete(group)} aria-label="Delete group">
+                                                <IconButton size="small" color="error" onClick={() => setDeleteTarget(group)} aria-label="Delete group">
                                                     <DeleteIcon fontSize="small" />
                                                 </IconButton>
                                             </Tooltip>
@@ -205,6 +212,15 @@ export default function AdminGroupsPage() {
                 group={detailGroup}
                 users={users}
                 printers={printers}
+            />
+
+            <ConfirmDialog
+                open={Boolean(deleteTarget)}
+                title="Delete group?"
+                message={`Delete group "${deleteTarget?.name}"? This cannot be undone — members will lose any printer access granted through this group.`}
+                onClose={() => setDeleteTarget(null)}
+                onConfirm={handleDelete}
+                loading={deleting}
             />
 
         </Box>

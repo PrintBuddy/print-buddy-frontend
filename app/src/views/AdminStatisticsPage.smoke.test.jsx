@@ -21,6 +21,8 @@ vi.mock("../api/stats", () => ({
             total_spent_on_print: 12.5,
             total_refunded: 0,
             total_adjustments: 0,
+            total_expenses: 5,
+            total_product_purchases: 2.5,
         },
     }),
 }));
@@ -43,5 +45,6 @@ describe("AdminStatisticsPage smoke test", () => {
         await waitFor(() => expect(screen.getAllByText("Total Pages").length).toBeGreaterThan(0));
         await waitFor(() => expect(screen.getAllByText("Printer1").length).toBeGreaterThan(0));
         expect(screen.getAllByText("alice").length).toBeGreaterThan(0);
+        expect(screen.getByRole("button", { name: /export/i })).toBeInTheDocument();
     });
 });

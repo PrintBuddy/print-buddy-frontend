@@ -1,10 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     Box,
-    Button,
-    Dialog,
-    DialogContent,
-    DialogTitle,
     IconButton,
     InputAdornment,
     Paper,
@@ -16,16 +13,11 @@ import {
     TableHead,
     TableRow,
     TextField,
-    Tooltip,
     Typography,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
-import DeleteIcon from "@mui/icons-material/Delete";
-import CloseIcon from "@mui/icons-material/Close";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 import UserStatusChips from "./UserStatusChips";
 
@@ -33,21 +25,13 @@ function getBalanceColor(balance, positiveColor = "success.main") {
     return balance < 0 ? "error.main" : positiveColor;
 }
 
-// The user directory table + its mobile tap-to-open action sheet — one
-// cohesive interactive unit (a mobile row tap opens the sheet, whose
-// buttons hand off to the parent's edit/recharge/transactions/delete
-// modals via the callbacks below).
-export default function UsersTable({
-    users,
-    usersLoading,
-    isMobile,
-    onEditUser,
-    onRechargeUser,
-    onViewTransactions,
-    onDeleteUser,
-}) {
+// The user directory table — clicking a row navigates to that user's
+// dedicated detail sub-page (/admin/users/:id), which now houses every
+// action (edit, balance, transactions, delete) that used to live in
+// separate modals launched from this list.
+export default function UsersTable({ users, usersLoading, isMobile }) {
+    const navigate = useNavigate();
     const [search, setSearch] = useState("");
-    const [selectedUser, setSelectedUser] = useState(null);
 
     const skeletonRows = Array.from({ length: 6 });
 
@@ -66,6 +50,8 @@ export default function UsersTable({
             if (a.is_admin !== b.is_admin) return a.is_admin ? -1 : 1;
             return (a.username ?? "").localeCompare(b.username ?? "");
         });
+
+    const goToUser = (user) => navigate(`/admin/users/${user.id}`);
 
     return (
         <>
@@ -121,7 +107,7 @@ export default function UsersTable({
                                 <TableCell>Email</TableCell>
                                 <TableCell>Balance</TableCell>
                                 <TableCell>Roles</TableCell>
-                                <TableCell align="right">Actions</TableCell>
+                                <TableCell align="right" />
                             </>
                         )}
                     </TableRow>
@@ -155,7 +141,7 @@ export default function UsersTable({
                             <TableRow
                                 key={user.id}
                                 hover
-                                onClick={() => setSelectedUser(user)}
+                                onClick={() => goToUser(user)}
                                 sx={{ cursor: "pointer" }}
                             >
                                 <TableCell>
@@ -183,7 +169,7 @@ export default function UsersTable({
                             <TableRow
                                 key={user.id}
                                 hover
-                                onClick={() => setSelectedUser(user)}
+                                onClick={() => goToUser(user)}
                                 sx={{ cursor: "pointer" }}
                             >
                                 <TableCell>
@@ -207,26 +193,7 @@ export default function UsersTable({
                                     </Box>
                                 </TableCell>
                                 <TableCell align="right">
-                                    <Tooltip title="Edit user info">
-                                        <IconButton size="small" onClick={(e) => { e.stopPropagation(); onEditUser(user); }} aria-label="Edit user info">
-                                            <EditIcon fontSize="small" />
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Tooltip title="Adjust balance">
-                                        <IconButton size="small" onClick={(e) => { e.stopPropagation(); onRechargeUser(user); }} aria-label="Adjust balance">
-                                            <AccountBalanceWalletIcon fontSize="small" />
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Tooltip title="View transactions">
-                                        <IconButton size="small" onClick={(e) => { e.stopPropagation(); onViewTransactions(user); }} aria-label="View transactions">
-                                            <ReceiptLongIcon fontSize="small" />
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Tooltip title="Delete user">
-                                        <IconButton size="small" color="error" onClick={(e) => { e.stopPropagation(); onDeleteUser(user); }} aria-label="Delete user">
-                                            <DeleteIcon fontSize="small" />
-                                        </IconButton>
-                                    </Tooltip>
+                                    <ChevronRightIcon fontSize="small" color="disabled" />
                                 </TableCell>
                             </TableRow>
                         ))
@@ -234,79 +201,6 @@ export default function UsersTable({
                 </TableBody>
             </Table>
             </TableContainer>
-
-            {/* Mobile action sheet */}
-            <Dialog
-                open={Boolean(selectedUser)}
-                onClose={() => setSelectedUser(null)}
-                fullWidth
-                maxWidth="xs"
-            >
-                <DialogTitle sx={{ pb: 0.5, pr: 6 }}>
-                    <Typography fontWeight="bold">{selectedUser?.username}</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        {selectedUser?.name} {selectedUser?.surname}
-                    </Typography>
-                    <IconButton
-                        onClick={() => setSelectedUser(null)}
-                        size="small"
-                        sx={{ position: "absolute", top: 8, right: 8 }}
-                        aria-label="Close"
-                    >
-                        <CloseIcon fontSize="small" />
-                    </IconButton>
-                </DialogTitle>
-                <DialogContent>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                        {selectedUser?.email}
-                    </Typography>
-                    <Box display="flex" alignItems="center" gap={1} mt={0.5}>
-                        <Typography
-                            variant="body1"
-                            fontWeight="medium"
-                            color={getBalanceColor(selectedUser?.balance)}
-                        >
-                            €{selectedUser?.balance?.toFixed(2)}
-                        </Typography>
-                        <UserStatusChips user={selectedUser} />
-                    </Box>
-                </DialogContent>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 1, px: 2, pb: 2 }}>
-                    <Button
-                        fullWidth
-                        variant="outlined"
-                        startIcon={<EditIcon />}
-                        onClick={() => { onEditUser(selectedUser); setSelectedUser(null); }}
-                    >
-                        Edit Info
-                    </Button>
-                    <Button
-                        fullWidth
-                        variant="outlined"
-                        startIcon={<AccountBalanceWalletIcon />}
-                        onClick={() => { onRechargeUser(selectedUser); setSelectedUser(null); }}
-                    >
-                        Recharge / Adjust Balance
-                    </Button>
-                    <Button
-                        fullWidth
-                        variant="outlined"
-                        startIcon={<ReceiptLongIcon />}
-                        onClick={() => { onViewTransactions(selectedUser); setSelectedUser(null); }}
-                    >
-                        View Transactions
-                    </Button>
-                    <Button
-                        fullWidth
-                        variant="outlined"
-                        color="error"
-                        startIcon={<DeleteIcon />}
-                        onClick={() => { onDeleteUser(selectedUser); setSelectedUser(null); }}
-                    >
-                        Delete User
-                    </Button>
-                </Box>
-            </Dialog>
         </>
     );
 }

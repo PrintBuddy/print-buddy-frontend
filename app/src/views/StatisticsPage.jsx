@@ -1,9 +1,9 @@
+import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
     Box,
     Button,
-    Card,
-    CardContent,
+    Chip,
     Skeleton,
     Stack,
     Typography,
@@ -17,24 +17,14 @@ import InvertColorsOffIcon from "@mui/icons-material/InvertColorsOff";
 import PrintIcon from "@mui/icons-material/Print";
 import EuroIcon from "@mui/icons-material/Euro";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import {
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    Legend,
-    ResponsiveContainer,
-} from "recharts";
 
 import { getUserStats } from "../api/stats";
 import { getPrinters } from "../api/printer";
 import UserPageHero from "../components/userViewComponents/UserPageHero";
 import UserSurface from "../components/userViewComponents/UserSurface";
-
-
-// ─── Constants ────────────────────────────────────────────────────────────────
+import PeriodFilter from "../components/utils/PeriodFilter";
+import StatCard from "../components/adminComponents/StatCard";
+import StatsBarChart from "../components/adminComponents/StatsBarChart";
 
 const BW_COLOR = "#78909c";
 const COLOR_COLOR = "#ed6c02";
@@ -49,134 +39,20 @@ function shortLabelMobile(label, maxLen = 9) {
     return label.length > maxLen ? label.slice(0, maxLen - 1) + "…" : label;
 }
 
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
-
-function StatCard({ icon, label, value, accentColor, loading, subtitle }) {
-    return (
-        <Card
-            elevation={0}
-            sx={{
-                height: "100%",
-                borderRadius: 3,
-                border: "1px solid",
-                borderColor: "divider",
-                backgroundColor: "background.paper",
-                boxShadow: "0 14px 34px rgba(15, 23, 42, 0.08)"
-            }}
-        >
-            <CardContent sx={{ p: { xs: 1.5, sm: 2 }, "&:last-child": { pb: { xs: 1.5, sm: 2 } } }}>
-                <Stack direction="row" alignItems="center" spacing={1} mb={1}>
-                    <Box
-                        sx={{
-                            p: { xs: 0.75, sm: 1 },
-                            borderRadius: 2,
-                            backgroundColor: `${accentColor}22`,
-                            color: accentColor,
-                            display: "flex",
-                            alignItems: "center",
-                            flexShrink: 0,
-                        }}
-                    >
-                        {icon}
-                    </Box>
-                    <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        lineHeight={1.3}
-                        sx={{ fontSize: { xs: "0.72rem", sm: "0.875rem" } }}
-                    >
-                        {label}
-                    </Typography>
-                </Stack>
-                {loading ? (
-                    <Skeleton width="55%" height={36} />
-                ) : (
-                    <Typography
-                        fontWeight="bold"
-                        sx={{ fontSize: { xs: "1.4rem", sm: "1.75rem", md: "2.125rem" } }}
-                    >
-                        {value}
-                    </Typography>
-                )}
-                {subtitle && (
-                    <Typography
-                        variant="caption"
-                        color="text.disabled"
-                        sx={{ display: { xs: "none", sm: "block" } }}
-                    >
-                        {subtitle}
-                    </Typography>
-                )}
-            </CardContent>
-        </Card>
-    );
-}
-
-function SectionTitle({ children }) {
-    return (
-        <Typography variant="h6" fontWeight="bold" mb={2} sx={{ fontSize: { xs: "1rem", sm: "1.25rem" } }}>
-            {children}
-        </Typography>
-    );
-}
-
-function ResponsivePrinterChart({ data, height, isMobile }) {
-    if (isMobile) {
-        const mobileData = data.map((d) => ({ ...d, name: shortLabelMobile(d.fullName) }));
-        const barSize = Math.max(10, Math.min(20, Math.floor(220 / (data.length || 1))));
-        return (
-            <ResponsiveContainer width="100%" height={Math.max(height, data.length * 44 + 60)}>
-                <BarChart
-                    data={mobileData}
-                    layout="vertical"
-                    margin={{ top: 5, right: 16, left: 4, bottom: 5 }}
-                >
-                    <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                    <XAxis type="number" tick={{ fontSize: 11 }} allowDecimals={false} />
-                    <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={72} />
-                    <Tooltip
-                        formatter={(value, name) => [value.toLocaleString(), name]}
-                        labelFormatter={(_, payload) => payload?.[0]?.payload?.fullName ?? ""}
-                    />
-                    <Legend wrapperStyle={{ fontSize: 12 }} />
-                    <Bar dataKey="B/W" fill={BW_COLOR} radius={[0, 3, 3, 0]} barSize={barSize} />
-                    <Bar dataKey="Color" fill={COLOR_COLOR} radius={[0, 3, 3, 0]} barSize={barSize} />
-                </BarChart>
-            </ResponsiveContainer>
-        );
-    }
-
-    return (
-        <ResponsiveContainer width="100%" height={height}>
-            <BarChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
-                <Tooltip
-                    formatter={(value, name) => [value.toLocaleString(), name]}
-                    labelFormatter={(_, payload) => payload?.[0]?.payload?.fullName ?? ""}
-                />
-                <Legend />
-                <Bar dataKey="B/W" fill={BW_COLOR} radius={[3, 3, 0, 0]} />
-                <Bar dataKey="Color" fill={COLOR_COLOR} radius={[3, 3, 0, 0]} />
-            </BarChart>
-        </ResponsiveContainer>
-    );
-}
-
-
-// ─── Main page ────────────────────────────────────────────────────────────────
-
 export default function StatisticsPage() {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     const queryClient = useQueryClient();
+    const [range, setRange] = useState({ start: null, end: null });
+
+    const queryKey = (range.start || range.end)
+        ? ["user-stats", range.start, range.end]
+        : ["user-stats"];
 
     const { data: stats, isLoading } = useQuery({
-        queryKey: ["user-stats"],
-        queryFn: getUserStats,
+        queryKey,
+        queryFn: () => getUserStats(range),
         retry: false,
         staleTime: 1000 * 60 * 2,
     });
@@ -188,7 +64,7 @@ export default function StatisticsPage() {
         staleTime: 1000 * 60 * 5,
     });
 
-    const refresh = () => queryClient.invalidateQueries({ queryKey: ["user-stats"] });
+    const refresh = () => queryClient.invalidateQueries({ queryKey });
 
     const labelFn = isMobile ? shortLabelMobile : shortLabel;
 
@@ -206,6 +82,8 @@ export default function StatisticsPage() {
         };
     });
 
+    const printersWithCost = (stats?.by_printer ?? []).filter((p) => p.total_cost > 0);
+
     const chartHeight = isMobile ? 220 : 260;
 
     return (
@@ -219,6 +97,8 @@ export default function StatisticsPage() {
                     </Button>
                 )}
             />
+
+            <PeriodFilter onChange={setRange} />
 
             {/* ── Summary cards ── */}
             <Box
@@ -269,6 +149,9 @@ export default function StatisticsPage() {
                     loading={isLoading}
                 />
             </Box>
+            <Typography variant="caption" color="text.secondary">
+                "Pages" counts each printed side; "Sheets" counts physical paper — a 2-sided job uses half as many sheets as pages.
+            </Typography>
 
             {/* ── Spending summary ── */}
             <UserSurface title="Spending Summary" sx={{ p: { xs: 2, sm: 3 } }}>
@@ -286,7 +169,7 @@ export default function StatisticsPage() {
                     <Stack direction="row" alignItems="center" spacing={1} mb={0.5}>
                         <EuroIcon fontSize="small" />
                         <Typography variant="body2" sx={{ opacity: 0.9, fontSize: { xs: "0.75rem", sm: "0.875rem" } }}>
-                            Total spent on printing (after refunds)
+                            Spent on printing this period (after refunds)
                         </Typography>
                     </Stack>
                     {isLoading ? (
@@ -297,7 +180,7 @@ export default function StatisticsPage() {
                         </Typography>
                     )}
                     <Typography variant="caption" sx={{ opacity: 0.75 }}>
-                        Sum of completed print jobs minus approved refunds
+                        Sum of completed print jobs minus approved refunds, for the selected window
                     </Typography>
                 </Box>
             </UserSurface>
@@ -307,14 +190,31 @@ export default function StatisticsPage() {
                     <Skeleton variant="rectangular" height={chartHeight} />
                 ) : printerChartData.length === 0 ? (
                     <Typography color="text.secondary" sx={{ py: 4, textAlign: "center" }}>
-                        No print data available yet.
+                        No print data available for this period.
                     </Typography>
                 ) : (
-                    <ResponsivePrinterChart
-                        data={printerChartData}
-                        height={chartHeight}
-                        isMobile={isMobile}
-                    />
+                    <>
+                        <StatsBarChart
+                            data={printerChartData}
+                            height={chartHeight}
+                            isMobile={isMobile}
+                            series={[{ dataKey: "B/W", color: BW_COLOR }, { dataKey: "Color", color: COLOR_COLOR }]}
+                            allowDecimals={false}
+                        />
+                        {printersWithCost.length > 0 && (
+                            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 2 }}>
+                                {printersWithCost.map((p) => (
+                                    <Chip
+                                        key={p.printer_name}
+                                        label={`${p.printer_name}: €${p.total_cost.toFixed(2)}`}
+                                        size="small"
+                                        variant="outlined"
+                                        color="primary"
+                                    />
+                                ))}
+                            </Stack>
+                        )}
+                    </>
                 )}
             </UserSurface>
 

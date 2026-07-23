@@ -20,7 +20,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import HourglassBottomIcon from "@mui/icons-material/HourglassBottom";
 import ReplayIcon from "@mui/icons-material/Replay";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useSnackbar } from "notistack";
+import { useSnackbar } from "../hooks/useSnackbar";
 
 import { usePrint } from "../context/PrintContext";
 import { getMyRefunds, requestRefund } from "../api/refund";

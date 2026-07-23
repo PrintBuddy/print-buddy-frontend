@@ -1,6 +1,6 @@
 import { Box, Card, CardContent, Skeleton, Stack, Typography } from "@mui/material";
 
-export default function StatCard({ icon, label, value, accentColor, loading, subtitle }) {
+export default function StatCard({ icon, label, value, accentColor, loading, subtitle, action }) {
     return (
         <Card
             elevation={0}
@@ -14,28 +14,31 @@ export default function StatCard({ icon, label, value, accentColor, loading, sub
             }}
         >
             <CardContent sx={{ p: { xs: 1.5, sm: 2 }, "&:last-child": { pb: { xs: 1.5, sm: 2 } } }}>
-                <Stack direction="row" alignItems="center" spacing={1} mb={1}>
-                    <Box
-                        sx={{
-                            p: { xs: 0.75, sm: 1 },
-                            borderRadius: 2,
-                            backgroundColor: `${accentColor}22`,
-                            color: accentColor,
-                            display: "flex",
-                            alignItems: "center",
-                            flexShrink: 0,
-                        }}
-                    >
-                        {icon}
-                    </Box>
-                    <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        lineHeight={1.3}
-                        sx={{ fontSize: { xs: "0.72rem", sm: "0.875rem" } }}
-                    >
-                        {label}
-                    </Typography>
+                <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1} mb={1}>
+                    <Stack direction="row" alignItems="center" spacing={1} sx={{ minWidth: 0 }}>
+                        <Box
+                            sx={{
+                                p: { xs: 0.75, sm: 1 },
+                                borderRadius: 2,
+                                backgroundColor: `${accentColor}22`,
+                                color: accentColor,
+                                display: "flex",
+                                alignItems: "center",
+                                flexShrink: 0,
+                            }}
+                        >
+                            {icon}
+                        </Box>
+                        <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            lineHeight={1.3}
+                            sx={{ fontSize: { xs: "0.72rem", sm: "0.875rem" } }}
+                        >
+                            {label}
+                        </Typography>
+                    </Stack>
+                    {action}
                 </Stack>
                 {loading ? (
                     <Skeleton width="55%" height={36} />

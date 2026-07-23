@@ -1,6 +1,11 @@
-import { Box, Paper, Stack, Typography } from "@mui/material";
+import { useState } from "react";
+import { Box, Paper, Stack, Typography, IconButton } from "@mui/material";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import CustomModal from "../utils/CustomModal";
 
 export default function UserPageHero({ title, description, action, children }) {
+    const [descOpen, setDescOpen] = useState(false);
+
     return (
         <Paper
             elevation={0}
@@ -21,11 +26,27 @@ export default function UserPageHero({ title, description, action, children }) {
                     spacing={2}
                 >
                     <Stack spacing={0.75}>
-                        <Typography variant="h5" fontWeight={700} sx={{ fontSize: { xs: "1.55rem", sm: "1.85rem" } }}>
-                            {title}
-                        </Typography>
+                        <Stack direction="row" alignItems="center" spacing={0.5}>
+                            <Typography variant="h5" fontWeight={700} sx={{ fontSize: { xs: "1.55rem", sm: "1.85rem" } }}>
+                                {title}
+                            </Typography>
+                            {description && (
+                                <IconButton
+                                    size="small"
+                                    aria-label="Section info"
+                                    onClick={() => setDescOpen(true)}
+                                    sx={{ display: { xs: "inline-flex", sm: "none" } }}
+                                >
+                                    <InfoOutlinedIcon fontSize="small" />
+                                </IconButton>
+                            )}
+                        </Stack>
                         {description && (
-                            <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 760 }}>
+                            <Typography
+                                variant="body1"
+                                color="text.secondary"
+                                sx={{ maxWidth: 760, display: { xs: "none", sm: "block" } }}
+                            >
                                 {description}
                             </Typography>
                         )}
@@ -34,6 +55,15 @@ export default function UserPageHero({ title, description, action, children }) {
                 </Stack>
                 {children}
             </Stack>
+
+            {description && (
+                <CustomModal
+                    open={descOpen}
+                    onClose={() => setDescOpen(false)}
+                    title={title}
+                    content={description}
+                />
+            )}
         </Paper>
     );
 }

@@ -30,3 +30,8 @@ export async function resolveRefund(refundId, status, adminMessage) {
     });
     return response.data;
 }
+
+export async function overrideRefund(jobId, reason) {
+    const response = await api.post(`${REFUND_ROUTE}/override/${jobId}`, { reason });
+    return response.data;
+}
