@@ -87,7 +87,7 @@ export default function GroupMembersTab({ group, users, detail, refresh }) {
             <ConfirmDialog
                 open={Boolean(removeTarget)}
                 title="Remove member?"
-                message={`Remove @${removeTarget?.username} from "${group.name}"? They will lose access to this group's restricted printers and pricing.`}
+                message={`Remove @${removeTarget?.username} from "${group?.name}"? They will lose access to this group's restricted printers and pricing.`}
                 onClose={() => setRemoveTarget(null)}
                 onConfirm={() => runRemoveMember(removeTarget.id)}
                 loading={removeLoading}

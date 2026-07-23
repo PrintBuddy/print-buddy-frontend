@@ -30,7 +30,7 @@ export default function GroupDetailModal({ open, onClose, group, users, printers
     const memberCount = (detail?.members ?? []).length;
     const permitCount = (detail?.printer_permits ?? []).length;
 
-    const content = detailLoading ? (
+    const content = !open || !group ? null : detailLoading ? (
         <Box display="flex" justifyContent="center" py={4}>
             <CircularProgress />
         </Box>
