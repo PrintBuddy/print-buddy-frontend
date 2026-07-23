@@ -1,6 +1,11 @@
-import { Box, Chip, Paper, Stack, Typography } from "@mui/material";
+import { useState } from "react";
+import { Box, Chip, Paper, Stack, Typography, IconButton } from "@mui/material";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import CustomModal from "../utils/CustomModal";
 
 export default function AdminPageHero({ eyebrow = "Admin Workspace", title, description, tags = [], action }) {
+    const [descOpen, setDescOpen] = useState(false);
+
     return (
         <Paper
             elevation={0}
@@ -20,7 +25,7 @@ export default function AdminPageHero({ eyebrow = "Admin Workspace", title, desc
                     alignItems={{ xs: "flex-start", md: "flex-start" }}
                     spacing={2}
                 >
-                    <Stack spacing={1}>
+                    <Stack spacing={1} sx={{ minWidth: 0 }}>
                         <Chip
                             label={eyebrow}
                             size="small"
@@ -31,11 +36,27 @@ export default function AdminPageHero({ eyebrow = "Admin Workspace", title, desc
                                 fontWeight: 600,
                             }}
                         />
-                        <Typography variant="h5" fontWeight={700} sx={{ fontSize: { xs: "1.6rem", sm: "1.9rem" } }}>
-                            {title}
-                        </Typography>
+                        <Stack direction="row" alignItems="center" spacing={0.5}>
+                            <Typography variant="h5" fontWeight={700} sx={{ fontSize: { xs: "1.6rem", sm: "1.9rem" } }}>
+                                {title}
+                            </Typography>
+                            {description && (
+                                <IconButton
+                                    size="small"
+                                    aria-label="Section info"
+                                    onClick={() => setDescOpen(true)}
+                                    sx={{ display: { xs: "inline-flex", sm: "none" } }}
+                                >
+                                    <InfoOutlinedIcon fontSize="small" />
+                                </IconButton>
+                            )}
+                        </Stack>
                         {description && (
-                            <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 760 }}>
+                            <Typography
+                                variant="body1"
+                                color="text.secondary"
+                                sx={{ maxWidth: 760, display: { xs: "none", sm: "block" } }}
+                            >
                                 {description}
                             </Typography>
                         )}
@@ -54,6 +75,15 @@ export default function AdminPageHero({ eyebrow = "Admin Workspace", title, desc
                     </Stack>
                 )}
             </Stack>
+
+            {description && (
+                <CustomModal
+                    open={descOpen}
+                    onClose={() => setDescOpen(false)}
+                    title={title}
+                    content={description}
+                />
+            )}
         </Paper>
     );
 }
