@@ -47,6 +47,17 @@ export default function ResolveRechargeRequestModal({ open, onClose, request, on
                         </Typography>
                     </Box>
 
+                    <Box>
+                        <Typography variant="caption" color="text.secondary" fontWeight="bold" textTransform="uppercase">
+                            Sent to
+                        </Typography>
+                        <Typography variant="body1" fontWeight="medium">
+                            {request?.target_admin_username
+                                ? `${request.target_admin_name} ${request.target_admin_surname} (@${request.target_admin_username})`
+                                : "—"}
+                        </Typography>
+                    </Box>
+
                     {request?.message && (
                         <Box>
                             <Typography variant="caption" color="text.secondary" fontWeight="bold" textTransform="uppercase">
