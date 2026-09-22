@@ -151,6 +151,13 @@ function RechargeRequestsTab() {
         { header: "User", render: (r) => <Typography variant="body2" fontWeight="medium">@{r.username}</Typography> },
         { header: "Amount", render: (r) => `€${Number(r.amount).toFixed(2)}` },
         { header: "Method", render: (r) => <span style={{ textTransform: "capitalize" }}>{r.method}</span> },
+        {
+            header: "Sent to", render: (r) => (
+                <Typography variant="body2">
+                    {r.target_admin_username ? `${r.target_admin_name} ${r.target_admin_surname}` : "—"}
+                </Typography>
+            )
+        },
         { header: "Message", render: (r) => <Typography variant="body2" noWrap sx={{ maxWidth: 200 }}>{r.message ?? "—"}</Typography> },
         { header: "Status", render: (r) => <Chip label={r.status} color={RECHARGE_STATUS_COLOR[r.status] ?? "default"} size="small" /> },
         { header: "Created", render: (r) => <Typography variant="caption">{new Date(r.created_at).toLocaleString()}</Typography> },
